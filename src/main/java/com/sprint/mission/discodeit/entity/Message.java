@@ -6,16 +6,22 @@ public class Message {
     private UUID id; //메세지 번호
     private String meg; //메세지 내용
     private UUID sender; //보낸 사람
+    private UUID roomId; // 보낸 방번호
 
     private long created;
     private long updated;
 
+//    나중에는 보낸 방 위치도 알게 roomId 알게 수정하기
     public Message(String meg,UUID userId) {
         this.id = UUID.randomUUID();
         this.meg = meg;
         this.sender = userId;
         this.created = System.currentTimeMillis();
         this.updated = System.currentTimeMillis();
+    }
+
+    public UUID getRoomId() {
+        return roomId;
     }
 
     public UUID getId() {

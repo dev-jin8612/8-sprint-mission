@@ -6,16 +6,13 @@ import com.sprint.mission.discodeit.entity.User;
 import com.sprint.mission.discodeit.service.ChannelService;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.stream.Collectors;
 
 public class JCFChannelService implements ChannelService {
-    final List<Channel> channels;
-
-    public JCFChannelService(List<Channel> channels) {
-        this.channels = new ArrayList<>(channels);
-    }
+    final List<Channel> channels = new ArrayList<Channel>();
 
     // 채널 추가
     @Override

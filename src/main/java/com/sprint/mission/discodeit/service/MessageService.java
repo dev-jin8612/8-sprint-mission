@@ -3,6 +3,7 @@ package com.sprint.mission.discodeit.service;
 import com.sprint.mission.discodeit.entity.Message;
 
 import java.util.ArrayList;
+import java.util.List;
 import java.util.UUID;
 
 public interface MessageService {
@@ -16,16 +17,14 @@ public interface MessageService {
     void deleteMessage(UUID mesUid);
 
     // 메세지 찾기
-    Message search(UUID mesUId);
+    Message searchU(UUID mesUId);
+//    List<Message> searchL(String contents);
 
     void searchMessage(UUID mesUId);
 
     // 메세지 여러개 찾기
-    void searchMessageS(ArrayList<Message> megs );
+    void searchMessageS(String contents);
 
     // 수정된 메세지 찾기
     void searchUpdateMessage();
-
-    // 수정된 메세지들 찾기
-//    void searchUpdateMessageS(List<String> names);
 }
