@@ -4,7 +4,7 @@ import java.util.UUID;
 
 public class User {
     private UUID id; //유저 id
-    private String name; //이름
+    private String name="defaultName"; //이름
 
     private long created;
     private long updated;
@@ -35,8 +35,8 @@ public class User {
     }
 
 
-    //    // method
-    public void updateName(String name) {
+    // method
+    public void update(String name) {
         this.name = name;
         this.updated = System.currentTimeMillis();
     }

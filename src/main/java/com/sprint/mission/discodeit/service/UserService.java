@@ -1,9 +1,7 @@
 package com.sprint.mission.discodeit.service;
 
 import com.sprint.mission.discodeit.entity.User;
-
-import java.util.List;
-import java.util.UUID;
+import java.util.ArrayList;
 
 public interface UserService {
     // 유저등록
@@ -24,7 +22,7 @@ public interface UserService {
 
     //객체 주는걸로 바꾸기
     // 유저 여러명 찾기
-    void searchUserS(List<String> names );
+    void searchUserS(ArrayList<String> names );
 
     // 수정된 유저 찾기
     void searchUpdateUser();

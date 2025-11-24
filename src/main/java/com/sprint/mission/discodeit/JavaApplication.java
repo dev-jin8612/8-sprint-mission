@@ -1,16 +1,20 @@
 package com.sprint.mission.discodeit;
 
+import com.sprint.mission.discodeit.entity.Channel;
 import com.sprint.mission.discodeit.entity.User;
+import com.sprint.mission.discodeit.service.jcf.JCFChannelService;
 import com.sprint.mission.discodeit.service.jcf.JCFUserService;
 
 import java.util.List;
 
 public class JavaApplication {
     public static void main(String[] args) {
-        JCFUserService test = new JCFUserService(List.of(new User("황")));
+        User testUser1=new User("황");
+        JCFUserService test = new JCFUserService(List.of(testUser1));
 
         // 유저 등록
-//        test.addUser(new User("진"));
+        User testUser2=new User("진");
+        test.addUser(testUser2);
 
         // 유저 수정
 //        test.updateUser("황","서");
@@ -34,6 +38,9 @@ public class JavaApplication {
 
 //        __________________________________________
 
+        Channel cTest1=new Channel("test1",List.of(testUser1));
+
+        JCFChannelService cTest=new JCFChannelService(List.of(cTest1));
 
 
 
