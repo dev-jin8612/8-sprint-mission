@@ -10,7 +10,7 @@ import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.stream.Collectors;
 
 public class JCFUserService implements UserService {
-    final List<User> users= new ArrayList<User>();
+    final List<User> users= new ArrayList<>();
 
     // 사람 추가
     @Override
@@ -98,4 +98,8 @@ public class JCFUserService implements UserService {
             System.out.println("업데이트된 존재가 없습니다.");
         }
     }
+
+    // 유저 리스트 넘기는거 만들기
+    // 채널 만들 때 필요
+    public List<User> getUsers() {return this.users;}
 }

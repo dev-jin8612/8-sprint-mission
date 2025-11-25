@@ -30,4 +30,9 @@ public interface UserService {
 
     // 수정된 유저들 찾기
 //    void searchUpdateUserS(List<String> names);
+
+
+    // 유저 리스트 넘기는거 만들기
+    // 채널 만들 때 필요
+    List<User> getUsers();
 }

@@ -42,43 +42,55 @@ public class JavaApplication {
         // 삭제 확인
 //        test.searchUser("황");
 
-//        System.out.println("_________________구분선, 채널__________________");
+        System.out.println("_________________구분선, 채널__________________");
+        // 따로 참여자 리스트 만들어야 하는데 임시로 진행
+        Channel cTest1=new Channel("ctest1",test.getUsers());
+        Channel cTest2=new Channel("ctest2",test.getUsers());
 
-//        Channel cTest1=new Channel("test1",List.of(testUser1));
-//        Channel cTest1=new Channel("test1", list);
+        JCFChannelService cTest=new JCFChannelService();
+//        cTest.searchChannel("ctest1");
 
-//        JCFChannelService cTest=new JCFChannelService(List.of(cTest1));
+        cTest.addChannel(cTest1);
+        cTest.addChannel(cTest2);
+//        cTest.searchChannel("ctest1");
+//        cTest.searchChannelS(List.of("ctest1"));
 
-        System.out.println("_________________구분선, 메세지__________________");
+//        cTest.updateChannel("ctest1","ctest10");
+//        cTest.searchChannel("ctest10");
+//
+//        cTest.deleteChannel("ctest10");
+//        cTest.searchChannel("ctest10");
 
-        Message mtest1 = new Message("황의 메세지1", testUser1.getId());
-        Message mtest2 = new Message("황의 메세지2", testUser1.getId());
-        Message mtest3 = new Message("진의 메세지1", testUser2.getId());
-        Message mtest4 = new Message("진의 메세지2", testUser2.getId());
-
-
-        JCFMessageService megTest = new JCFMessageService();
-
-        // 추가
-        megTest.addMessage(mtest1);
-        megTest.addMessage(mtest2);
-        megTest.addMessage(mtest3);
-        megTest.addMessage(mtest4);
-
-        // 검색, 단어 포함하는
-        megTest.searchMessageS("진");
-
-        // 검색, 단일, 추후 수정 필요
-        megTest.searchMessage(mtest1.getId());
-
-        megTest.updateMessage(mtest1.getId(), "서의 메세지1");
-        megTest.searchMessage(mtest1.getId());
-
-        // 수정됐던 메세지 출력
-        megTest.searchUpdateMessage();
-
-        // 메세지 삭제
-        megTest.deleteMessage(mtest1.getId());
-        megTest.searchMessage(mtest1.getId());
+//        System.out.println("_________________구분선, 메세지__________________");
+//
+//        Message mtest1 = new Message("황의 메세지1", testUser1.getId());
+//        Message mtest2 = new Message("황의 메세지2", testUser1.getId());
+//        Message mtest3 = new Message("진의 메세지1", testUser2.getId());
+//        Message mtest4 = new Message("진의 메세지2", testUser2.getId());
+//
+//
+//        JCFMessageService megTest = new JCFMessageService();
+//
+//        // 추가
+//        megTest.addMessage(mtest1);
+//        megTest.addMessage(mtest2);
+//        megTest.addMessage(mtest3);
+//        megTest.addMessage(mtest4);
+//
+//        // 검색, 단어 포함하는
+//        megTest.searchMessageS("진");
+//
+//        // 검색, 단일, 추후 수정 필요
+//        megTest.searchMessage(mtest1.getId());
+//
+//        megTest.updateMessage(mtest1.getId(), "서의 메세지1");
+//        megTest.searchMessage(mtest1.getId());
+//
+//        // 수정됐던 메세지 출력
+//        megTest.searchUpdateMessage();
+//
+//        // 메세지 삭제
+//        megTest.deleteMessage(mtest1.getId());
+//        megTest.searchMessage(mtest1.getId());
     }
 }

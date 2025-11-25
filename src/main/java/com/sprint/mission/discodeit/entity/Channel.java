@@ -7,13 +7,14 @@ import java.util.UUID;
 public class Channel {
     private UUID id; // 방 번호
     private String channelName; // 방이름
-    private ArrayList<User> users; //참가자 명단
-    private ArrayList<Message> messages; //메세지 내용
+    private List<User> users; //참가자 명단
+    private List<Message> messages; //메세지 내용
+    // 나중에 메세지 넣고 메세지 추가도 진행하게 만들기
 
     private long created;
     private long updated;
 
-    public Channel(String name, ArrayList<User> users) {
+    public Channel(String name, List<User> users) {
         this.channelName = name;
         this.id = UUID.randomUUID();
         this.users = users;
@@ -25,11 +26,11 @@ public class Channel {
         return channelName;
     }
 
-    public ArrayList<User> getUsers() {
+    public List<User> getUsers() {
         return users;
     }
 
-    public ArrayList<Message> getMessages() {
+    public List<Message> getMessages() {
         return messages;
     }
 

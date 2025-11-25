@@ -22,7 +22,7 @@ public interface ChannelService {
     Channel search(String name);
 
     // 방찾기
-    void searchchannel(String name);
+    void searchChannel(String name);
 
     // 여러 방 찾기
     void searchChannelS(List<String> names );
@@ -33,7 +33,6 @@ public interface ChannelService {
     // 방에 있는 유저
     // 추가
     void addUser(User user);
-    void updateUser(User user); //흠 이건 필요한가?
     // 삭제
     void deleteUser(User user);
 
