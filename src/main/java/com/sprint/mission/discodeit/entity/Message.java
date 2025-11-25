@@ -1,17 +1,25 @@
 package com.sprint.mission.discodeit.entity;
 
+import java.io.Serializable;
 import java.util.UUID;
 
-public class Message {
-    private UUID id; //메세지 번호
-    private String meg; //메세지 내용
-    private UUID sender; //보낸 사람
-    private UUID roomId; // 보낸 방번호
-
+public class Message implements Serializable {
+    private static final long serialVersionUID = 1L;
+    //메세지 번호
+    private UUID id;
+    //메세지 내용
+    private String meg;
+    //보낸 사람
+    private UUID sender;
+    // 보낸 방번호
+    private UUID roomId;
+    // 생성 시간
     private long created;
+    // 수정 시간
     private long updated;
 
     public Message(String meg, UUID userId, Channel ch) {
+        // 심화 내용
         // anyMatch는 자동완성으로 나왔는데 일치하는게 있나 확인하는 것
         // 이걸로 메세지를 보내는 사람이 보내는 채팅방에 있는 유저인지를 확인
         if (ch.getUsers().stream().anyMatch(u -> u.getId().equals(userId))) {
@@ -28,35 +36,28 @@ public class Message {
             throw new RuntimeException("생성 불가");
         }
     }
-
+    // getter
     public UUID getRoomId() {
         return roomId;
     }
-
     public UUID getId() {
         return id;
     }
-
     public String getMeg() {
         return meg;
     }
-
     public UUID getSender() {
         return sender;
     }
-
     public long getCreated() {
         return created;
     }
-
     public long getUpdated() {
         return updated;
     }
 
-    // 수정 필요
-//    public void update(UUID id,String meg) {
+    // 수정
     public void update(String meg) {
-//        나중에는 userId랑 비교해서 본인이 보낸게 맞는지 확인하고 수정하게 만들기
         this.meg = meg;
         this.updated = System.currentTimeMillis();
     }

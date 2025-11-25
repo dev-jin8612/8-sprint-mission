@@ -1,21 +1,66 @@
-package com.sprint.mission.discodeit.service.jcf;
+package com.sprint.mission.discodeit.service.file;
 
 import com.sprint.mission.discodeit.entity.Message;
+import com.sprint.mission.discodeit.entity.User;
 import com.sprint.mission.discodeit.service.MessageService;
 
+import java.io.*;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.stream.Collectors;
 
-public class JCFMessageService implements MessageService {
-    final List<Message> messages = new ArrayList<Message>();
+public class FileMessageService implements MessageService {
+    private static final Path directory = Paths.get(System.getProperty("user.dir"),"data");
+    private static final Path filepath = Paths.get(String.valueOf(directory), "meg.ser");
+    private List<Message> messages;
+
+    public FileMessageService() {
+        init(directory);
+        messages = load(filepath);
+    }
+
+    public static void init(Path directory) {
+        // 저장할 경로의 파일 초기화
+        if (!Files.exists(directory)) {
+            try {
+                Files.createDirectories(directory);
+            } catch (IOException e) {
+                throw new RuntimeException(e);
+            }
+        }
+    }
+
+    public static <T> void save(Path directory, T data) {
+        try (ObjectOutputStream oos = new ObjectOutputStream(new FileOutputStream(directory.toFile()))) {
+            oos.writeObject(data);
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    public static List<Message> load(Path directory) {
+        if (Files.exists(directory)) {
+            try (ObjectInputStream ois = new ObjectInputStream(new FileInputStream(directory.toFile()))) {
+                Object data = ois.readObject();
+                return (List<Message>) data;
+            } catch (IOException | ClassNotFoundException e) {
+                throw new RuntimeException(e);
+            }
+        } else {
+            return new ArrayList<>();
+        }
+    }
 
     // 메세지 추가
     @Override
     public void addMessage(Message message) {
         messages.add(message);
+        save(filepath, messages);
     }
 
     // 메세지 수정
@@ -27,6 +72,7 @@ public class JCFMessageService implements MessageService {
             if (contents != "") {
                 System.out.println(m.getMeg() + " -> " + contents);
                 m.update(contents);
+                save(filepath, messages);
             } else {
                 System.out.println("입력이 없습니다.");
             }
@@ -45,6 +91,7 @@ public class JCFMessageService implements MessageService {
         if (m != null) {
             System.out.println(m.getMeg() + "를 삭제했습니다.");
             messages.remove(m);
+            save(filepath, messages);
         } else {
             System.out.println("없거나 삭제된 메세지입니다.");
         }
@@ -55,6 +102,7 @@ public class JCFMessageService implements MessageService {
         List<Message> meg = messages.stream()
                 .filter(u -> u.getMeg().contains(contents))
                 .collect(Collectors.toList());
+
         if (meg.isEmpty()) {
             return null;
         } else {

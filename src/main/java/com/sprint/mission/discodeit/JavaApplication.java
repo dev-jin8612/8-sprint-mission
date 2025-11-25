@@ -54,7 +54,8 @@ public class JavaApplication {
 //        cTest.updateChannel(cTest1.getId(),"ctest10");
 //        cTest.searchChannel("ctest10");
 //        cTest.searchChannel("ctest1");
-//
+//        cTest.searchUpdateChannel();
+
 //        cTest.deleteChannel(cTest1.getId());
 //        cTest.searchChannel("ctest10");
 
@@ -94,8 +95,5 @@ public class JavaApplication {
 //        // 메세지 삭제
 //        megTest.deleteMessage(mtest1.getId());
 //        megTest.searchMessage("서");
-
-//        System.out.println("_________________구분선, filo__________________");
-
     }
 }
