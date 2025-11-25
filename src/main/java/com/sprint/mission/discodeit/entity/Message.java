@@ -56,7 +56,6 @@ public class Message {
     // 수정 필요
 //    public void update(UUID id,String meg) {
     public void update(String meg) {
-//        나중에는 userId랑 비교해서 본인이 보낸게 맞는지 확인하고 수정하게 만들기
         this.meg = meg;
         this.updated = System.currentTimeMillis();
     }
