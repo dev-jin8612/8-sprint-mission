@@ -15,7 +15,7 @@ public class Message {
     public Message(String meg,UUID userId) {
         this.id = UUID.randomUUID();
         this.meg = meg;
-        this.sender = userId;
+        this.sender = this.id;
         this.created = System.currentTimeMillis();
         this.updated = System.currentTimeMillis();
     }

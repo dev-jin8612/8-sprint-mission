@@ -17,13 +17,13 @@ public interface MessageService {
     void deleteMessage(UUID mesUid);
 
     // 메세지 찾기
-    Message searchU(UUID mesUId);
+    List<Message> search(String content);
 //    List<Message> searchL(String contents);
 
-    void searchMessage(UUID mesUId);
+    void searchMessage(String content);
 
     // 메세지 여러개 찾기
-    void searchMessageS(String contents);
+    void searchMessageS(List<String> contents);
 
     // 수정된 메세지 찾기
     void searchUpdateMessage();

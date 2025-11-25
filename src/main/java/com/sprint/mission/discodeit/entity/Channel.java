@@ -26,6 +26,10 @@ public class Channel {
         return channelName;
     }
 
+    public UUID getId() {
+        return id;
+    }
+
     public List<User> getUsers() {
         return users;
     }

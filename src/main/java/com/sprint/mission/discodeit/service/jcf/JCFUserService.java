@@ -1,11 +1,13 @@
 package com.sprint.mission.discodeit.service.jcf;
 
+import com.sprint.mission.discodeit.entity.Channel;
 import com.sprint.mission.discodeit.entity.User;
 import com.sprint.mission.discodeit.service.UserService;
 
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.UUID;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.stream.Collectors;
 
@@ -20,22 +22,23 @@ public class JCFUserService implements UserService {
 
     // 사람 수정
     @Override
-    public void updateUser(String user, String username) {
-        User found = search(user);
+    public void updateUser(UUID userid, String username) {
+        User user= users.stream().filter(c->c.getId().equals(userid)).findFirst().get();
 
-        if (found != null) {
-            System.out.println(found.getUserName() + "-> " + username);
-            found.update(username);
+        if (user != null) {
+            System.out.println(user.getUserName() + " -> " + username);
+            user.update(username);
         } else if (username != null) {
             System.out.println("입력이 잘못 되었습니다.");
         }
-
     }
 
     // 사람 삭제
     @Override
-    public void deleteUser(String name) {
-        User user = search(name);
+    public void deleteUser(UUID userId) {
+        User user= users.stream()
+                .filter(u -> u.getId().equals(userId))
+                .findFirst().get();
 
         if (user != null) {
             System.out.println(user.getUserName() + "님을 삭제했습니다.");
@@ -47,24 +50,22 @@ public class JCFUserService implements UserService {
 
     // 사람 찾아서 객체 넘기기
     @Override
-    public User search(String name) {
-//        이거는 여러명 검색을 위한 수정도 필요할 듯
-//        아무래도 단체용은 따로 하는게 좋을것 같다.
-        User user = users.stream().filter(u -> {
-            return u.getUserName().equals(name);
-        }).collect(Collectors.toList()).get(0);
+    public List<User> search(String name) {
+        List<User> user= users.stream()
+                .filter(u -> u.getUserName().contains(name))
+                .collect(Collectors.toList());
 
-
-        return user;
+        if (user.isEmpty()) {return null;}
+        else {return user;}
     }
 
     // 사람 찾기
     @Override
     public void searchUser(String name) {
-        User user = search(name);
+        List<User> user = search(name);
 
         if (user != null) {
-            System.out.println(user.getUserName() + "님이 존재합니다.");
+            user.stream().forEach(u -> System.out.println(u.getUserName()+"님이 존재합니다."));
         } else {
             System.out.println("없는 존재입니다.");
         }
@@ -73,13 +74,7 @@ public class JCFUserService implements UserService {
     // 사람'들' 찾기
     @Override
     public void searchUserS(List<String> names) {
-        // 여기서 여러번 부르는 것보다는
-        // serach에서 list로 보내주는게 좋을거 같기는 한데
-        // 일단 이렇게만
-        names.forEach(name -> {
-            User user = search(name);
-            System.out.println(user.getUserName() + "님이 존재합니다.");
-        });
+        names.forEach(name -> searchUser(name));
     }
 
     // 업데이트가 된적 있는 사람 탐색

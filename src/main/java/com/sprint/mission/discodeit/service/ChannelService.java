@@ -6,6 +6,7 @@ import com.sprint.mission.discodeit.entity.User;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.UUID;
 
 public interface ChannelService {
     // 채널
@@ -13,33 +14,20 @@ public interface ChannelService {
     void addChannel(Channel channel);
 
     // 정보 수정
-    void updateChannel(String channel, String channelname);
+    void updateChannel(UUID channelId, String channelname);
 
     // 삭제
-    void deleteChannel(String channel);
+    void deleteChannel(UUID channelId);
 
-    // 찾기
-    Channel search(String name);
+    // 방 찾기
+    List<Channel> search(String name);
 
     // 방찾기
     void searchChannel(String name);
 
     // 여러 방 찾기
-    void searchChannelS(List<String> names );
+    void searchChannelS(List<String> channelIds );
 
     // 수정된 방 찾기
     void searchUpdateChannel();
-    
-    // 방에 있는 유저
-    // 추가
-    void addUser(User user);
-    // 삭제
-    void deleteUser(User user);
-
-    // 메세지 내용
-    // 추가
-    void addMessage(Message message);
-    void updateMessage(Message message);//필요한가
-    // 삭제
-    void deleteMessage(Message message);
 }
