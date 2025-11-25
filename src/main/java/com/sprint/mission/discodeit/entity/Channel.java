@@ -8,8 +8,6 @@ public class Channel {
     private UUID id; // 방 번호
     private String channelName; // 방이름
     private List<User> users; //참가자 명단
-    private List<Message> messages; //메세지 내용
-    // 나중에 메세지 넣고 메세지 추가도 진행하게 만들기
 
     private long created;
     private long updated;
@@ -33,11 +31,6 @@ public class Channel {
     public List<User> getUsers() {
         return users;
     }
-
-    public List<Message> getMessages() {
-        return messages;
-    }
-
     public long getCreated() {
         return created;
     }
@@ -46,7 +39,6 @@ public class Channel {
         return updated;
     }
 
-    // 수정 필요
     public void update(String name) {
         this.channelName = name;
         this.updated = System.currentTimeMillis();

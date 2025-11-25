@@ -23,7 +23,7 @@ public class JavaApplication {
         test.addUser(testUser2);
 
         // 수정
-        test.updateUser(testUser1.getId(),"서");
+//        test.updateUser(testUser1.getId(),"서");
 
         // 찾기
 //        test.searchUser("서");
@@ -32,23 +32,22 @@ public class JavaApplication {
 //        test.searchUserS(List.of("서","진"));
 
         // 수정된 찾기
-        test.searchUpdateUser();
+//        test.searchUpdateUser();
 
         // 삭제
-        test.deleteUser(testUser1.getId());
+//        test.deleteUser(testUser1.getId());
         // 삭제 확인
-        test.searchUser("서");
+//        test.searchUser("서");
 
 //        System.out.println("_________________구분선, 채널__________________");
-        // 따로 참여자 리스트 만들어야 하는데 임시로 진행
-        Channel cTest1=new Channel("ctest1",test.getUsers());
-        Channel cTest2=new Channel("ctest2",test.getUsers());
-
-        JCFChannelService cTest=new JCFChannelService();
+//        Channel cTest1=new Channel("ctest1",test.getUsers());
+//        Channel cTest2=new Channel("ctest2",test.getUsers());
+//
+//        JCFChannelService cTest=new JCFChannelService();
 //        cTest.searchChannel("ctest1");
 
-        cTest.addChannel(cTest1);
-        cTest.addChannel(cTest2);
+//        cTest.addChannel(cTest1);
+//        cTest.addChannel(cTest2);
 //        cTest.searchChannel("ctest1");
 //        cTest.searchChannelS(List.of("ctest1", "ctest2"));
 
@@ -61,10 +60,14 @@ public class JavaApplication {
 
 //        System.out.println("_________________구분선, 메세지__________________");
 //
-//        Message mtest1 = new Message("황의 메세지1", testUser1.getId());
-//        Message mtest2 = new Message("황의 메세지2", testUser1.getId());
-//        Message mtest3 = new Message("진의 메세지1", testUser2.getId());
-//        Message mtest4 = new Message("진의 메세지2", testUser2.getId());
+
+        Channel cTest3=new Channel("ctest2",List.of(testUser1));
+        Channel cTest4=new Channel("ctest2",List.of(testUser2));
+
+        Message mtest1 = new Message("황의 메세지1", testUser1.getId(),cTest3);
+        Message mtest3 = new Message("진의 메세지1", testUser2.getId(),cTest4);
+        Message mtest4 = new Message("진의 메세지2", testUser2.getId(),cTest4);
+        Message mtest2 = new Message("황의 메세지2", testUser1.getId(),cTest4);
 //
 //
 //        JCFMessageService megTest = new JCFMessageService();
@@ -91,5 +94,8 @@ public class JavaApplication {
 //        // 메세지 삭제
 //        megTest.deleteMessage(mtest1.getId());
 //        megTest.searchMessage("서");
+
+//        System.out.println("_________________구분선, filo__________________");
+
     }
 }

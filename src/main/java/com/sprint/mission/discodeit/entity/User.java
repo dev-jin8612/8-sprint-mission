@@ -35,7 +35,6 @@ public class User {
         this.updated = System.currentTimeMillis();
     }
 
-
     // method
     public void update(String name) {
         this.name = name;

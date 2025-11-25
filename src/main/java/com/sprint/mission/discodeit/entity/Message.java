@@ -11,13 +11,22 @@ public class Message {
     private long created;
     private long updated;
 
-//    나중에는 보낸 방 위치도 알게 roomId 알게 수정하기
-    public Message(String meg,UUID userId) {
-        this.id = UUID.randomUUID();
-        this.meg = meg;
-        this.sender = this.id;
-        this.created = System.currentTimeMillis();
-        this.updated = System.currentTimeMillis();
+    public Message(String meg, UUID userId, Channel ch) {
+        // anyMatch는 자동완성으로 나왔는데 일치하는게 있나 확인하는 것
+        // 이걸로 메세지를 보내는 사람이 보내는 채팅방에 있는 유저인지를 확인
+        if (ch.getUsers().stream().anyMatch(u -> u.getId().equals(userId))) {
+            this.id = UUID.randomUUID();
+            this.meg = meg;
+            this.sender = userId;
+            this.roomId = ch.getId();
+            this.created = System.currentTimeMillis();
+            this.updated = System.currentTimeMillis();
+
+            System.out.println("메세지가 생성되었습니다.");
+        }else{
+            // 조건 안맞으면 강제오류 내기
+            throw new RuntimeException("생성 불가");
+        }
     }
 
     public UUID getRoomId() {
@@ -48,7 +57,7 @@ public class Message {
 //    public void update(UUID id,String meg) {
     public void update(String meg) {
 //        나중에는 userId랑 비교해서 본인이 보낸게 맞는지 확인하고 수정하게 만들기
-        this.meg = meg ;
+        this.meg = meg;
         this.updated = System.currentTimeMillis();
     }
 }
