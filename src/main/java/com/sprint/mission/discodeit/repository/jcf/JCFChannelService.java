@@ -1,7 +1,7 @@
 package com.sprint.mission.discodeit.repository.jcf;
 
 import com.sprint.mission.discodeit.entity.Channel;
-import com.sprint.mission.discodeit.service.ChannelService;
+import com.sprint.mission.discodeit.repository.ChannelRepository;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -9,13 +9,14 @@ import java.util.UUID;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.stream.Collectors;
 
-public class JCFChannelService implements ChannelService {
+public class JCFChannelService implements ChannelRepository {
     final List<Channel> channels = new ArrayList<>();
 
     // 채널 추가
     @Override
     public void addChannel(Channel channel) {
         channels.add(channel);
+//        return channel;
     }
 
     // 채널 수정
@@ -90,5 +91,10 @@ public class JCFChannelService implements ChannelService {
         if(notNull.get() ==false){
             System.out.println("업데이트된 방이 없습니다.");
         }
+    }
+
+    @Override
+    public List<Channel> getChannelList() {
+        return this.channels;
     }
 }

@@ -1,7 +1,7 @@
 package com.sprint.mission.discodeit.repository.jcf;
 
 import com.sprint.mission.discodeit.entity.User;
-import com.sprint.mission.discodeit.service.UserService;
+import com.sprint.mission.discodeit.repository.UserRepository;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -9,7 +9,7 @@ import java.util.UUID;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.stream.Collectors;
 
-public class JCFUserService implements UserService {
+public class JCFUserService implements UserRepository {
     final List<User> users= new ArrayList<>();
 
     // 사람 추가

@@ -91,4 +91,9 @@ public class JCFChannelService implements ChannelService {
             System.out.println("업데이트된 방이 없습니다.");
         }
     }
+
+    @Override
+    public List<Channel> getChannelList() {
+        return channels;
+    }
 }

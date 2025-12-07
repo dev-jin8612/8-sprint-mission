@@ -1,7 +1,7 @@
 package com.sprint.mission.discodeit.repository.jcf;
 
 import com.sprint.mission.discodeit.entity.Message;
-import com.sprint.mission.discodeit.service.MessageService;
+import com.sprint.mission.discodeit.repository.MessageRepository;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -9,7 +9,7 @@ import java.util.UUID;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.stream.Collectors;
 
-public class JCFMessageService implements MessageService {
+public class JCFMessageService implements MessageRepository {
     final List<Message> messages = new ArrayList<Message>();
 
     // 메세지 추가

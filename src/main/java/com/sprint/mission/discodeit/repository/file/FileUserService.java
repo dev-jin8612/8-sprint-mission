@@ -1,7 +1,7 @@
 package com.sprint.mission.discodeit.repository.file;
 
 import com.sprint.mission.discodeit.entity.User;
-import com.sprint.mission.discodeit.service.UserService;
+import com.sprint.mission.discodeit.repository.UserRepository;
 
 import java.io.*;
 import java.nio.file.Files;
@@ -13,7 +13,7 @@ import java.util.UUID;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.stream.Collectors;
 
-public class FileUserService implements UserService {
+public class FileUserService implements UserRepository {
     private static final Path directory = Paths.get(System.getProperty("user.dir"), "data");
     private static final Path file = Paths.get(String.valueOf(directory), "user.ser");
     private List<User> users;

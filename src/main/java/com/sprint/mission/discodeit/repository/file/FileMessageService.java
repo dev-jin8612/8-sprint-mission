@@ -1,7 +1,7 @@
 package com.sprint.mission.discodeit.repository.file;
 
 import com.sprint.mission.discodeit.entity.Message;
-import com.sprint.mission.discodeit.service.MessageService;
+import com.sprint.mission.discodeit.repository.MessageRepository;
 
 import java.io.*;
 import java.nio.file.Files;
@@ -13,7 +13,7 @@ import java.util.UUID;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.stream.Collectors;
 
-public class FileMessageService implements MessageService {
+public class FileMessageService implements MessageRepository {
     private static final Path directory = Paths.get(System.getProperty("user.dir"),"data");
     private static final Path filepath = Paths.get(String.valueOf(directory), "meg.ser");
     private List<Message> messages;

@@ -1,7 +1,7 @@
 package com.sprint.mission.discodeit.repository.file;
 
 import com.sprint.mission.discodeit.entity.Channel;
-import com.sprint.mission.discodeit.service.ChannelService;
+import com.sprint.mission.discodeit.repository.ChannelRepository;
 
 import java.io.*;
 import java.nio.file.Files;
@@ -13,7 +13,7 @@ import java.util.UUID;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.stream.Collectors;
 
-public class FileChannelService implements ChannelService {
+public class FileChannelService implements ChannelRepository {
     private static final Path directory = Paths.get(System.getProperty("user.dir"), "data");
     private static final Path file = Paths.get(String.valueOf(directory), "ch.ser");
     private List<Channel> channels;
@@ -37,6 +37,7 @@ public class FileChannelService implements ChannelService {
     public static <T> void save(Path directory, T data) {
         try (ObjectOutputStream oos = new ObjectOutputStream(new FileOutputStream(directory.toFile()))) {
             oos.writeObject(data);
+//            channels.add(data);
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
@@ -139,7 +140,8 @@ public class FileChannelService implements ChannelService {
         }
     }
 
-    public List<Channel> getChannels() {
+    @Override
+    public List<Channel> getChannelList() {
         return channels;
     }
 }

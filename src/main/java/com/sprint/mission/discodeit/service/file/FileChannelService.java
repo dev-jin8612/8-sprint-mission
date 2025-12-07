@@ -140,7 +140,8 @@ public class FileChannelService implements ChannelService {
         }
     }
 
-    public List<Channel> getChannels() {
+    @Override
+    public List<Channel> getChannelList() {
         return channels;
     }
 }

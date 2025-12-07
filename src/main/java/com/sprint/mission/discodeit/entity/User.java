@@ -1,7 +1,6 @@
 package com.sprint.mission.discodeit.entity;
 
 import java.io.Serializable;
-import java.util.List;
 import java.util.UUID;
 
 //유저 정보는 간략하게 비번 등을 생략
