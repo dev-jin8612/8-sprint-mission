@@ -3,31 +3,25 @@ package com.sprint.mission.discodeit.repository;
 import com.sprint.mission.discodeit.entity.Channel;
 
 import java.util.List;
+import java.util.Optional;
 import java.util.UUID;
 
 public interface ChannelRepository {
-    // 채널
     // 등록
-    void addChannel(Channel channel);
+    Channel create(Channel ch);
 
     // 정보 수정
-    void updateChannel(UUID channelId, String channelname);
+    Channel update(UUID channelId, String channelName);
 
     // 삭제
-    void deleteChannel(UUID channelId);
+    void delete(UUID id);
 
-    // 방 찾기
-    List<Channel> search(String name);
+    // 이름으로 찾기
+    List<Channel> searchByName(List<String> name);
 
-    // 방찾기
-    void searchChannel(String name);
+    // 찾기는 리턴이 없을 수 있으니 나중에 optional해주기
+    // id로 찾기
+    Channel findById(UUID id);
 
-    // 여러 방 찾기
-    void searchChannelS(List<String> channelIds );
-
-    // 수정된 방 찾기
-    void searchUpdateChannel();
-
-    // 방 정보 넘기기
-    List<Channel> getChannelList();
+    public List<Channel> getChannelList();
 }

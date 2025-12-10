@@ -3,27 +3,25 @@ package com.sprint.mission.discodeit.repository;
 import com.sprint.mission.discodeit.entity.Message;
 
 import java.util.List;
+import java.util.Optional;
 import java.util.UUID;
 
 public interface MessageRepository {
-    // 메세지 등록
-    void addMessage(Message message);
+    // 등록
+    Message create(Message meg);
 
-    // 메세지 정보 수정
-    void updateMessage(UUID mesUid, String contents);
+    // 정보 수정
+    Message update(UUID mesUid, String contents);
 
-    // 메세지 삭제
-    void deleteMessage(UUID mesUid);
+    // 삭제
+    void delete(UUID id);
 
-    // 메세지 찾기
-    List<Message> search(String content);
-//    List<Message> searchL(String contents);
+    // 찾기는 리턴이 없을 수 있으니 나중에 optional해주기
+    // 내용으로 찾기
+    List<Message> searchByContent(List<String> contents);
 
-    void searchMessage(String content);
+    // id로 찾기
+    Message findById(UUID id);
 
-    // 메세지 여러개 찾기
-    void searchMessageS(List<String> contents);
-
-    // 수정된 메세지 찾기
-    void searchUpdateMessage();
+    List<Message> getMessages();
 }

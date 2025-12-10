@@ -3,37 +3,26 @@ package com.sprint.mission.discodeit.repository;
 import com.sprint.mission.discodeit.entity.User;
 
 import java.util.List;
+import java.util.Optional;
 import java.util.UUID;
 
 public interface UserRepository {
-    // 유저등록
-    void addUser(User user);
+    // 등록
+    User create(User user);
 
-    // 유저 정보 수정
-    void updateUser(UUID userId, String username);
+    // 정보 수정
+    User update(UUID userid, String username);
 
-    // 유저 삭제
-    void deleteUser(UUID userId);
+    // 삭제
+    void delete(UUID id);
 
-    // 객체 주는걸로 바꾸기
-    // 유저 찾기
-//    User searchUser(UUID userId);
-    List<User> search(String name);
+    // 찾기는 리턴이 없을 수 있으니 나중에 optional해주기
+    // optional 해주면서 구현된 메서드에서 sout 없애거나 줄이기
+    // 이름으로 찾기
+    List<User> searchByName(List<String> name);
 
-    void searchUser(String name);
+    // id로 찾기
+    User findById(UUID id);
 
-    //객체 주는걸로 바꾸기
-    // 유저 여러명 찾기
-    void searchUserS(List<String> names );
-
-    // 수정된 유저 찾기
-    void searchUpdateUser();
-
-    // 수정된 유저들 찾기
-//    void searchUpdateUserS(List<String> names);
-
-
-    // 유저 리스트 넘기는거 만들기
-    // 채널 만들 때 필요
-    List<User> getUsers();
+    public List<User> getUsers();
 }

@@ -15,92 +15,123 @@ public class Application {
     public static void main(String[] args) {
         System.out.println("_______________________미션 2차 데이터 영속화__________________________");
         FileUserService fileUser = new FileUserService();
-//        UUID firstUserId = fileUser.getUsers().get(0).getId();
-//        UUID secondUserId = fileUser.getUsers().get(1).getId();
-
-        User testUser1 = new User("황");
-        User testUser2 = new User("진");
-        User testUser3 = new User("서");
-        fileUser.addUser(testUser1);
-        fileUser.addUser(testUser2);
-        fileUser.addUser(testUser3);
-
-
         UUID firstUserId = fileUser.getUsers().get(0).getId();
         UUID secondUserId = fileUser.getUsers().get(1).getId();
 
+//        User testUser1 = new User("황");
+//        User testUser2 = new User("진");
+//        User testUser3 = new User("서");
+//        fileUser.create(testUser1);
+//        fileUser.create(testUser2);
+//        fileUser.create(testUser3);
 
         // 수정
-        fileUser.updateUser(firstUserId,"서");
-
-        // 찾기
-        fileUser.searchUser("서");
+//        fileUser.update(firstUserId,"서");
 
         // 유저들 찾기
-        fileUser.searchUserS(List.of("서","진"));
+//        List<User> userList = fileUser.searchByName(List.of("서", "진"));
+        // 단일로 넣어도 동작됨
+//        List<User> userList = fileUser.searchByName(List.of("뉴"));
+//
+//        if (userList != null && userList.size() > 0) {
+//            userList.forEach(user -> {
+//                System.out.println(user.getUserName());
+//            });
+//        } else {
+//            System.out.println("존재하지 않습니다.");
+//        }
 
-        // 수정된 찾기
-        fileUser.searchUpdateUser();
+        // ID로 찾기
+//        User resultUser = fileUser.findById(firstUserId);
+
+//        if (resultUser != null) {
+//            System.out.println("존재합니다.");
+//        }else{
+//            System.out.println("존재하지 않습니다.");
+//        }
 
         // 삭제
-        fileUser.deleteUser(fileUser.getUsers().get(0).getId());
-        // 삭제 확인
-        fileUser.searchUser("황");
+//        fileUser.delete(firstUserId);
+
+        // ID로 찾기
+//        resultUser = fileUser.findById(firstUserId);
+
+//        if (resultUser != null) {
+//            System.out.println("삭제 안됐습니다.");
+//        }else{
+//            System.out.println("삭제 되었습니다.");
+//        }
 
 
-        System.out.println("_______________채팅방_____________________");
+
+//        System.out.println("_______________채팅방_____________________");
         FileChannelService cTest=new FileChannelService();
-//        Channel firstCh = cTest.getChannelList().get(0);
-//        Channel secondCh = cTest.getChannelList().get(1);
 
-        List<UUID> uerList = List.of(firstUserId,secondUserId);
+        // 참가자 목록
+//        List<UUID> usersList = fileUser.getUsers().stream().map(u->u.getId()).toList();
 
-        Channel cTest1 = new Channel("ctest1", uerList);
-        Channel cTest2 = new Channel("ctest2", uerList);
+        // 채널 생성
+//        Channel cTest1 = new Channel("ctest1", usersList);
+//        Channel cTest2 = new Channel("ctest2", usersList);
 
-        cTest.searchChannel("ctest1");
-
-        cTest.addChannel(cTest1);
-        cTest.addChannel(cTest2);
-        cTest.searchChannel("ctest1");
-        cTest.searchChannelS(List.of("ctest1", "ctest2"));
+        // 채널 추가
+//        cTest.create(cTest1);
+//        cTest.create(cTest2);
 
         Channel firstCh = cTest.getChannelList().get(0);
-        Channel secondCh = cTest.getChannelList().get(1);
+//        Channel secondCh = cTest.getChannelList().get(1);
 
-        cTest.updateChannel(firstCh.getId(),"ctest10");
-        cTest.searchChannel("ctest10");
-        cTest.searchChannel("ctest1");
-        cTest.searchUpdateChannel();
+        // 채널 이름 검색
+//        List<Channel> chLIst= cTest.searchByName(List.of("ctest1"));
+//        chLIst.forEach(u-> System.out.println(u.getChannelName()));
 
-        cTest.deleteChannel(cTest1.getId());
-        cTest.searchChannel("ctest10");
+        // 채널 수정
+//        cTest.update(firstCh.getId(),"ctest10");
+        // 채널 id 검색
+//        Channel ch = cTest.findById(firstCh.getId());
+//        System.out.println(ch.getChannelName());
 
-        System.out.println("_________________메세지__________________");
+//        cTest.delete(firstCh.getId());
+//        Channel ch = cTest.findById(firstCh.getId());
+//
+//        if(ch==null){
+//            System.out.println("삭제되었습니다.");
+//        }else{
+//            System.out.println("삭제되지 않았습니다.");
+//        }
+
+
+//        System.out.println("_________________메세지__________________");
         FileMessageService filemeg = new FileMessageService();
 
         Message mtest1 = new Message("황의 메세지1", firstUserId,firstCh);
-        Message mtest2 = new Message("황의 메세지2", firstUserId,secondCh);
+        Message mtest2 = new Message("황의 메세지2", firstUserId,firstCh);
 
-        // 추가
-        filemeg.addMessage(mtest1);
-        filemeg.addMessage(mtest2);
+//        // 추가
+        filemeg.create(mtest1);
+        filemeg.create(mtest2);
+
+        Message firstMeg = filemeg.getMessages().get(0);
 
         // 검색, 여러 단어
-        filemeg.searchMessageS(List.of("황","1"));
+//        List<Message> megs= filemeg.searchByContent(List.of("황","1"));
+//        megs.forEach(m->{
+//            System.out.println(m.getMeg());
+//        });
 
-        // 검색, 단일
-        filemeg.searchMessage("2");
+        // 메세지 수정
+//        filemeg.update(firstMeg.getId(), "서의 메세지1");
 
-        filemeg.updateMessage(mtest1.getId(), "서의 메세지1");
-        filemeg.searchMessage("서");
-        filemeg.searchMessage("황");
-
-        // 수정됐던 메세지 출력
-        filemeg.searchUpdateMessage();
+        // 메세지 id 찾기
+//        System.out.println(filemeg.findById(firstMeg.getId()).getMeg());
 
         // 메세지 삭제
-        filemeg.deleteMessage(mtest1.getId());
-        filemeg.searchMessage("서");
+//        filemeg.delete(firstMeg.getId());
+
+//        if(filemeg.findById(firstMeg.getId())==null){
+//            System.out.println("삭제되었습니다.");
+//        }else{
+//            System.out.println("삭제되지 않았습니다.");
+//        }
     }
 }

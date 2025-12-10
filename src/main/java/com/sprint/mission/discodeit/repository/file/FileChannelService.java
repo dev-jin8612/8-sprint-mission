@@ -1,6 +1,7 @@
 package com.sprint.mission.discodeit.repository.file;
 
 import com.sprint.mission.discodeit.entity.Channel;
+import com.sprint.mission.discodeit.entity.User;
 import com.sprint.mission.discodeit.repository.ChannelRepository;
 
 import java.nio.file.Path;
@@ -9,8 +10,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
-import java.util.concurrent.atomic.AtomicBoolean;
-import java.util.stream.Collectors;
 
 public class FileChannelService extends SaveLoadHelper implements ChannelRepository {
     private static final Path directory = Paths.get(System.getProperty("user.dir"), "data");
@@ -29,87 +28,51 @@ public class FileChannelService extends SaveLoadHelper implements ChannelReposit
 
 
     @Override
-    public void addChannel(Channel channel) {
+    public Channel create(Channel channel) {
         channels.add(channel);
         save(file, channels);
+        return channel;
     }
 
     @Override
-    public void updateChannel(UUID channelId, String channelName) {
+    public Channel update(UUID channelId, String channelName) {
         Channel ch = channels.stream().filter(ch1 -> ch1.getId().equals(channelId)).findFirst().get();
 
         if (ch != null) {
-            System.out.println(ch.getChannelName() + " -> " + channelName);
             ch.update(channelName);
             save(file, channels);
-        } else if (channelName != null && !channelName.isEmpty()) {
-            System.out.println("방이 없거나 입력이 잘못 되었습니다.");
-        }
-
+            return ch;
+        } else return null;
     }
 
     @Override
-    public void deleteChannel(UUID channelId) {
+    public void delete(UUID channelId) {
         Channel ch = channels.stream()
                 .filter(u -> u.getId().equals(channelId))
                 .findFirst().get();
 
         if (ch != null) {
-            System.out.println(ch.getChannelName() + "채널를 삭제했습니다.");
             channels.remove(ch);
             save(file, channels);
-        } else {
-            System.out.println("없거나 삭제된 채널입니다.");
-        }
-
-    }
-
-    @Override
-    public List<Channel> search(String name) {
-        List<Channel> ch = channels.stream()
-                .filter(u -> u.getChannelName().equals(name))
-                .collect(Collectors.toList());
-
-        if (ch.isEmpty()) {
-            return null;
-        } else {
-            return ch;
         }
     }
 
     @Override
-    public void searchChannel(String name) {
-        List<Channel> ch = search(name);
+    public List<Channel> searchByName(List<String> name) {
+        List<Channel>ch = channels.stream()
+                .filter(cha ->
+                        name.stream().anyMatch(na -> cha.getChannelName().contains(na))
+                ).toList();
 
-        if (ch != null) {
-            ch.stream().forEach(u -> System.out.println(u.getChannelName() + "방이 존재합니다."));
-        } else {
-            System.out.println("없거나 삭제 된 방입니다.");
-        }
-
+        return ch.isEmpty()? null : ch;
     }
 
     @Override
-    public void searchChannelS(List<String> names) {
+    public Channel findById(UUID id) {
+        Optional<Channel> ch = channels.stream()
+                .filter(c -> c.getId().equals(id)).findFirst();
 
-        names.forEach(name -> searchChannel(name));
-    }
-
-
-    @Override
-    public void searchUpdateChannel() {
-        AtomicBoolean notNull = new AtomicBoolean(false);
-
-        channels.forEach(u -> {
-            if (u.getCreated() != u.getUpdated()) {
-                System.out.println("업데이트된 방: " + u.getChannelName());
-                notNull.set(true);
-            }
-        });
-
-        if (notNull.get() == false) {
-            System.out.println("업데이트된 방이 없습니다.");
-        }
+        return ch.orElse(null);
     }
 
     @Override
