@@ -1,5 +1,6 @@
 package com.sprint.mission.discodeit.repository.file;
 
+import com.sprint.mission.discodeit.entity.Channel;
 import com.sprint.mission.discodeit.entity.Message;
 import com.sprint.mission.discodeit.repository.MessageRepository;
 
@@ -9,50 +10,24 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 import java.util.UUID;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.stream.Collectors;
 
-public class FileMessageService implements MessageRepository {
+public class FileMessageService extends SaveLoadHelper  implements MessageRepository {
     private static final Path directory = Paths.get(System.getProperty("user.dir"),"data");
     private static final Path filepath = Paths.get(String.valueOf(directory), "meg.ser");
     private List<Message> messages;
 
     public FileMessageService() {
         init(directory);
-        messages = load(filepath);
+        messages = loadFile(filepath);
     }
 
-    public static void init(Path directory) {
-        // 저장할 경로의 파일 초기화
-        if (!Files.exists(directory)) {
-            try {
-                Files.createDirectories(directory);
-            } catch (IOException e) {
-                throw new RuntimeException(e);
-            }
-        }
-    }
-
-    public static <T> void save(Path directory, T data) {
-        try (ObjectOutputStream oos = new ObjectOutputStream(new FileOutputStream(directory.toFile()))) {
-            oos.writeObject(data);
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        }
-    }
-
-    public static List<Message> load(Path directory) {
-        if (Files.exists(directory)) {
-            try (ObjectInputStream ois = new ObjectInputStream(new FileInputStream(directory.toFile()))) {
-                Object data = ois.readObject();
-                return (List<Message>) data;
-            } catch (IOException | ClassNotFoundException e) {
-                throw new RuntimeException(e);
-            }
-        } else {
-            return new ArrayList<>();
-        }
+    public List<Message> loadFile(Path directory) {
+        Optional<List<Message>> result = super.load(directory);
+        return result.orElseGet(ArrayList::new);
     }
 
     // 메세지 추가

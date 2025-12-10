@@ -3,58 +3,30 @@ package com.sprint.mission.discodeit.repository.file;
 import com.sprint.mission.discodeit.entity.Channel;
 import com.sprint.mission.discodeit.repository.ChannelRepository;
 
-import java.io.*;
-import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 import java.util.UUID;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.stream.Collectors;
 
-public class FileChannelService implements ChannelRepository {
+public class FileChannelService extends SaveLoadHelper implements ChannelRepository {
     private static final Path directory = Paths.get(System.getProperty("user.dir"), "data");
     private static final Path file = Paths.get(String.valueOf(directory), "ch.ser");
     private List<Channel> channels;
 
     public FileChannelService() {
         init(directory);
-        channels = load(file);
+        channels = loadFile(file);
     }
 
-    public static void init(Path directory) {
-        // 저장할 경로의 파일 초기화
-        if (!Files.exists(directory)) {
-            try {
-                Files.createDirectories(directory);
-            } catch (IOException e) {
-                throw new RuntimeException(e);
-            }
-        }
+    public List<Channel> loadFile(Path directory) {
+        Optional<List<Channel>> result = super.load(directory);
+        return result.orElseGet(ArrayList::new);
     }
 
-    public static <T> void save(Path directory, T data) {
-        try (ObjectOutputStream oos = new ObjectOutputStream(new FileOutputStream(directory.toFile()))) {
-            oos.writeObject(data);
-//            channels.add(data);
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        }
-    }
-
-    public static List<Channel> load(Path directory) {
-        if (Files.exists(directory)) {
-            try (ObjectInputStream ois = new ObjectInputStream(new FileInputStream(directory.toFile()))) {
-                Object data = ois.readObject();
-                return (List<Channel>) data;
-            } catch (IOException | ClassNotFoundException e) {
-                throw new RuntimeException(e);
-            }
-        } else {
-            return new ArrayList<>();
-        }
-    }
 
     @Override
     public void addChannel(Channel channel) {

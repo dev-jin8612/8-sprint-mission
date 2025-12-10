@@ -35,8 +35,9 @@ public class User implements Serializable {
     // 생성자
     public User(String name) {
         this.id = UUID.randomUUID();
-        this.created = System.currentTimeMillis();
-        this.updated = System.currentTimeMillis();
+        long now = System.currentTimeMillis();
+        this.created = now;
+        this.updated = now;
 
         // 찾아보니 spring5.3이상에서는 ObjectUtils로 null,blank 확인 가능
         // ex) ObjectUtils.isEmpty(String name);

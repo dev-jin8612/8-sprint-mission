@@ -22,13 +22,14 @@ public class Message implements Serializable {
         // 심화 내용
         // anyMatch는 자동완성으로 나왔는데 일치하는게 있나 확인하는 것
         // 이걸로 메세지를 보내는 사람이 보내는 채팅방에 있는 유저인지를 확인
-        if (ch.getUsers().stream().anyMatch(u -> u.getId().equals(userId))) {
+        if (ch.getUsers().stream().anyMatch(u -> u.equals(userId))) {
             this.id = UUID.randomUUID();
             this.meg = meg;
             this.sender = userId;
             this.roomId = ch.getId();
-            this.created = System.currentTimeMillis();
-            this.updated = System.currentTimeMillis();
+            long now = System.currentTimeMillis();
+            this.created = now;
+            this.updated = now;
 
             System.out.println("메세지가 생성되었습니다.");
         }else{

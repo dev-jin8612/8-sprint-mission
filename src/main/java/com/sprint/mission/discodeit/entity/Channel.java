@@ -14,18 +14,19 @@ public class Channel implements Serializable {
     // 방이름, 없다면 기본 이름
     private String name = "defaultName";
     // 참가자 명단
-    private List<User> users;
+    private List<UUID> users;
     // 생성 시간
     private long created;
     // 수정 시간
     private long updated;
 
     // 생성자
-    public Channel(String name, List<User> users) {
+    public Channel(String name, List<UUID> users) {
         this.id = UUID.randomUUID();
         this.users = users;
-        this.created = System.currentTimeMillis();
-        this.updated = System.currentTimeMillis();
+        long now = System.currentTimeMillis();
+        this.created = now;
+        this.updated = now;
 
         // 찾아보니 spring5.3이상에서는 ObjectUtils로 null,blank 확인 가능
         // ex) ObjectUtils.isEmpty(String name);
@@ -42,7 +43,7 @@ public class Channel implements Serializable {
     public UUID getId() {
         return id;
     }
-    public List<User> getUsers() {
+    public List<UUID> getUsers() {
         return users;
     }
     public long getCreated() {
@@ -59,7 +60,7 @@ public class Channel implements Serializable {
     }
 
     // 수정, 방참가자
-    public void update(List<User> users) {
+    public void update(List<UUID> users) {
         this.users = users;
         this.updated = System.currentTimeMillis();
     }

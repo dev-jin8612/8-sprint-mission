@@ -3,9 +3,9 @@ package com.sprint.mission.discodeit;
 import com.sprint.mission.discodeit.entity.Channel;
 import com.sprint.mission.discodeit.entity.Message;
 import com.sprint.mission.discodeit.entity.User;
-import com.sprint.mission.discodeit.service.file.FileChannelService;
-import com.sprint.mission.discodeit.service.file.FileMessageService;
-import com.sprint.mission.discodeit.service.file.FileUserService;
+import com.sprint.mission.discodeit.repository.file.FileChannelService;
+import com.sprint.mission.discodeit.repository.file.FileMessageService;
+import com.sprint.mission.discodeit.repository.file.FileUserService;
 
 import java.util.List;
 import java.util.UUID;
@@ -15,8 +15,8 @@ public class Application {
     public static void main(String[] args) {
         System.out.println("_______________________미션 2차 데이터 영속화__________________________");
         FileUserService fileUser = new FileUserService();
-        UUID firstUserId = fileUser.getUsers().get(0).getId();
-        UUID secondUserId = fileUser.getUsers().get(1).getId();
+//        UUID firstUserId = fileUser.getUsers().get(0).getId();
+//        UUID secondUserId = fileUser.getUsers().get(1).getId();
 
         User testUser1 = new User("황");
         User testUser2 = new User("진");
@@ -24,6 +24,10 @@ public class Application {
         fileUser.addUser(testUser1);
         fileUser.addUser(testUser2);
         fileUser.addUser(testUser3);
+
+
+        UUID firstUserId = fileUser.getUsers().get(0).getId();
+        UUID secondUserId = fileUser.getUsers().get(1).getId();
 
 
         // 수정
@@ -46,11 +50,13 @@ public class Application {
 
         System.out.println("_______________채팅방_____________________");
         FileChannelService cTest=new FileChannelService();
-        Channel firstCh = cTest.getChannelList().get(0);
-        Channel secondCh = cTest.getChannelList().get(1);
+//        Channel firstCh = cTest.getChannelList().get(0);
+//        Channel secondCh = cTest.getChannelList().get(1);
 
-        Channel cTest1 = new Channel("ctest1", fileUser.getUsers());
-        Channel cTest2 = new Channel("ctest2", fileUser.getUsers());
+        List<UUID> uerList = List.of(firstUserId,secondUserId);
+
+        Channel cTest1 = new Channel("ctest1", uerList);
+        Channel cTest2 = new Channel("ctest2", uerList);
 
         cTest.searchChannel("ctest1");
 
@@ -58,6 +64,9 @@ public class Application {
         cTest.addChannel(cTest2);
         cTest.searchChannel("ctest1");
         cTest.searchChannelS(List.of("ctest1", "ctest2"));
+
+        Channel firstCh = cTest.getChannelList().get(0);
+        Channel secondCh = cTest.getChannelList().get(1);
 
         cTest.updateChannel(firstCh.getId(),"ctest10");
         cTest.searchChannel("ctest10");

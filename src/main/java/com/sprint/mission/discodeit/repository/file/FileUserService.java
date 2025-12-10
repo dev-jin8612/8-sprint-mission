@@ -1,5 +1,6 @@
 package com.sprint.mission.discodeit.repository.file;
 
+import com.sprint.mission.discodeit.entity.Channel;
 import com.sprint.mission.discodeit.entity.User;
 import com.sprint.mission.discodeit.repository.UserRepository;
 
@@ -9,55 +10,25 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 import java.util.UUID;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.stream.Collectors;
 
-public class FileUserService implements UserRepository {
+public class FileUserService extends SaveLoadHelper  implements UserRepository {
     private static final Path directory = Paths.get(System.getProperty("user.dir"), "data");
     private static final Path file = Paths.get(String.valueOf(directory), "user.ser");
     private List<User> users;
 
     public FileUserService() {
         init(directory);
-        users = load(file);
-//        users.forEach(u -> {
-//            System.out.println(u.getUserName());
-//        });
+        users = loadFile(file);
     }
 
-    public static void init(Path directory) {
-        // 저장할 경로의 파일 초기화
-        if (!Files.exists(directory)) {
-            try {
-                Files.createDirectories(directory);
-            } catch (IOException e) {
-                throw new RuntimeException(e);
-            }
-        }
+    public List<User> loadFile(Path directory) {
+        Optional<List<User>> result = super.load(directory);
+        return result.orElseGet(ArrayList::new);
     }
-
-    public static <T> void save(Path directory, T data) {
-        try (ObjectOutputStream oos = new ObjectOutputStream(new FileOutputStream(directory.toFile()))) {
-            oos.writeObject(data);
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        }
-    }
-
-    public static List<User> load(Path directory) {
-        if (Files.exists(directory)) {
-            try (ObjectInputStream ois = new ObjectInputStream(new FileInputStream(directory.toFile()))) {
-                Object data = ois.readObject();
-                return (List<User>) data;
-            } catch (IOException | ClassNotFoundException e) {
-                throw new RuntimeException(e);
-            }
-        } else {
-            return new ArrayList<>();
-        }
-    }
-
 
     @Override
     public void addUser(User user) {

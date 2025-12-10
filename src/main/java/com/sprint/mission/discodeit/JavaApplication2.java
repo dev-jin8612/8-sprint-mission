@@ -10,21 +10,24 @@ import com.sprint.mission.discodeit.repository.jcf.JCFChannelService;
 import com.sprint.mission.discodeit.repository.jcf.JCFMessageService;
 import com.sprint.mission.discodeit.repository.jcf.JCFUserService;
 
+import java.util.ArrayList;
 import java.util.List;
+import java.util.UUID;
 
 public class JavaApplication2 {
-    static List<User> setupUser(BasicUserService userService) {
+    static List<UUID> setupUser(BasicUserService userService) {
          userService.addUser(new User("황"));
-         return userService.getUsers();
+         List<UUID> uerList = userService.getUsers().stream().map(u->u.getId()).toList();
+         return uerList;
     }
 
-    static List<Channel> setupChannel(BasicChannelService chService,String chName, List<User> inChUsers) {
+    static List<Channel> setupChannel(BasicChannelService chService,String chName, List<UUID> inChUsers) {
         chService.addChannel(new Channel(chName,inChUsers));
            return chService.getChannelList();
     }
 
-    static void messageCreateTest(BasicMessageService megService,String megContents , User sender,Channel channel) {
-        megService.addMessage(new Message(megContents, sender.getId(), channel));
+    static void messageCreateTest(BasicMessageService megService,String megContents , UUID sender,Channel channel) {
+        megService.addMessage(new Message(megContents, sender, channel));
     }
 
     public static void main(String[] args) {
@@ -34,13 +37,13 @@ public class JavaApplication2 {
         BasicMessageService meg = new BasicMessageService(new JCFMessageService());
         BasicChannelService ch = new BasicChannelService(new JCFChannelService());
 
-        List<User> users= setupUser(user);
+        List<UUID> users= setupUser(user);
         List<Channel> chList = setupChannel(ch,"1번 채널",users);
         messageCreateTest(meg,"1번 메세지",users.get(0),chList.get(0));
         meg.searchMessage("1번");
 
         user.searchUser("황");
-        user.deleteUser(users.get(0).getId());
+        user.deleteUser(users.get(0));
         user.searchUser("황");
 
         ch.searchChannel("1번 채널");

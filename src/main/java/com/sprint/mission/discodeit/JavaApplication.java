@@ -8,6 +8,7 @@ import com.sprint.mission.discodeit.service.jcf.JCFMessageService;
 import com.sprint.mission.discodeit.service.jcf.JCFUserService;
 
 import java.util.List;
+import java.util.UUID;
 
 public class JavaApplication {
     public static void main(String[] args) {
@@ -38,8 +39,11 @@ public class JavaApplication {
         test.searchUser("서");
 
         System.out.println("_________________구분선, 채널__________________");
-        Channel cTest1=new Channel("ctest1",test.getUsers());
-        Channel cTest2=new Channel("ctest2",test.getUsers());
+
+        List<UUID> uerList = List.of(testUser1.getId(),testUser2.getId());
+
+        Channel cTest1 = new Channel("ctest1", uerList);
+        Channel cTest2 = new Channel("ctest2", uerList);
 
         JCFChannelService cTest=new JCFChannelService();
         cTest.searchChannel("ctest1");
@@ -60,8 +64,8 @@ public class JavaApplication {
         System.out.println("_________________구분선, 메세지__________________");
 
 
-        Channel cTest3=new Channel("ctest2",List.of(testUser1));
-        Channel cTest4=new Channel("ctest2",List.of(testUser2));
+        Channel cTest3=new Channel("ctest2",List.of(testUser1.getId()));
+        Channel cTest4=new Channel("ctest2",List.of(testUser2.getId()));
 
         Message mtest1 = new Message("황의 메세지1", testUser1.getId(),cTest3);
         Message mtest3 = new Message("진의 메세지1", testUser2.getId(),cTest4);
