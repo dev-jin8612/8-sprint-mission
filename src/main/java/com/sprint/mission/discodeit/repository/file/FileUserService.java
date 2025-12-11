@@ -42,7 +42,6 @@ public class FileUserService extends SaveLoadHelper implements UserRepository {
             save(file, users);
             return user;
         } else return null;
-
     }
 
     // 사람 삭제

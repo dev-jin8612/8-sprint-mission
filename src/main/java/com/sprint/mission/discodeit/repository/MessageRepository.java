@@ -16,7 +16,6 @@ public interface MessageRepository {
     // 삭제
     void delete(UUID id);
 
-    // 찾기는 리턴이 없을 수 있으니 나중에 optional해주기
     // 내용으로 찾기
     List<Message> searchByContent(List<String> contents);
 

@@ -16,13 +16,11 @@ public interface UserRepository {
     // 삭제
     void delete(UUID id);
 
-    // 찾기는 리턴이 없을 수 있으니 나중에 optional해주기
-    // optional 해주면서 구현된 메서드에서 sout 없애거나 줄이기
     // 이름으로 찾기
     List<User> searchByName(List<String> name);
 
     // id로 찾기
     User findById(UUID id);
 
-    public List<User> getUsers();
+    List<User> getUsers();
 }

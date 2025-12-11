@@ -9,27 +9,20 @@ import java.util.List;
 import java.util.UUID;
 
 public interface ChannelService {
-    // 채널
     // 등록
-    void addChannel(Channel channel);
+    Channel create(Channel channel);
 
     // 정보 수정
-    void updateChannel(UUID channelId, String channelname);
+    Channel update(UUID channelId, String channelname);
 
     // 삭제
-    void deleteChannel(UUID channelId);
+    void delete(UUID channelId);
 
-    // 방 찾기
-    List<Channel> search(String name);
+    // 방 이름으로 찾기
+    List<Channel> searchByName(List<String> name);
 
-    // 방찾기
-    void searchChannel(String name);
-
-    // 여러 방 찾기
-    void searchChannelS(List<String> channelIds );
-
-    // 수정된 방 찾기
-    void searchUpdateChannel();
+    // 방 id로 찾기
+    Channel findById(UUID id);
 
     // 방 정보 넘기기
     List<Channel> getChannelList();

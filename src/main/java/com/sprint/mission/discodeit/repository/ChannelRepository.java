@@ -23,5 +23,5 @@ public interface ChannelRepository {
     // id로 찾기
     Channel findById(UUID id);
 
-    public List<Channel> getChannelList();
+    List<Channel> getChannelList();
 }
