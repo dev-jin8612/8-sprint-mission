@@ -10,6 +10,8 @@ build/
 .idea/jarRepositories.xml
 .idea/compiler.xml
 .idea/libraries/
+.idea
+.idea/
 *.iws
 *.iml
 *.ipr
@@ -41,3 +43,7 @@ bin/
 
 ### Mac OS ###
 .DS_Store
+
+### data ###
+/data/
+data/
