@@ -8,7 +8,7 @@ import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
-public class JCFChannelService implements ChannelRepository {
+public class JCFChannelService1 implements ChannelRepository {
     final List<Channel> channels = new ArrayList<>();
 
     // 채널 추가
@@ -19,11 +19,12 @@ public class JCFChannelService implements ChannelRepository {
 
     // 채널 수정
     @Override
-    public Channel update(UUID channelId, String channelName) {
+    public Channel update(UUID channelId, String channelName, List<UUID> usersIds) {
         Channel ch = channels.stream().filter(ch1 -> ch1.getId().equals(channelId)).findFirst().get();
 
         if (ch != null) {
-            ch.update(channelName);
+            ch.updateChName(channelName);
+            ch.updateChUsers(usersIds);
             return ch;
         } else return null;
     }

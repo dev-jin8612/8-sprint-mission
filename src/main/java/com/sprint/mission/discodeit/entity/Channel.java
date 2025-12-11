@@ -3,9 +3,7 @@ package com.sprint.mission.discodeit.entity;
 import com.sprint.mission.discodeit.service.MessageService;
 
 import java.io.Serializable;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.UUID;
+import java.util.*;
 
 public class Channel implements Serializable {
     private static final long serialVersionUID = 1L;
@@ -14,7 +12,7 @@ public class Channel implements Serializable {
     // 방이름, 없다면 기본 이름
     private String name = "defaultName";
     // 참가자 명단
-    private List<UUID> users;
+    private Set<UUID> users;
     // 생성 시간
     private long created;
     // 수정 시간
@@ -23,7 +21,7 @@ public class Channel implements Serializable {
     // 생성자
     public Channel(String name, List<UUID> users) {
         this.id = UUID.randomUUID();
-        this.users = users;
+        this.users = new HashSet<>(users);
         long now = System.currentTimeMillis();
         this.created = now;
         this.updated = now;
@@ -44,7 +42,7 @@ public class Channel implements Serializable {
         return id;
     }
     public List<UUID> getUsers() {
-        return users;
+        return users.stream().toList();
     }
     public long getCreated() {
         return created;
@@ -54,14 +52,14 @@ public class Channel implements Serializable {
     }
 
     // 수정, 방이름
-    public void update(String name) {
+    public void updateChName(String name) {
         this.name = name;
         this.updated = System.currentTimeMillis();
     }
 
     // 수정, 방참가자
-    public void update(List<UUID> users) {
-        this.users = users;
+    public void updateChUsers(List<UUID> users) {
+        this.users = new HashSet<>(users);
         this.updated = System.currentTimeMillis();
     }
 }

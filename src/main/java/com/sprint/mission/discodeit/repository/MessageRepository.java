@@ -1,5 +1,6 @@
 package com.sprint.mission.discodeit.repository;
 
+import com.sprint.mission.discodeit.entity.Channel;
 import com.sprint.mission.discodeit.entity.Message;
 
 import java.util.List;
@@ -8,7 +9,7 @@ import java.util.UUID;
 
 public interface MessageRepository {
     // 등록
-    Message create(Message meg);
+    Message create(String meg, Channel ch, UUID userId);
 
     // 정보 수정
     Message update(UUID mesUid, String contents);

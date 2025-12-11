@@ -8,7 +8,7 @@ import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
-public class JCFMessageService implements MessageRepository {
+public class JCFMessageService1 implements MessageRepository {
     final List<Message> messages = new ArrayList<Message>();
 
     // 메세지 추가

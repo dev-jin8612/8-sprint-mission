@@ -13,7 +13,7 @@ public interface ChannelService {
     Channel create(Channel channel);
 
     // 정보 수정
-    Channel update(UUID channelId, String channelname);
+    Channel update(UUID channelId, String channelname, List<UUID> usersIds);
 
     // 삭제
     void delete(UUID channelId);

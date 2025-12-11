@@ -1,71 +1,69 @@
 package com.sprint.mission.discodeit.service.jcf;
 
+import com.sprint.mission.discodeit.entity.Channel;
 import com.sprint.mission.discodeit.entity.User;
 import com.sprint.mission.discodeit.service.UserService;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Optional;
-import java.util.UUID;
+import java.util.*;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.stream.Collectors;
 
 public class JCFUserService implements UserService {
-    final List<User> users = new ArrayList<>();
+    private final Map<UUID, User> users;
+
+    public JCFUserService() {
+        this.users = new HashMap<>();
+    }
 
     // 사람 추가
     @Override
     public User create(User user) {
-        users.add(user);
+        users.put(user.getId(), user);
         return user;
     }
 
     // 사람 수정
     @Override
     public User update(UUID userid, String username) {
-        User user = users.stream().filter(c -> c.getId().equals(userid)).findFirst().get();
-
-        if (user != null) {
-            user.update(username);
-            return user;
-        } else return null;
+        User user = Optional.ofNullable(users.get(userid))
+                .orElseThrow(() -> new NoSuchElementException("채널이 없습니다."));
+        user.update(username);
+        return user;
     }
 
     // 사람 삭제
     @Override
     public void delete(UUID userId) {
-        User user = users.stream()
-                .filter(u -> u.getId().equals(userId))
-                .findFirst().get();
-
-        if (user != null) {
-            users.remove(user);
+        if (!users.containsKey(userId)) {
+            throw new NoSuchElementException("이미 삭제 되었습니다.");
         }
+        users.remove(userId);
     }
 
     // 사람 찾아서 객체 넘기기
     @Override
     public List<User> searchByName(List<String> name) {
-        List<User> result = users.stream()
+        List<User> result = users.values().stream()
                 .filter(user ->
                         name.stream().anyMatch(na -> user.getUserName().contains(na))
                 ).toList();
 
-        return result.isEmpty() ? null : result;
+        return Optional.ofNullable(result)
+                .orElse(null);
     }
 
     // 사람 찾기
     @Override
     public User findById(UUID id) {
-        Optional<User> user = users.stream()
-                .filter(c -> c.getId().equals(id)).findFirst();
+        return Optional.ofNullable(users.get(id))
+                .orElse(null);
 
-        return user.orElse(null);
     }
 
-    // 유저 리스트 넘기는거 만들기
-    // 채널 만들 때 필요
+    // 유저 리스트 채널 만들 때 필요
     public List<User> getUsers() {
-        return this.users;
+        List<User> user = new ArrayList<>(users.values());
+        return Optional.ofNullable(user)
+                .orElse(null);
     }
 }

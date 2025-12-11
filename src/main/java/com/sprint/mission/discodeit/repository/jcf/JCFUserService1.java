@@ -8,7 +8,7 @@ import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
-public class JCFUserService implements UserService {
+public class JCFUserService1 implements UserService {
     final List<User> users = new ArrayList<>();
 
     // 사람 추가

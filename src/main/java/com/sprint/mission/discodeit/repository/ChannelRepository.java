@@ -11,7 +11,7 @@ public interface ChannelRepository {
     Channel create(Channel ch);
 
     // 정보 수정
-    Channel update(UUID channelId, String channelName);
+    Channel update(UUID channelId, String channelname, List<UUID> usersIds);
 
     // 삭제
     void delete(UUID id);
