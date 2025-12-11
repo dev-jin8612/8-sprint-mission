@@ -10,12 +10,12 @@ import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
-public class FileMessageService extends SaveLoadHelper implements MessageRepository {
+public class FileMessageReposiory extends SaveLoadHelper implements MessageRepository {
     private static final Path directory = Paths.get(System.getProperty("user.dir"), "data");
     private static final Path filepath = Paths.get(String.valueOf(directory), "meg.ser");
     private List<Message> messages;
 
-    public FileMessageService() {
+    public FileMessageReposiory() {
         init(directory);
         messages = loadFile(filepath);
     }

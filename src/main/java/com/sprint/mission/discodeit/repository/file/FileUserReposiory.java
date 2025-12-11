@@ -10,12 +10,12 @@ import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
-public class FileUserService extends SaveLoadHelper implements UserRepository {
+public class FileUserReposiory extends SaveLoadHelper implements UserRepository {
     private static final Path directory = Paths.get(System.getProperty("user.dir"), "data");
     private static final Path file = Paths.get(String.valueOf(directory), "user.ser");
     private List<User> users;
 
-    public FileUserService() {
+    public FileUserReposiory() {
         init(directory);
         users = loadFile(file);
     }

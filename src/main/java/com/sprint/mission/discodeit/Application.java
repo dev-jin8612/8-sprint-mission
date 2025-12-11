@@ -2,19 +2,17 @@ package com.sprint.mission.discodeit;
 
 import com.sprint.mission.discodeit.entity.Channel;
 import com.sprint.mission.discodeit.entity.Message;
-import com.sprint.mission.discodeit.entity.User;
-import com.sprint.mission.discodeit.repository.file.FileChannelService;
-import com.sprint.mission.discodeit.repository.file.FileMessageService;
-import com.sprint.mission.discodeit.repository.file.FileUserService;
+import com.sprint.mission.discodeit.repository.file.FileChannelReposiory;
+import com.sprint.mission.discodeit.repository.file.FileMessageReposiory;
+import com.sprint.mission.discodeit.repository.file.FileUserReposiory;
 
-import java.util.List;
 import java.util.UUID;
 
 public class Application {
 
     public static void main(String[] args) {
         System.out.println("_______________________미션 2차 데이터 영속화__________________________");
-        FileUserService fileUser = new FileUserService();
+        FileUserReposiory fileUser = new FileUserReposiory();
         UUID firstUserId = fileUser.getUsers().get(0).getId();
         UUID secondUserId = fileUser.getUsers().get(1).getId();
 
@@ -65,7 +63,7 @@ public class Application {
 
 
 //        System.out.println("_______________채팅방_____________________");
-        FileChannelService cTest=new FileChannelService();
+        FileChannelReposiory cTest=new FileChannelReposiory();
 
         // 참가자 목록
 //        List<UUID> usersList = fileUser.getUsers().stream().map(u->u.getId()).toList();
@@ -102,7 +100,7 @@ public class Application {
 
 
 //        System.out.println("_________________메세지__________________");
-        FileMessageService filemeg = new FileMessageService();
+        FileMessageReposiory filemeg = new FileMessageReposiory();
 
         Message mtest1 = new Message("황의 메세지1", firstUserId,firstCh);
         Message mtest2 = new Message("황의 메세지2", firstUserId,firstCh);

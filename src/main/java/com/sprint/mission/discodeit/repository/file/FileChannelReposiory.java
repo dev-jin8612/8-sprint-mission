@@ -1,7 +1,6 @@
 package com.sprint.mission.discodeit.repository.file;
 
 import com.sprint.mission.discodeit.entity.Channel;
-import com.sprint.mission.discodeit.entity.User;
 import com.sprint.mission.discodeit.repository.ChannelRepository;
 
 import java.nio.file.Path;
@@ -11,12 +10,12 @@ import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
-public class FileChannelService extends SaveLoadHelper implements ChannelRepository {
+public class FileChannelReposiory extends SaveLoadHelper implements ChannelRepository {
     private static final Path directory = Paths.get(System.getProperty("user.dir"), "data");
     private static final Path file = Paths.get(String.valueOf(directory), "ch.ser");
     private List<Channel> channels;
 
-    public FileChannelService() {
+    public FileChannelReposiory() {
         init(directory);
         channels = loadFile(file);
     }

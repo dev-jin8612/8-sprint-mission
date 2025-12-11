@@ -3,17 +3,13 @@ package com.sprint.mission.discodeit;
 import com.sprint.mission.discodeit.entity.Channel;
 import com.sprint.mission.discodeit.entity.Message;
 import com.sprint.mission.discodeit.entity.User;
-import com.sprint.mission.discodeit.repository.file.FileChannelService;
-import com.sprint.mission.discodeit.repository.file.FileMessageService;
-import com.sprint.mission.discodeit.repository.file.FileUserService;
+import com.sprint.mission.discodeit.repository.file.FileChannelReposiory;
+import com.sprint.mission.discodeit.repository.file.FileMessageReposiory;
+import com.sprint.mission.discodeit.repository.file.FileUserReposiory;
 import com.sprint.mission.discodeit.service.basic.BasicChannelService;
 import com.sprint.mission.discodeit.service.basic.BasicMessageService;
 import com.sprint.mission.discodeit.service.basic.BasicUserService;
-import com.sprint.mission.discodeit.repository.jcf.JCFChannelService;
-import com.sprint.mission.discodeit.repository.jcf.JCFMessageService;
-import com.sprint.mission.discodeit.repository.jcf.JCFUserService;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
@@ -36,9 +32,9 @@ public class JavaApplication2 {
     public static void main(String[] args) {
         System.out.println("_______________________미션 2차 심화문제 풀이 __________________________");
 
-        BasicUserService user = new BasicUserService(new FileUserService());
-        BasicMessageService meg = new BasicMessageService(new FileMessageService());
-        BasicChannelService ch = new BasicChannelService(new FileChannelService());
+        BasicUserService user = new BasicUserService(new FileUserReposiory());
+        BasicMessageService meg = new BasicMessageService(new FileMessageReposiory());
+        BasicChannelService ch = new BasicChannelService(new FileChannelReposiory());
 
         List<UUID> users= setupUser(user);
         List<Channel> chList = setupChannel(ch,"1번 채널",users);
