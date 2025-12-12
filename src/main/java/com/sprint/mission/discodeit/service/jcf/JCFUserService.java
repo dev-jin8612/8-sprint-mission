@@ -1,12 +1,9 @@
 package com.sprint.mission.discodeit.service.jcf;
 
-import com.sprint.mission.discodeit.entity.Channel;
 import com.sprint.mission.discodeit.entity.User;
 import com.sprint.mission.discodeit.service.UserService;
 
 import java.util.*;
-import java.util.concurrent.atomic.AtomicBoolean;
-import java.util.stream.Collectors;
 
 public class JCFUserService implements UserService {
     private final Map<UUID, User> users;
@@ -27,6 +24,7 @@ public class JCFUserService implements UserService {
     public User update(UUID userid, String username) {
         User user = Optional.ofNullable(users.get(userid))
                 .orElseThrow(() -> new NoSuchElementException("채널이 없습니다."));
+
         user.update(username);
         return user;
     }
@@ -57,12 +55,12 @@ public class JCFUserService implements UserService {
     public User findById(UUID id) {
         return Optional.ofNullable(users.get(id))
                 .orElse(null);
-
     }
 
     // 유저 리스트 채널 만들 때 필요
     public List<User> getUsers() {
         List<User> user = new ArrayList<>(users.values());
+
         return Optional.ofNullable(user)
                 .orElse(null);
     }

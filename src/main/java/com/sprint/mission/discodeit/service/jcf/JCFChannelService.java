@@ -4,8 +4,6 @@ import com.sprint.mission.discodeit.entity.Channel;
 import com.sprint.mission.discodeit.service.ChannelService;
 
 import java.util.*;
-import java.util.concurrent.atomic.AtomicBoolean;
-import java.util.stream.Collectors;
 
 public class JCFChannelService implements ChannelService {
     private final Map<UUID, Channel> channels;
@@ -29,6 +27,7 @@ public class JCFChannelService implements ChannelService {
 
         channel.updateChName(channelName);
         channel.updateChUsers(usersIds);
+
         return channel;
     }
 
@@ -59,16 +58,14 @@ public class JCFChannelService implements ChannelService {
     public Channel findById(UUID id) {
         return Optional.ofNullable(channels.get(id))
                 .orElse(null);
-
     }
 
     // 참여자
     @Override
     public List<Channel> getChannelList() {
         List<Channel> ch= new ArrayList<>(channels.values());
+
         return Optional.ofNullable(ch)
                 .orElse(null);
-
-
     }
 }

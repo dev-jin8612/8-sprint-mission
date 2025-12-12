@@ -2,7 +2,6 @@ package com.sprint.mission.discodeit.service.jcf;
 
 import com.sprint.mission.discodeit.entity.Channel;
 import com.sprint.mission.discodeit.entity.Message;
-import com.sprint.mission.discodeit.entity.User;
 import com.sprint.mission.discodeit.service.MessageService;
 
 import java.util.*;
@@ -34,6 +33,7 @@ public class JCFMessageService implements MessageService {
     public Message update(UUID mesUid, String contents) {
         Message m = Optional.ofNullable(messages.get(mesUid))
                 .orElseThrow(() -> new NoSuchElementException("메세지가 없습니다."));
+
         m.update(contents);
         return m;
     }
