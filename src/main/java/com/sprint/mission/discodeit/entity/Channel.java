@@ -49,15 +49,9 @@ public class Channel implements Serializable {
         return updated;
     }
 
-    // 수정, 방이름
-    public void updateChName(String name) {
+    // 수정
+    public void update(String name) {
         this.name = name;
-        this.updated = System.currentTimeMillis();
-    }
-
-    // 수정, 방참가자
-    public void updateChUsers(List<UUID> users) {
-        this.users = new HashSet<>(users);
         this.updated = System.currentTimeMillis();
     }
 }

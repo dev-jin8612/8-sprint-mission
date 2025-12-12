@@ -25,9 +25,7 @@ public class JCFChannelService implements ChannelService {
         Channel channel = Optional.ofNullable(channels.get(channelId))
                         .orElseThrow(()-> new NoSuchElementException("채널이 없습니다."));
 
-        channel.updateChName(channelName);
-        channel.updateChUsers(usersIds);
-
+        channel.update(channelName);
         return channel;
     }
 

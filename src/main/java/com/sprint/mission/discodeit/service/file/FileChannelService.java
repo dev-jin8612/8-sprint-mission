@@ -64,10 +64,8 @@ public class FileChannelService implements ChannelService {
         Channel channel = Optional.ofNullable(channels.get(channelId))
                 .orElseThrow(() -> new NoSuchElementException("채널이 없습니다."));
 
-        channel.updateChName(channelName);
-        channel.updateChUsers(usersId);
+        channel.update(channelName);
         save(file, channels);
-
         return channel;
     }
 
