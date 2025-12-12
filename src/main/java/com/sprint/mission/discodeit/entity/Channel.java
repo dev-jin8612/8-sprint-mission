@@ -1,7 +1,5 @@
 package com.sprint.mission.discodeit.entity;
 
-import com.sprint.mission.discodeit.service.MessageService;
-
 import java.io.Serializable;
 import java.util.*;
 

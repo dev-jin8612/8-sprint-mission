@@ -1,7 +1,6 @@
 package com.sprint.mission.discodeit.service.file;
 
 import com.sprint.mission.discodeit.entity.Channel;
-import com.sprint.mission.discodeit.entity.User;
 import com.sprint.mission.discodeit.service.ChannelService;
 
 import java.io.*;
@@ -9,8 +8,6 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.*;
-import java.util.concurrent.atomic.AtomicBoolean;
-import java.util.stream.Collectors;
 
 public class FileChannelService implements ChannelService {
     private static final Path directory = Paths.get(System.getProperty("user.dir"), "data");
@@ -54,7 +51,6 @@ public class FileChannelService implements ChannelService {
             return new HashMap<UUID,Channel>();
         }
     }
-
 
     @Override
     public Channel create(Channel channel) {

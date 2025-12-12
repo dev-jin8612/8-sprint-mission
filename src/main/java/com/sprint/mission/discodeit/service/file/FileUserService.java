@@ -1,6 +1,5 @@
 package com.sprint.mission.discodeit.service.file;
 
-import com.sprint.mission.discodeit.entity.Channel;
 import com.sprint.mission.discodeit.entity.User;
 import com.sprint.mission.discodeit.service.UserService;
 
@@ -9,21 +8,18 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.*;
-import java.util.concurrent.atomic.AtomicBoolean;
-import java.util.stream.Collectors;
 
 public class FileUserService implements UserService {
     private static final Path directory = Paths.get(System.getProperty("user.dir"), "data");
     private static final Path file = Paths.get(String.valueOf(directory), "user.ser");
     private final Map<UUID, User> users;
 
-
     public FileUserService() {
         init(directory);
         users = load(file);
     }
 
-    public static void init(Path directory) {
+    public void init(Path directory) {
         // 저장할 경로의 파일 초기화
         if (!Files.exists(directory)) {
             try {
@@ -34,7 +30,7 @@ public class FileUserService implements UserService {
         }
     }
 
-    public static <T> void save(Path directory, T data) {
+    public <T> void save(Path directory, T data) {
         try (ObjectOutputStream oos = new ObjectOutputStream(new FileOutputStream(directory.toFile()))) {
             oos.writeObject(data);
         } catch (IOException e) {
@@ -43,7 +39,7 @@ public class FileUserService implements UserService {
     }
 
 
-    public static Map<UUID, User> load(Path directory) {
+    public Map<UUID, User> load(Path directory) {
         if (Files.exists(directory)) {
             try (ObjectInputStream ois = new ObjectInputStream(new FileInputStream(directory.toFile()))) {
                 Object data = ois.readObject();
@@ -113,5 +109,4 @@ public class FileUserService implements UserService {
         return Optional.ofNullable(user)
                 .orElse(null);
     }
-
 }

@@ -2,7 +2,6 @@ package com.sprint.mission.discodeit.service.file;
 
 import com.sprint.mission.discodeit.entity.Channel;
 import com.sprint.mission.discodeit.entity.Message;
-import com.sprint.mission.discodeit.entity.User;
 import com.sprint.mission.discodeit.service.MessageService;
 
 import java.io.*;
@@ -10,8 +9,6 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.*;
-import java.util.concurrent.atomic.AtomicBoolean;
-import java.util.stream.Collectors;
 
 public class FileMessageService implements MessageService {
     private static final Path directory = Paths.get(System.getProperty("user.dir"), "data");
@@ -23,7 +20,7 @@ public class FileMessageService implements MessageService {
         messages = load(filepath);
     }
 
-    public static void init(Path directory) {
+    public void init(Path directory) {
         // 저장할 경로의 파일 초기화
         if (!Files.exists(directory)) {
             try {
@@ -34,7 +31,7 @@ public class FileMessageService implements MessageService {
         }
     }
 
-    public static <T> void save(Path directory, T data) {
+    public <T> void save(Path directory, T data) {
         try (ObjectOutputStream oos = new ObjectOutputStream(new FileOutputStream(directory.toFile()))) {
             oos.writeObject(data);
         } catch (IOException e) {
@@ -42,8 +39,7 @@ public class FileMessageService implements MessageService {
         }
     }
 
-
-    public static Map<UUID,Message> load(Path directory) {
+    public Map<UUID,Message> load(Path directory) {
         if (Files.exists(directory)) {
             try (ObjectInputStream ois = new ObjectInputStream(new FileInputStream(directory.toFile()))) {
                 Object data = ois.readObject();

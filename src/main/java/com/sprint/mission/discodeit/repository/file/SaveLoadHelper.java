@@ -1,10 +1,11 @@
 package com.sprint.mission.discodeit.repository.file;
 
+import com.sprint.mission.discodeit.entity.User;
+
 import java.io.*;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 
 public abstract class SaveLoadHelper<T> {
 
@@ -27,18 +28,16 @@ public abstract class SaveLoadHelper<T> {
         }
     }
 
-    public Optional<List<T>> load(Path directory) {
+    public Map<UUID, T>  load(Path directory) {
         if (Files.exists(directory)) {
             try (ObjectInputStream ois = new ObjectInputStream(new FileInputStream(directory.toFile()))) {
                 Object data = ois.readObject();
-//                return (Optional<T>) data;
-//                return Optional.of((T) data);
-                return Optional.of((List<T>) data);
+                return (Map<UUID, T>) data;
             } catch (IOException | ClassNotFoundException e) {
                 throw new RuntimeException(e);
             }
         } else {
-            return Optional.empty();
+            return new HashMap<>();
         }
     }
 }

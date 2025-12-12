@@ -20,8 +20,8 @@ public class BasicChannelService implements ChannelService {
     }
 
     @Override
-    public Channel update(UUID channelId, String channelName) {
-        return chService.update(channelId, channelName);
+    public Channel update(UUID channelId, String channelName, List<UUID> userIds) {
+        return chService.update(channelId, channelName, userIds);
     }
 
     @Override
