@@ -48,7 +48,7 @@ public class FileChannelService implements ChannelService {
                 throw new RuntimeException(e);
             }
         } else {
-            return new HashMap<UUID,Channel>();
+            return new HashMap<>();
         }
     }
 
