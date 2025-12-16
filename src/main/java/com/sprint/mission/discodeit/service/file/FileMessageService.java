@@ -54,18 +54,11 @@ public class FileMessageService implements MessageService {
 
     // 메세지 추가
     @Override
-    public Message create(String contents, Channel ch, UUID userId) {
-        Message m = null;
+    public Message create(Message m) {
+        messages.put(m.getId(), m);
+        save(filepath, messages);
 
-        if (ch.getUsers().stream().anyMatch(u -> u.equals(userId))) {
-            m = new Message(contents, userId, ch.getId());
-            messages.put(m.getId(), m);
-            save(filepath, messages);
-            System.out.println("메세지가 생성 됐습니다.");
-        }
-
-        return Optional.ofNullable(m)
-                .orElseThrow(() -> new NoSuchElementException("잘못된 형식입니다."));
+        return m;
     }
 
     // 메세지 수정
@@ -76,6 +69,7 @@ public class FileMessageService implements MessageService {
 
         m.update(contents);
         save(filepath, messages);
+
         return m;
     }
 

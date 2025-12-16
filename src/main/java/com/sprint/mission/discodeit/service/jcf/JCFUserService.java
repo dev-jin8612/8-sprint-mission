@@ -12,6 +12,7 @@ public class JCFUserService implements UserService {
         this.users = new HashMap<>();
     }
 
+
     // 사람 추가
     @Override
     public User create(User user) {
@@ -21,11 +22,11 @@ public class JCFUserService implements UserService {
 
     // 사람 수정
     @Override
-    public User update(UUID userid, String username) {
+    public User update(UUID userid,String name,String password,String email) {
         User user = Optional.ofNullable(users.get(userid))
                 .orElseThrow(() -> new NoSuchElementException("채널이 없습니다."));
 
-        user.update(username);
+        user.update(name,password,email);
         return user;
     }
 
@@ -35,6 +36,7 @@ public class JCFUserService implements UserService {
         if (!users.containsKey(userId)) {
             throw new NoSuchElementException("이미 삭제 되었습니다.");
         }
+
         users.remove(userId);
     }
 
@@ -43,7 +45,7 @@ public class JCFUserService implements UserService {
     public List<User> searchByName(List<String> name) {
         List<User> result = users.values().stream()
                 .filter(user ->
-                        name.stream().anyMatch(na -> user.getUserName().contains(na))
+                        name.stream().anyMatch(na -> user.getName().contains(na))
                 ).toList();
 
         return Optional.ofNullable(result)
@@ -57,7 +59,9 @@ public class JCFUserService implements UserService {
                 .orElse(null);
     }
 
-    // 유저 리스트 채널 만들 때 필요
+    // 유저 리스트 넘기는거 만들기
+    // 채널 만들 때 필요
+    @Override
     public List<User> getUsers() {
         List<User> user = new ArrayList<>(users.values());
 

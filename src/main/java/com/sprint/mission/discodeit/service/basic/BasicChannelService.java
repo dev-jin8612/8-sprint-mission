@@ -3,25 +3,26 @@ package com.sprint.mission.discodeit.service.basic;
 import com.sprint.mission.discodeit.entity.Channel;
 import com.sprint.mission.discodeit.repository.ChannelRepository;
 import com.sprint.mission.discodeit.service.ChannelService;
+import lombok.RequiredArgsConstructor;
+import org.springframework.stereotype.Service;
 
 import java.util.List;
 import java.util.UUID;
 
+@Service
+@RequiredArgsConstructor
 public class BasicChannelService implements ChannelService {
     private final ChannelRepository chService;
 
-    public BasicChannelService(ChannelRepository chService) {
-        this.chService = chService;
+    @Override
+    public Channel create(String name, List<UUID> memberIds, String type) {
+        Channel channel = new Channel(name, memberIds, type);
+        return chService.create(channel);
     }
 
     @Override
-    public Channel create(Channel ch) {
-        return chService.create(ch);
-    }
-
-    @Override
-    public Channel update(UUID channelId, String channelName, List<UUID> userIds) {
-        return chService.update(channelId, channelName, userIds);
+    public Channel update(UUID channelId, String channelName, String type) {
+        return chService.update(channelId, channelName, type);
     }
 
     @Override

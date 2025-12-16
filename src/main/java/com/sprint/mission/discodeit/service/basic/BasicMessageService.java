@@ -4,20 +4,33 @@ import com.sprint.mission.discodeit.entity.Channel;
 import com.sprint.mission.discodeit.entity.Message;
 import com.sprint.mission.discodeit.repository.MessageRepository;
 import com.sprint.mission.discodeit.service.MessageService;
+import lombok.RequiredArgsConstructor;
+import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.NoSuchElementException;
+import java.util.Optional;
 import java.util.UUID;
 
+@Service
+@RequiredArgsConstructor
 public class BasicMessageService implements MessageService {
     private final MessageRepository messageService;
 
-    public BasicMessageService(MessageRepository messageService) {
-        this.messageService = messageService;
-    }
-
     @Override
     public Message create(String meg, Channel ch, UUID userId) {
-        return messageService.create(meg,ch,userId);
+        Message m = null;
+
+        if (ch.getUsers().stream().anyMatch(u -> u.equals(userId))) {
+            if (meg != null && meg.trim().length() > 0) {
+                m = new Message(meg, userId, ch.getId());
+                System.out.println("메세지가 생성 됐습니다.");
+                return messageService.create(m);
+            }
+        }
+
+        return Optional.ofNullable(m)
+                .orElseThrow(() -> new NoSuchElementException("잘못된 형식입니다."));
     }
 
     @Override

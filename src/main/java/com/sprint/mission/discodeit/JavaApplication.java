@@ -9,47 +9,37 @@
 //import com.sprint.mission.discodeit.service.basic.BasicChannelService;
 //import com.sprint.mission.discodeit.service.basic.BasicMessageService;
 //import com.sprint.mission.discodeit.service.basic.BasicUserService;
-////import com.sprint.mission.discodeit.service.jcf.JCFChannelService;
-////import com.sprint.mission.discodeit.service.jcf.JCFMessageService;
-////import com.sprint.mission.discodeit.service.jcf.JCFUserService;
-////import com.sprint.mission.discodeit.service.basic.BasicChannelService;
-////import com.sprint.mission.discodeit.service.basic.BasicMessageService;
-////import com.sprint.mission.discodeit.service.basic.BasicUserService;
-////import com.sprint.mission.discodeit.service.file.FileChannelService;
-////import com.sprint.mission.discodeit.service.file.FileUserService;
-////import com.sprint.mission.discodeit.service.file.FileMessageService;
-////import com.sprint.mission.discodeit.repository.jcf.JCFChannelRepository;
-////import com.sprint.mission.discodeit.repository.jcf.JCFMessageRepository;
-////import com.sprint.mission.discodeit.repository.jcf.JCFUserRepository;
 //
 //import java.util.List;
 //import java.util.UUID;
 //
 //public class JavaApplication {
+//    static User setupUser(BasicUserService userService) {
+//        return userService.create("황", "1544", "hwang@mail.com");
+//    }
+//
+//    static Channel setupChannel(BasicChannelService chService, String chName, List<UUID> inChUsers, String type) {
+//        return chService.create("1번", inChUsers, type);
+//    }
+//
+//    static Message messageCreateTest(BasicMessageService megService, String megContents, UUID sender, Channel channel) {
+//        return megService.create(megContents, channel, sender);
+//    }
+//
 //    public static void main(String[] args) {
 //        System.out.println("_________________구분선, 유저__________________");
-//        // service test
-////        JCFUserService test = new JCFUserService();
-////        FileUserService test = new FileUserService();
-//
-//        // file test
-////        JCFUserRepository test = new JCFUserRepository();
-////        FileUserReposiory test = new FileUserReposiory();
-//
-//        // 심화 풀이
 //        FileUserReposiory notUse = new FileUserReposiory();
 //        BasicUserService test = new BasicUserService(notUse);
 //
 //        // 등록
 //        User testUser1 = test.create(new User("황"));
-//        User testUser2 = test.create(new User("진"));
 //
 //        // 수정
 //        test.update(testUser1.getId(), "서");
 //
 //        // 찾기
 //        List<User> uList = test.searchByName(List.of("서", "진"));
-//        uList.forEach(user -> System.out.println(user.getUserName()));
+//        uList.forEach(user -> System.out.println(user.getName()));
 //
 //        // 삭제
 //        test.delete(testUser1.getId());
@@ -64,16 +54,7 @@
 //        }
 //
 //        System.out.println("_________________구분선, 채널__________________");
-//
 //        List<UUID> uerList = List.of(testUser1.getId(), testUser2.getId());
-//
-//        // service test
-////        JCFChannelService cTest = new JCFChannelService();
-////        FileChannelService cTest = new FileChannelService();
-//
-//        //file test
-////        JCFChannelRepository cTest = new JCFChannelRepository();
-////        FileChannelReposiory cTest = new FileChannelReposiory();
 //
 //        // 심화 풀이
 //        FileChannelReposiory notUse2 = new FileChannelReposiory();
@@ -89,7 +70,7 @@
 //        List<Channel> cList = cTest.searchByName(List.of("ctest1", "ctest2"));
 //
 //        cList.forEach(channel -> {
-//            System.out.println(channel.getChannelName());
+//            System.out.println(channel.getName());
 //        });
 //
 //        // 삭제
@@ -104,16 +85,6 @@
 //        }
 //
 //        System.out.println("_________________구분선, 메세지__________________");
-//
-//        // service test
-////        JCFMessageService megTest = new JCFMessageService();
-////        FileMessageService megTest = new FileMessageService();
-//
-//        // file test
-////        JCFMessageRepository megTest = new JCFMessageRepository();
-////        FileMessageReposiory megTest = new FileMessageReposiory();
-//
-//        // 심화 풀이
 //        FileMessageReposiory notUse3 = new FileMessageReposiory();
 //        BasicMessageService megTest = new BasicMessageService(notUse3);
 //

@@ -10,10 +10,10 @@ import java.util.UUID;
 
 public interface ChannelService {
     // 등록
-    Channel create(Channel channel);
+    Channel create(String name, List<UUID> memberIds, String type);
 
     // 정보 수정
-    Channel update(UUID channelId, String channelname, List<UUID> usersIds);
+    Channel update(UUID channelId, String channelname, String type);
 
     // 삭제
     void delete(UUID channelId);

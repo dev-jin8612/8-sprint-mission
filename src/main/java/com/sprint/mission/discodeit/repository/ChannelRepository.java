@@ -8,10 +8,10 @@ import java.util.UUID;
 
 public interface ChannelRepository {
     // 등록
-    Channel create(Channel ch);
+    Channel create(Channel channel);
 
     // 정보 수정
-    Channel update(UUID channelId, String channelname, List<UUID> usersIds);
+    Channel update(UUID channelId, String channelName, String type);
 
     // 삭제
     void delete(UUID id);

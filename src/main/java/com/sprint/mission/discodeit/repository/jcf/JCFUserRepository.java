@@ -2,10 +2,12 @@ package com.sprint.mission.discodeit.repository.jcf;
 
 import com.sprint.mission.discodeit.entity.User;
 import com.sprint.mission.discodeit.repository.UserRepository;
+import org.springframework.stereotype.Repository;
 
 
 import java.util.*;
 
+@Repository
 public class JCFUserRepository implements UserRepository {
     private final Map<UUID, User> users;
 
@@ -22,11 +24,11 @@ public class JCFUserRepository implements UserRepository {
 
     // 사람 수정
     @Override
-    public User update(UUID userid, String username) {
+    public User update(UUID userid,String name,String password,String email) {
         User user = Optional.ofNullable(users.get(userid))
                 .orElseThrow(() -> new NoSuchElementException("채널이 없습니다."));
 
-        user.update(username);
+        user.update(name,password,email);
         return user;
     }
 
@@ -44,7 +46,7 @@ public class JCFUserRepository implements UserRepository {
     public List<User> searchByName(List<String> name) {
         List<User> result = users.values().stream()
                 .filter(user ->
-                        name.stream().anyMatch(na -> user.getUserName().contains(na))
+                        name.stream().anyMatch(na -> user.getName().contains(na))
                 ).toList();
 
         return Optional.ofNullable(result)
@@ -58,7 +60,9 @@ public class JCFUserRepository implements UserRepository {
                 .orElse(null);
     }
 
-    // 유저 리스트 채널 만들 때 필요
+    // 유저 리스트 넘기는거 만들기
+    // 채널 만들 때 필요
+    @Override
     public List<User> getUsers() {
         List<User> user = new ArrayList<>(users.values());
 

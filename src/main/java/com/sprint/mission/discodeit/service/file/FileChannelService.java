@@ -60,11 +60,11 @@ public class FileChannelService implements ChannelService {
     }
 
     @Override
-    public Channel update(UUID channelId, String channelName, List<UUID> usersId) {
+    public Channel update(UUID channelId, String channelName, String type) {
         Channel channel = Optional.ofNullable(channels.get(channelId))
                 .orElseThrow(() -> new NoSuchElementException("채널이 없습니다."));
 
-        channel.update(channelName);
+        channel.update(channelName,type);
         save(file, channels);
         return channel;
     }
@@ -83,7 +83,7 @@ public class FileChannelService implements ChannelService {
     public List<Channel> searchByName(List<String> name) {
         List<Channel> ch = channels.values().stream()
                 .filter(cha ->
-                        name.stream().anyMatch(na -> cha.getChannelName().contains(na))
+                        name.stream().anyMatch(na -> cha.getName().contains(na))
                 ).toList();
 
         return Optional.ofNullable(ch)

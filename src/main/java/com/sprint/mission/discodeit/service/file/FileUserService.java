@@ -52,6 +52,8 @@ public class FileUserService implements UserService {
         }
     }
 
+
+    // 사람 추가
     @Override
     public User create(User user) {
         users.put(user.getId(), user);
@@ -61,12 +63,12 @@ public class FileUserService implements UserService {
 
     // 사람 수정
     @Override
-    public User update(UUID userid, String username) {
+    public User update(UUID userid,String name,String password,String email) {
         User user = Optional.ofNullable(users.get(userid))
                 .orElseThrow(() -> new NoSuchElementException("채널이 없습니다."));
 
-        user.update(username);
-            save(file, users);
+        user.update(name,password,email);
+        save(file, users);
         return user;
     }
 
@@ -78,7 +80,7 @@ public class FileUserService implements UserService {
         }
 
         users.remove(userId);
-            save(file, users);
+        save(file, users);
     }
 
     // 사람 찾아서 객체 넘기기
@@ -86,7 +88,7 @@ public class FileUserService implements UserService {
     public List<User> searchByName(List<String> name) {
         List<User> result = users.values().stream()
                 .filter(user ->
-                        name.stream().anyMatch(na -> user.getUserName().contains(na))
+                        name.stream().anyMatch(na -> user.getName().contains(na))
                 ).toList();
 
         return Optional.ofNullable(result)

@@ -39,3 +39,14 @@ dependencies {
 tasks.named('test') {
     useJUnitPlatform()
 }
+
+// 빌드 제외
+sourceSets {
+    main {
+        java {
+            exclude '**/service/file/**'
+            exclude '**/service/jcf/**'
+            exclude '**/repository/jcf/**'
+        }
+    }
+}

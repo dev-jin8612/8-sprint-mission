@@ -11,7 +11,7 @@ public interface UserRepository {
     User create(User user);
 
     // 정보 수정
-    User update(UUID userid, String username);
+    User update(UUID userid,String name,String password,String email);
 
     // 삭제
     void delete(UUID id);

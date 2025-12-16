@@ -2,11 +2,13 @@ package com.sprint.mission.discodeit.repository.file;
 
 import com.sprint.mission.discodeit.entity.Channel;
 import com.sprint.mission.discodeit.repository.ChannelRepository;
+import org.springframework.stereotype.Repository;
 
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.*;
 
+@Repository
 public class FileChannelReposiory extends SaveLoadHelper implements ChannelRepository {
     private static final Path directory = Paths.get(System.getProperty("user.dir"), "data");
     private static final Path file = Paths.get(String.valueOf(directory), "ch.ser");
@@ -25,11 +27,11 @@ public class FileChannelReposiory extends SaveLoadHelper implements ChannelRepos
     }
 
     @Override
-    public Channel update(UUID channelId, String channelName, List<UUID> usersId) {
+    public Channel update(UUID channelId, String channelName, String type) {
         Channel channel = Optional.ofNullable(channels.get(channelId))
                 .orElseThrow(() -> new NoSuchElementException("채널이 없습니다."));
 
-        channel.update(channelName);
+        channel.update(channelName,type);
         save(file, channels);
         return channel;
     }
@@ -48,7 +50,7 @@ public class FileChannelReposiory extends SaveLoadHelper implements ChannelRepos
     public List<Channel> searchByName(List<String> name) {
         List<Channel> ch = channels.values().stream()
                 .filter(cha ->
-                        name.stream().anyMatch(na -> cha.getChannelName().contains(na))
+                        name.stream().anyMatch(na -> cha.getName().contains(na))
                 ).toList();
 
         return Optional.ofNullable(ch)

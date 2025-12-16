@@ -9,7 +9,7 @@ import java.util.UUID;
 
 public interface MessageRepository {
     // 등록
-    Message create(String meg, Channel ch, UUID userId);
+    Message create(Message message);
 
     // 정보 수정
     Message update(UUID mesUid, String contents);
