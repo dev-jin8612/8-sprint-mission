@@ -1,5 +1,6 @@
 package com.sprint.mission.discodeit.service.basic;
 
+import com.sprint.mission.discodeit.dto.LoginSerachDTO;
 import com.sprint.mission.discodeit.dto.UserStatusCreateDTO;
 import com.sprint.mission.discodeit.dto.UserStatusFindDTO;
 import com.sprint.mission.discodeit.dto.UserStatusUpdateDTO;
@@ -9,7 +10,7 @@ import com.sprint.mission.discodeit.entity.UserStatus;
 import com.sprint.mission.discodeit.repository.BinaryContentRepository;
 import com.sprint.mission.discodeit.repository.UserRepository;
 import com.sprint.mission.discodeit.repository.UserStatusRepository;
-import com.sprint.mission.discodeit.service.UserService;
+import com.sprint.mission.discodeit.service.AuthService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -17,7 +18,7 @@ import java.util.*;
 
 @Service
 @RequiredArgsConstructor
-public class BasicUserService implements UserService {
+public class BasicUserService implements AuthService {
     private final UserRepository userService;
     private final UserStatusRepository userStatus;
     private final BinaryContentRepository bcRepository;
@@ -91,5 +92,23 @@ public class BasicUserService implements UserService {
     @Override
     public Map<UUID, User> getUsers() {
         return userService.getUsers();
+    }
+
+    @Override
+    public UserStatusFindDTO login(LoginSerachDTO dto) {
+        for (User u : userService.getUsers().values()) {
+            if (u.getName().equals(dto.name()) &&
+                    u.getPassword().equals(dto.password())) {
+
+                return new UserStatusFindDTO(
+                        u.getId(),
+                        u.getName(),
+                        u.getEmail(),
+                        u.getProfileImg(),
+                        true
+                );
+            }
+        }
+        return null;
     }
 }
