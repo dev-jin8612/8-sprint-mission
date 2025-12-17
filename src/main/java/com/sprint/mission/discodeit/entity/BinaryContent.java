@@ -1,6 +1,6 @@
 package com.sprint.mission.discodeit.entity;
 
-import com.sprint.mission.discodeit.dto.BinaryCreateDTO;
+import com.sprint.mission.discodeit.dto.user.BinaryCreateDTO;
 import lombok.Getter;
 
 import java.io.File;

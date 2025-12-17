@@ -1,15 +1,9 @@
 package com.sprint.mission.discodeit;
 
-import com.sprint.mission.discodeit.dto.UserStatusCreateDTO;
+import com.sprint.mission.discodeit.dto.user.UserStatusCreateDTO;
 import com.sprint.mission.discodeit.entity.Channel;
 import com.sprint.mission.discodeit.entity.Message;
 import com.sprint.mission.discodeit.entity.User;
-
-import com.sprint.mission.discodeit.entity.UserStatus;
-import com.sprint.mission.discodeit.repository.UserRepository;
-import com.sprint.mission.discodeit.repository.file.FileChannelReposiory;
-import com.sprint.mission.discodeit.repository.file.FileMessageReposiory;
-import com.sprint.mission.discodeit.repository.file.FileUserReposiory;
 
 import com.sprint.mission.discodeit.service.basic.BasicChannelService;
 import com.sprint.mission.discodeit.service.basic.BasicMessageService;

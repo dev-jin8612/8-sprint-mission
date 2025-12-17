@@ -16,7 +16,8 @@ public class ReadStatus extends BasicEntity {
         this.userId = userId;
     }
 
-    public void update(){
+    public Instant update(){
         this.updated = Instant.now();
+        return updated;
     }
 }

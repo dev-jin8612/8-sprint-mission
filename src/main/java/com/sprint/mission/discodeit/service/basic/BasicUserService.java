@@ -1,10 +1,9 @@
 package com.sprint.mission.discodeit.service.basic;
 
-import com.sprint.mission.discodeit.dto.LoginSerachDTO;
-import com.sprint.mission.discodeit.dto.UserStatusCreateDTO;
-import com.sprint.mission.discodeit.dto.UserStatusFindDTO;
-import com.sprint.mission.discodeit.dto.UserStatusUpdateDTO;
-import com.sprint.mission.discodeit.entity.BinaryContent;
+import com.sprint.mission.discodeit.dto.user.LoginSerachDTO;
+import com.sprint.mission.discodeit.dto.user.UserStatusCreateDTO;
+import com.sprint.mission.discodeit.dto.user.UserStatusFindDTO;
+import com.sprint.mission.discodeit.dto.user.UserStatusUpdateDTO;
 import com.sprint.mission.discodeit.entity.User;
 import com.sprint.mission.discodeit.entity.UserStatus;
 import com.sprint.mission.discodeit.repository.BinaryContentRepository;

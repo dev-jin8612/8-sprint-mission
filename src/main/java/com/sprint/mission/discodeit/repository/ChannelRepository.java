@@ -1,8 +1,11 @@
 package com.sprint.mission.discodeit.repository;
 
+import com.sprint.mission.discodeit.dto.ch.FindDTO;
+import com.sprint.mission.discodeit.entity.ChType;
 import com.sprint.mission.discodeit.entity.Channel;
 
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 import java.util.UUID;
 
@@ -11,7 +14,7 @@ public interface ChannelRepository {
     Channel create(Channel channel);
 
     // 정보 수정
-    Channel update(UUID channelId, String channelName, String type);
+    Channel update(UUID channelId, String channelName, ChType type);
 
     // 삭제
     void delete(UUID id);
@@ -23,5 +26,5 @@ public interface ChannelRepository {
     // id로 찾기
     Channel findById(UUID id);
 
-    List<Channel> getChannelList();
+    Map<UUID, Channel> getChannelList();
 }

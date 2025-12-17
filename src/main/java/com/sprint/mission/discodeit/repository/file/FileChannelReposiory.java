@@ -1,5 +1,7 @@
 package com.sprint.mission.discodeit.repository.file;
 
+import com.sprint.mission.discodeit.dto.ch.FindDTO;
+import com.sprint.mission.discodeit.entity.ChType;
 import com.sprint.mission.discodeit.entity.Channel;
 import com.sprint.mission.discodeit.repository.ChannelRepository;
 import org.springframework.stereotype.Repository;
@@ -27,11 +29,11 @@ public class FileChannelReposiory extends SaveLoadHelper implements ChannelRepos
     }
 
     @Override
-    public Channel update(UUID channelId, String channelName, String type) {
+    public Channel update(UUID channelId, String channelName, ChType type) {
         Channel channel = Optional.ofNullable(channels.get(channelId))
                 .orElseThrow(() -> new NoSuchElementException("채널이 없습니다."));
 
-        channel.update(channelName,type);
+        channel.update(channelName, type);
         save(file, channels);
         return channel;
     }
@@ -61,10 +63,8 @@ public class FileChannelReposiory extends SaveLoadHelper implements ChannelRepos
     }
 
     @Override
-    public List<Channel> getChannelList() {
-        List<Channel> ch = new ArrayList<>(channels.values());
-
-        return Optional.ofNullable(ch)
+    public Map<UUID, Channel> getChannelList() {
+        return Optional.ofNullable(channels)
                 .orElse(null);
     }
 }
