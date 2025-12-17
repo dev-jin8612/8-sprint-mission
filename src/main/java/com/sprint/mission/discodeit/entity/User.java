@@ -21,6 +21,8 @@ public class User extends BasicEntity implements Serializable {
     private String email;
     // 프로필 이미지
     private UUID profile;
+    // 현 프로필
+    private UUID profileImg;
 
     // 생성자
     public User(UserStatusCreateDTO createDTO) {
@@ -36,18 +38,23 @@ public class User extends BasicEntity implements Serializable {
     public void update(UserStatusUpdateDTO updateDTO) {
         boolean check =false;
 
-        if (name != null && name.isEmpty() == false) {
+        if (updateDTO.name() != null && updateDTO.name().isEmpty() == false) {
             this.name = updateDTO.name();
             check = true;
         }
 
-        if (password != null && password.isEmpty() == false) {
+        if (updateDTO.password() != null && updateDTO.password().isEmpty() == false) {
             this.password = updateDTO.password();
             check = true;
         }
 
-        if (email != null && email.isEmpty() == false) {
+        if (updateDTO.email() != null && updateDTO.email().isEmpty() == false) {
             this.email = updateDTO.email();
+            check = true;
+        }
+
+        if (updateDTO.profileImg() != null) {
+            this.profileImg = updateDTO.profileImg();
             check = true;
         }
 

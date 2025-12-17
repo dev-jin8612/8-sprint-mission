@@ -23,21 +23,14 @@ public class FileBinaryContentReposiory extends SaveLoadHelper implements Binary
 
     @Override
     public BinaryContent create(BinaryContent binaryContent) {
-        // userid로 찾기 변하게 만들기
-        // 자체적으로 찾아서 쓸일 없을거 같아서
-        bc.put(binaryContent.getUserId(),binaryContent);
+        bc.put(binaryContent.getId(),binaryContent);
         save(file, binaryContent);
         return binaryContent;
     }
 
     @Override
-    public Instant update(UUID userid) {
-        Instant instant = bc.get(id).;
-    }
-
-    @Override
     public void delete(UUID id) {
-
+        bc.remove(id);
     }
 
     @Override

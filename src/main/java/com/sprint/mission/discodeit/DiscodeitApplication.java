@@ -1,5 +1,6 @@
 package com.sprint.mission.discodeit;
 
+import com.sprint.mission.discodeit.dto.UserStatusCreateDTO;
 import com.sprint.mission.discodeit.entity.Channel;
 import com.sprint.mission.discodeit.entity.Message;
 import com.sprint.mission.discodeit.entity.User;
@@ -24,7 +25,8 @@ import java.util.UUID;
 @SpringBootApplication
 public class DiscodeitApplication {
     static User setupUser(BasicUserService userService) {
-        return userService.create("황", "1544", "hwang@mail.com",null);
+        // 반환을 뭐로 해줘야 하나
+        return userService.create(new UserStatusCreateDTO("황","1544","123@gmail.com",null));
     }
 
     static Channel setupChannel(BasicChannelService chService, String chName, List<UUID> inChUsers, String type) {

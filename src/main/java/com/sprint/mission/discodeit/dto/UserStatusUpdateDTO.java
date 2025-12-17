@@ -7,5 +7,5 @@ public record UserStatusUpdateDTO(
         String name,
         String password,
         String email,
-        UUID profileId) {}
+        UUID profileImg) {}
 

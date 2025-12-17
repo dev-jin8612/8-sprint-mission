@@ -3,8 +3,10 @@ package com.sprint.mission.discodeit.service.basic;
 import com.sprint.mission.discodeit.dto.UserStatusCreateDTO;
 import com.sprint.mission.discodeit.dto.UserStatusFindDTO;
 import com.sprint.mission.discodeit.dto.UserStatusUpdateDTO;
+import com.sprint.mission.discodeit.entity.BinaryContent;
 import com.sprint.mission.discodeit.entity.User;
 import com.sprint.mission.discodeit.entity.UserStatus;
+import com.sprint.mission.discodeit.repository.BinaryContentRepository;
 import com.sprint.mission.discodeit.repository.UserRepository;
 import com.sprint.mission.discodeit.repository.UserStatusRepository;
 import com.sprint.mission.discodeit.service.UserService;
@@ -18,7 +20,7 @@ import java.util.*;
 public class BasicUserService implements UserService {
     private final UserRepository userService;
     private final UserStatusRepository userStatus;
-    private final BasicUserService basicUserService;
+    private final BinaryContentRepository bcRepository;
 
     @Override
     public UserStatusCreateDTO create(UserStatusCreateDTO createDTO) {
@@ -37,6 +39,8 @@ public class BasicUserService implements UserService {
 
         userStatus.create(us);
         userService.create(u);
+        // 이거 근데 실제 이미지랑 다른게 좀 필요할거 같은데
+//        bcRepository.create(new BinaryContent());
 
         // 생성 말고 다른 dto? 유저 정보만 있는걸로? 그러면 vo가 낮지 않나?
         return createDTO;
@@ -61,9 +65,8 @@ public class BasicUserService implements UserService {
             throw new IllegalArgumentException("이미 삭제 되었습니다.");
         }
 
-        //BinaryContent(프로필)도 삭제돼게 만들기
-
         userStatus.delete(id);
+        bcRepository.delete(id);
         userService.delete(id);
     }
 
