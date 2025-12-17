@@ -7,6 +7,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.NoSuchElementException;
 import java.util.UUID;
 
 @Service
@@ -27,6 +28,11 @@ public class BasicChannelService implements ChannelService {
 
     @Override
     public void delete(UUID id) {
+        List<Channel> clist = chService.getChannelList();
+
+        if (!clist.containsKey(channelId)) {
+            throw new NoSuchElementException("이미 삭제 되었습니다.");
+        }
         chService.delete(id);
     }
 

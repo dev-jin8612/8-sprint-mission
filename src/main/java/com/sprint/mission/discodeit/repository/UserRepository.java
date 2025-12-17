@@ -1,9 +1,10 @@
 package com.sprint.mission.discodeit.repository;
 
+import com.sprint.mission.discodeit.dto.UserStatusUpdateDTO;
 import com.sprint.mission.discodeit.entity.User;
 
 import java.util.List;
-import java.util.Optional;
+import java.util.Map;
 import java.util.UUID;
 
 public interface UserRepository {
@@ -11,7 +12,7 @@ public interface UserRepository {
     User create(User user);
 
     // 정보 수정
-    User update(UUID userid,String name,String password,String email);
+    User update(UserStatusUpdateDTO updateDTO);
 
     // 삭제
     void delete(UUID id);
@@ -22,5 +23,5 @@ public interface UserRepository {
     // id로 찾기
     User findById(UUID id);
 
-    List<User> getUsers();
+    Map<UUID,User> getUsers();
 }

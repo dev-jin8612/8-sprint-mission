@@ -1,5 +1,7 @@
 package com.sprint.mission.discodeit.entity;
 
+import com.sprint.mission.discodeit.dto.UserStatusCreateDTO;
+import com.sprint.mission.discodeit.dto.UserStatusUpdateDTO;
 import lombok.Getter;
 
 import java.io.Serializable;
@@ -21,31 +23,31 @@ public class User extends BasicEntity implements Serializable {
     private UUID profile;
 
     // 생성자
-    public User(String name, String password, String email, UUID profile) {
+    public User(UserStatusCreateDTO createDTO) {
         super();
-        this.name = name;
-        this.password = password;
-        this.email = email;
+        this.name = createDTO.name();
+        this.password = createDTO.password();
+        this.email = createDTO.email();
         // 일단 랜덤으로 자리만 잡기
-        this.profile=profile;
+        this.profile=createDTO.profileId();
     }
 
     // 수정
-    public void update(String name,String password,String email) {
+    public void update(UserStatusUpdateDTO updateDTO) {
         boolean check =false;
 
         if (name != null && name.isEmpty() == false) {
-            this.name = name;
+            this.name = updateDTO.name();
             check = true;
         }
 
         if (password != null && password.isEmpty() == false) {
-            this.password = password;
+            this.password = updateDTO.password();
             check = true;
         }
 
         if (email != null && email.isEmpty() == false) {
-            this.email = email;
+            this.email = updateDTO.email();
             check = true;
         }
 

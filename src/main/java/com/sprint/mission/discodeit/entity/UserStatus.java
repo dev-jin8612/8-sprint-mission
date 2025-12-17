@@ -14,14 +14,17 @@ public class UserStatus extends BasicEntity {
         this.userId = userId;
     }
 
-    public void update() {
+    public Instant update() {
         this.updated = Instant.now();
+        return updated;
     }
 
-    public void checkLogin() {
+    public boolean checkLogin() {
         long diffSeconds = Instant.now().getEpochSecond() - updated.getEpochSecond();
         if (diffSeconds < 300) {
-            System.out.println("로그인 중입니다.");
+            return true;
+        }else{
+            return false;
         }
     }
 }

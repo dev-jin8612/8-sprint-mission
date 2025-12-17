@@ -38,9 +38,6 @@ public class FileChannelReposiory extends SaveLoadHelper implements ChannelRepos
 
     @Override
     public void delete(UUID channelId) {
-        if (!channels.containsKey(channelId)) {
-            throw new NoSuchElementException("이미 삭제 되었습니다.");
-        }
 
         channels.remove(channelId);
         save(file, channels);

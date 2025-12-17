@@ -1,47 +1,69 @@
 package com.sprint.mission.discodeit.service.basic;
 
+import com.sprint.mission.discodeit.dto.UserStatusCreateDTO;
+import com.sprint.mission.discodeit.dto.UserStatusFindDTO;
+import com.sprint.mission.discodeit.dto.UserStatusUpdateDTO;
 import com.sprint.mission.discodeit.entity.User;
+import com.sprint.mission.discodeit.entity.UserStatus;
 import com.sprint.mission.discodeit.repository.UserRepository;
-import com.sprint.mission.discodeit.repository.file.FileUserReposiory;
+import com.sprint.mission.discodeit.repository.UserStatusRepository;
 import com.sprint.mission.discodeit.service.UserService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
-import java.time.Instant;
-import java.util.List;
-import java.util.NoSuchElementException;
-import java.util.Optional;
-import java.util.UUID;
+import java.util.*;
 
 @Service
 @RequiredArgsConstructor
 public class BasicUserService implements UserService {
     private final UserRepository userService;
+    private final UserStatusRepository userStatus;
+    private final BasicUserService basicUserService;
 
     @Override
-    public User create(String name, String password, String email,UUID profileId) {
-        User user = null;
-
-        if (name != null && name.isEmpty() == false) {
-            if (password != null && password.isEmpty() == false) {
-                if (email != null && email.isEmpty() == false) {
-                    user = new User(name, password, email,profileId);
-                    return userService.create(user);
+    public UserStatusCreateDTO create(UserStatusCreateDTO createDTO) {
+        userService.getUsers().values().forEach(
+                user -> {
+                    if (user.getName().equals(createDTO.name())) {
+                        throw new IllegalArgumentException("이미 존재합니다.");
+                    } else if (user.getEmail().equals(createDTO.email())) {
+                        throw new IllegalArgumentException("이미 존재합니다.");
+                    }
                 }
-            }
-        }
+        );
 
-        return Optional.ofNullable(user)
-                .orElseThrow(() -> new NoSuchElementException("잘못된 형식입니다."));
+        User u = new User(createDTO);
+        UserStatus us = new UserStatus(u.getId());
+
+        userStatus.create(us);
+        userService.create(u);
+
+        // 생성 말고 다른 dto? 유저 정보만 있는걸로? 그러면 vo가 낮지 않나?
+        return createDTO;
     }
 
     @Override
-    public User update(UUID userid, String name, String password, String email) {
-        return userService.update(userid, name, password, email);
+    public UserStatusUpdateDTO update(UserStatusUpdateDTO updateDTO) {
+        if (userService.findById(updateDTO.userid()) == null) {
+            throw new IllegalArgumentException("유저가 없습니다.");
+        }
+
+        userService.update(updateDTO);
+
+        // 다른 dto 반환하게 만들어야 하나?
+        // 유저 정보만 있는걸로? 그러면 vo가 낫지 않나?
+        return updateDTO;
     }
 
     @Override
     public void delete(UUID id) {
+        if (userService.findById(id) == null) {
+            throw new IllegalArgumentException("이미 삭제 되었습니다.");
+        }
+
+        //BinaryContent(프로필)도 삭제돼게 만들기
+
+        userStatus.delete(id);
         userService.delete(id);
     }
 
@@ -51,12 +73,20 @@ public class BasicUserService implements UserService {
     }
 
     @Override
-    public User findById(UUID id) {
-        return userService.findById(id);
+    public UserStatusFindDTO findById(UUID id) {
+        // 온라인 상태 포함해서 내보네기
+        UserStatus us = userStatus.findById(id);
+        User u = userService.findById(id);
+
+        if (u != null) {
+            return new UserStatusFindDTO(u.getId(), u.getName(), u.getEmail(), u.getProfile(), us.checkLogin());
+        }
+
+        return null;
     }
 
     @Override
-    public List<User> getUsers() {
+    public Map<UUID, User> getUsers() {
         return userService.getUsers();
     }
 }
