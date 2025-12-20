@@ -4,6 +4,7 @@ import com.sprint.mission.discodeit.dto.user.UserStatusDTO;
 import com.sprint.mission.discodeit.entity.User;
 import com.sprint.mission.discodeit.repository.UserRepository;
 import jakarta.annotation.PostConstruct;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.stereotype.Repository;
 
@@ -14,15 +15,20 @@ import java.util.*;
 @Repository
 @ConditionalOnProperty(
         name = "discodeit.repository.type",
-        havingValue = "file"
+        havingValue = "file",
+        matchIfMissing = true
 )
 public class FileUserRepository extends SaveLoadHelper implements UserRepository {
-    private static final Path directory = Paths.get(System.getProperty("user.dir"), "data");
-    private static final Path file = Paths.get(String.valueOf(directory), "user.ser");
-    private   Map<UUID, User> users;
+    private final Path directory;
+    private final Path file;
+    private Map<UUID, User> users;
 
-    @PostConstruct
-    public void initRepository() {
+    public FileUserRepository(
+            @Value("${discodeit.repository.file-directory}")
+            String dir
+    ) {
+        this.directory = Paths.get(dir);
+        this.file = directory.resolve("user.ser");
         init(directory);
         users = load(file);
     }
@@ -73,7 +79,7 @@ public class FileUserRepository extends SaveLoadHelper implements UserRepository
     // 유저 리스트 넘기는거 만들기
     // 채널 만들 때 필요
     @Override
-    public Map<UUID,User> getUsers() {
+    public Map<UUID, User> getUsers() {
         return Optional.ofNullable(users)
                 .orElse(null);
     }

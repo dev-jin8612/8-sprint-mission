@@ -6,6 +6,7 @@ import com.sprint.mission.discodeit.entity.ChType;
 import com.sprint.mission.discodeit.entity.Channel;
 import com.sprint.mission.discodeit.repository.ChannelRepository;
 import jakarta.annotation.PostConstruct;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.stereotype.Repository;
 
@@ -16,15 +17,19 @@ import java.util.*;
 @Repository
 @ConditionalOnProperty(
         name = "discodeit.repository.type",
-        havingValue = "file"
+        havingValue = "file",
+        matchIfMissing = true
 )
 public class FileChannelRepository extends SaveLoadHelper implements ChannelRepository {
-    private static final Path directory = Paths.get(System.getProperty("user.dir"), "data");
-    private static final Path file = Paths.get(String.valueOf(directory), "ch.ser");
-    private   Map<UUID, Channel> channels;
+    private final Path directory;
+    private final Path file;
+    private Map<UUID, Channel> channels;
 
-    @PostConstruct
-    public void initRepository() {
+    public FileChannelRepository(
+            @Value("${discodeit.repository.file-directory}") String dir
+    ) {
+        this.directory = Paths.get(dir);
+        this.file = directory.resolve("ch.ser");
         init(directory);
         channels = load(file);
     }
@@ -41,7 +46,7 @@ public class FileChannelRepository extends SaveLoadHelper implements ChannelRepo
         Channel channel = Optional.ofNullable(channels.get(dto.chId()))
                 .orElseThrow(() -> new NoSuchElementException("채널이 없습니다."));
 
-        channel.update(dto.name(),dto.type());
+        channel.update(dto.name(), dto.type());
         save(file, channels);
         return channel;
     }

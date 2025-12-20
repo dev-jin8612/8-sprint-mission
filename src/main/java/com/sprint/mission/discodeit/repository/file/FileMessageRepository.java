@@ -5,6 +5,7 @@ import com.sprint.mission.discodeit.entity.Channel;
 import com.sprint.mission.discodeit.entity.Message;
 import com.sprint.mission.discodeit.repository.MessageRepository;
 import jakarta.annotation.PostConstruct;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.stereotype.Repository;
 
@@ -15,15 +16,19 @@ import java.util.*;
 @Repository
 @ConditionalOnProperty(
         name = "discodeit.repository.type",
-        havingValue = "file"
+        havingValue = "file",
+        matchIfMissing = true
 )
 public class FileMessageRepository extends SaveLoadHelper implements MessageRepository {
-    private static final Path directory = Paths.get(System.getProperty("user.dir"), "data");
-    private static final Path filepath = Paths.get(String.valueOf(directory), "meg.ser");
-    private   Map<UUID, Message> messages;
+    private final Path directory;
+    private final Path filepath;
+    private Map<UUID, Message> messages;
 
-    @PostConstruct
-    public void initRepository() {
+    public FileMessageRepository(
+            @Value("${discodeit.repository.file-directory}") String dir
+    ) {
+        this.directory = Paths.get(dir);
+        this.filepath = directory.resolve("meg.ser");
         init(directory);
         messages = load(filepath);
     }

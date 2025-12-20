@@ -3,6 +3,7 @@ package com.sprint.mission.discodeit.repository.file;
 import com.sprint.mission.discodeit.entity.BinaryContent;
 import com.sprint.mission.discodeit.repository.BinaryContentRepository;
 import jakarta.annotation.PostConstruct;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.stereotype.Repository;
 
@@ -15,15 +16,18 @@ import java.util.UUID;
 @Repository
 @ConditionalOnProperty(
         name = "discodeit.repository.type",
-        havingValue = "file"
+        havingValue = "file",
+        matchIfMissing = true
 )
-public class FileBinaryContentRepository extends SaveLoadHelper implements BinaryContentRepository {
-    private static final Path directory = Paths.get(System.getProperty("user.dir"), "data");
-    private static final Path file = Paths.get(String.valueOf(directory), "bc.ser");
+public class FileBinaryContentRepository extends SaveLoadHelper implements BinaryContentRepository {    private final Path directory;
+    private final Path file;
     private   Map<UUID, BinaryContent> bc;
 
-    @PostConstruct
-    public void initRepository() {
+    public FileBinaryContentRepository(
+            @Value("${discodeit.repository.file-directory}") String dir
+    ) {
+        this.directory = Paths.get(dir);
+        this.file = directory.resolve("bc.ser");
         init(directory);
         bc = load(file);
     }

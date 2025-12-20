@@ -6,6 +6,7 @@ import com.sprint.mission.discodeit.entity.ReadStatus;
 import com.sprint.mission.discodeit.entity.UserStatus;
 import com.sprint.mission.discodeit.repository.ReadStatusRepository;
 import jakarta.annotation.PostConstruct;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.stereotype.Repository;
 
@@ -20,15 +21,19 @@ import java.util.UUID;
 @Repository
 @ConditionalOnProperty(
         name = "discodeit.repository.type",
-        havingValue = "file"
+        havingValue = "file",
+        matchIfMissing = true
 )
 public class FileReadStatusRepository extends SaveLoadHelper implements ReadStatusRepository {
-    private static final Path directory = Paths.get(System.getProperty("user.dir"), "data");
-    private static final Path file = Paths.get(String.valueOf(directory), "read.ser");
-    private   Map<UUID, ReadStatus> read;
+    private final Path directory;
+    private final Path file;
+    private Map<UUID, ReadStatus> read;
 
-    @PostConstruct
-    public void initRepository() {
+    public FileReadStatusRepository(
+            @Value("${discodeit.repository.file-directory}") String dir
+    ) {
+        this.directory = Paths.get(dir);
+        this.file = directory.resolve("read.ser");
         init(directory);
         read = load(file);
     }
@@ -42,7 +47,7 @@ public class FileReadStatusRepository extends SaveLoadHelper implements ReadStat
 
     @Override
     public Instant update(UUID chid) {
-        Instant i= read.get(chid).update();
+        Instant i = read.get(chid).update();
         save(file, read);
         return i;
     }

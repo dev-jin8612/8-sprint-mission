@@ -44,8 +44,6 @@ public class DiscodeitApplication {
     }
 
     public static void main(String[] args) {
-        SpringApplication.run(DiscodeitApplication.class, args);
-
         ConfigurableApplicationContext context = SpringApplication.run(DiscodeitApplication.class, args);
 
         System.out.println("_________________구분선, 유저__________________");
@@ -73,16 +71,16 @@ public class DiscodeitApplication {
             uList.forEach(user -> System.out.println(user.getName()));
 
             // 삭제
-//            test.delete(testUser1.userid());
+            test.delete(testUser1.userid());
 
-            // 삭제 확인
-//            UserStatusFindDTO checkU = test.findById(testUser1.userid());
-//
-//            if (checkU != null) {
-//                System.out.println("삭제 안됐습니다.");
-//            } else {
-//                System.out.println("삭제 되었습니다.");
-//            }
+             // 삭제 확인
+            UserStatusFindDTO checkU = test.findById(testUser1.userid());
+
+            if (checkU != null) {
+                System.out.println("삭제 안됐습니다.");
+            } else {
+                System.out.println("삭제 되었습니다.");
+            }
         }
 
         System.out.println("_________________구분선, 채널__________________");
@@ -107,15 +105,15 @@ public class DiscodeitApplication {
 
         }
         // 삭제
-//            cTest.delete(cTest1.getId());
-//
-//        // 삭제 확인
-//        FindDTO checkC = cTest.findById(cTest1.getId());
-//        if (checkC != null) {
-//            System.out.println("삭제 안됐습니다.");
-//        } else {
-//            System.out.println("삭제 되었습니다.");
-//        }
+            cTest.delete(cTest1.getId());
+
+        // 삭제 확인
+        FindDTO checkC = cTest.findById(cTest1.getId());
+        if (checkC != null) {
+            System.out.println("삭제 안됐습니다.");
+        } else {
+            System.out.println("삭제 되었습니다.");
+        }
 
 
         System.out.println("_________________구분선, 메세지__________________");
