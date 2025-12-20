@@ -1,5 +1,6 @@
 package com.sprint.mission.discodeit.repository;
 
+import com.sprint.mission.discodeit.dto.meg.MegUpdateDTO;
 import com.sprint.mission.discodeit.entity.Channel;
 import com.sprint.mission.discodeit.entity.Message;
 
@@ -12,7 +13,7 @@ public interface MessageRepository {
     Message create(Message message);
 
     // 정보 수정
-    Message update(UUID mesUid, String contents);
+    Message update(MegUpdateDTO dto);
 
     // 삭제
     void delete(UUID id);

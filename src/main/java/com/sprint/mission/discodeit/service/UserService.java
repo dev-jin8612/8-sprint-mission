@@ -1,8 +1,8 @@
 package com.sprint.mission.discodeit.service;
 
 import com.sprint.mission.discodeit.dto.user.UserStatusCreateDTO;
+import com.sprint.mission.discodeit.dto.user.UserStatusDTO;
 import com.sprint.mission.discodeit.dto.user.UserStatusFindDTO;
-import com.sprint.mission.discodeit.dto.user.UserStatusUpdateDTO;
 import com.sprint.mission.discodeit.entity.User;
 
 import java.util.List;
@@ -15,7 +15,7 @@ public interface UserService {
     UserStatusCreateDTO create(UserStatusCreateDTO createDTO);
 
     // 정보 수정
-    UserStatusUpdateDTO update(UserStatusUpdateDTO updateDTO);
+    UserStatusDTO update(UserStatusDTO updateDTO);
 
     // 삭제
     void delete(UUID id);

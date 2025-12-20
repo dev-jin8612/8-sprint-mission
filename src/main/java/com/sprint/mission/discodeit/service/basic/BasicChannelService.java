@@ -48,7 +48,7 @@ public class BasicChannelService implements ChannelService {
     @Override
     public Channel update(ChUpdateDTO dto) {
         if (dto.type() == ChType.PUBLIC) {
-            return chService.update(dto.chId(), dto.name(), dto.type());
+            return chService.update(dto);
         }
         return null;
     }

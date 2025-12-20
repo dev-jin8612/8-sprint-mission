@@ -1,4 +1,9 @@
 package com.sprint.mission.discodeit.dto.meg;
 
-public record MegUpdateDTO() {
+import java.util.UUID;
+
+public record MegUpdateDTO(
+        UUID mesUid,
+        String contents
+) {
 }

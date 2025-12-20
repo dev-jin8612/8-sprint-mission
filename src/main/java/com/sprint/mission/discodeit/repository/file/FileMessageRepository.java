@@ -1,8 +1,11 @@
 package com.sprint.mission.discodeit.repository.file;
 
+import com.sprint.mission.discodeit.dto.meg.MegUpdateDTO;
 import com.sprint.mission.discodeit.entity.Channel;
 import com.sprint.mission.discodeit.entity.Message;
 import com.sprint.mission.discodeit.repository.MessageRepository;
+import jakarta.annotation.PostConstruct;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.stereotype.Repository;
 
 import java.nio.file.Path;
@@ -10,12 +13,17 @@ import java.nio.file.Paths;
 import java.util.*;
 
 @Repository
-public class FileMessageReposiory extends SaveLoadHelper implements MessageRepository {
+@ConditionalOnProperty(
+        name = "discodeit.repository.type",
+        havingValue = "file"
+)
+public class FileMessageRepository extends SaveLoadHelper implements MessageRepository {
     private static final Path directory = Paths.get(System.getProperty("user.dir"), "data");
     private static final Path filepath = Paths.get(String.valueOf(directory), "meg.ser");
-    private final Map<UUID, Message> messages;
+    private   Map<UUID, Message> messages;
 
-    public FileMessageReposiory() {
+    @PostConstruct
+    public void initRepository() {
         init(directory);
         messages = load(filepath);
     }
@@ -31,11 +39,11 @@ public class FileMessageReposiory extends SaveLoadHelper implements MessageRepos
 
     // 메세지 수정
     @Override
-    public Message update(UUID mesUid, String contents) {
-        Message m = Optional.ofNullable(messages.get(mesUid))
+    public Message update(MegUpdateDTO dto) {
+        Message m = Optional.ofNullable(messages.get(dto.mesUid()))
                 .orElseThrow(() -> new NoSuchElementException("메세지가 없습니다."));
 
-        m.update(contents);
+        m.update(dto.contents());
         save(filepath, messages);
 
         return m;

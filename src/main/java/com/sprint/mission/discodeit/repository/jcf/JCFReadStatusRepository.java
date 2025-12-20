@@ -1,41 +1,41 @@
-package com.sprint.mission.discodeit.repository.file;
+package com.sprint.mission.discodeit.repository.jcf;
 
-import com.sprint.mission.discodeit.dto.ch.ReadStatusCreateDTO;
-import com.sprint.mission.discodeit.entity.Channel;
 import com.sprint.mission.discodeit.entity.ReadStatus;
-import com.sprint.mission.discodeit.entity.UserStatus;
 import com.sprint.mission.discodeit.repository.ReadStatusRepository;
+import jakarta.annotation.PostConstruct;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.stereotype.Repository;
 
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.time.Instant;
-import java.util.List;
+import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
 import java.util.UUID;
 
 @Repository
-public class FileReadStatusReposiory extends SaveLoadHelper implements ReadStatusRepository {
-    private static final Path directory = Paths.get(System.getProperty("user.dir"), "data");
-    private static final Path file = Paths.get(String.valueOf(directory), "read.ser");
-    private final Map<UUID, ReadStatus> read;
+@ConditionalOnProperty(
+        name = "discodeit.repository.type",
+        havingValue = "jcf"
+)
+public class JCFReadStatusRepository implements ReadStatusRepository {
+    private   Map<UUID, ReadStatus> read;
 
-    public FileReadStatusReposiory() {
-        init(directory);
-        read = load(file);
+    public JCFReadStatusRepository() {
+        this.read = new HashMap<>();
     }
 
     @Override
     public ReadStatus create(ReadStatus dto) {
         read.put(dto.getChId(), dto);
-        save(file, read);
         return dto;
     }
 
     @Override
     public Instant update(UUID chid) {
-        return read.get(chid).update();
+        Instant i= read.get(chid).update();
+        return i;
     }
 
     @Override

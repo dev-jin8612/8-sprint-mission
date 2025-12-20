@@ -6,5 +6,6 @@ import java.util.UUID;
 
 public record BinaryCreateDTO(
         Map<UUID, File> profileImg,
-        Map<UUID, File> megfile
+        Map<UUID, File> megfile,
+        UUID megId
 ) {}

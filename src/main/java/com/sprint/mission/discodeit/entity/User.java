@@ -1,7 +1,7 @@
 package com.sprint.mission.discodeit.entity;
 
 import com.sprint.mission.discodeit.dto.user.UserStatusCreateDTO;
-import com.sprint.mission.discodeit.dto.user.UserStatusUpdateDTO;
+import com.sprint.mission.discodeit.dto.user.UserStatusDTO;
 import lombok.Getter;
 
 import java.io.Serializable;
@@ -35,7 +35,7 @@ public class User extends BasicEntity implements Serializable {
     }
 
     // 수정
-    public void update(UserStatusUpdateDTO updateDTO) {
+    public void update(UserStatusDTO updateDTO) {
         boolean check =false;
 
         if (updateDTO.name() != null && updateDTO.name().isEmpty() == false) {

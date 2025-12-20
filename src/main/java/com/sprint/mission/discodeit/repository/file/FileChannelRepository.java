@@ -1,9 +1,12 @@
 package com.sprint.mission.discodeit.repository.file;
 
+import com.sprint.mission.discodeit.dto.ch.ChUpdateDTO;
 import com.sprint.mission.discodeit.dto.ch.FindDTO;
 import com.sprint.mission.discodeit.entity.ChType;
 import com.sprint.mission.discodeit.entity.Channel;
 import com.sprint.mission.discodeit.repository.ChannelRepository;
+import jakarta.annotation.PostConstruct;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.stereotype.Repository;
 
 import java.nio.file.Path;
@@ -11,12 +14,17 @@ import java.nio.file.Paths;
 import java.util.*;
 
 @Repository
-public class FileChannelReposiory extends SaveLoadHelper implements ChannelRepository {
+@ConditionalOnProperty(
+        name = "discodeit.repository.type",
+        havingValue = "file"
+)
+public class FileChannelRepository extends SaveLoadHelper implements ChannelRepository {
     private static final Path directory = Paths.get(System.getProperty("user.dir"), "data");
     private static final Path file = Paths.get(String.valueOf(directory), "ch.ser");
-    private final Map<UUID, Channel> channels;
+    private   Map<UUID, Channel> channels;
 
-    public FileChannelReposiory() {
+    @PostConstruct
+    public void initRepository() {
         init(directory);
         channels = load(file);
     }
@@ -29,11 +37,11 @@ public class FileChannelReposiory extends SaveLoadHelper implements ChannelRepos
     }
 
     @Override
-    public Channel update(UUID channelId, String channelName, ChType type) {
-        Channel channel = Optional.ofNullable(channels.get(channelId))
+    public Channel update(ChUpdateDTO dto) {
+        Channel channel = Optional.ofNullable(channels.get(dto.chId()))
                 .orElseThrow(() -> new NoSuchElementException("채널이 없습니다."));
 
-        channel.update(channelName, type);
+        channel.update(dto.name(),dto.type());
         save(file, channels);
         return channel;
     }

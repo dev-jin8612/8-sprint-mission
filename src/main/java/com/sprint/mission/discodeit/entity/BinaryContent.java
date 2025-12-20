@@ -3,12 +3,15 @@ package com.sprint.mission.discodeit.entity;
 import com.sprint.mission.discodeit.dto.user.BinaryCreateDTO;
 import lombok.Getter;
 
+import java.io.Serializable;
 import java.io.File;
 import java.util.Map;
 import java.util.UUID;
 
 @Getter
-public class BinaryContent {
+public class BinaryContent implements Serializable {
+    private static final long serialVersionUID = 1L;
+
     private final UUID id;
     // 선택적 프로필 대체할려면 이미지를 여러개 받아야 겠지?
     private Map<UUID, File> profileImg;

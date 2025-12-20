@@ -1,13 +1,18 @@
 package com.sprint.mission.discodeit.repository.jcf;
 
+import com.sprint.mission.discodeit.dto.ch.ChUpdateDTO;
 import com.sprint.mission.discodeit.entity.Channel;
-import com.sprint.mission.discodeit.entity.Message;
 import com.sprint.mission.discodeit.repository.ChannelRepository;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.stereotype.Repository;
 
 import java.util.*;
 
 @Repository
+@ConditionalOnProperty(
+        name = "discodeit.repository.type",
+        havingValue = "jcf"
+)
 public class JCFChannelRepository implements ChannelRepository {
     private final Map<UUID, Channel> channels;
 
@@ -22,11 +27,11 @@ public class JCFChannelRepository implements ChannelRepository {
     }
 
     @Override
-    public Channel update(UUID channelId, String channelName, String type) {
-        Channel channel = Optional.ofNullable(channels.get(channelId))
+    public Channel update(ChUpdateDTO dto) {
+        Channel channel = Optional.ofNullable(channels.get(dto.chId()))
                 .orElseThrow(() -> new NoSuchElementException("채널이 없습니다."));
 
-        channel.update(channelName,type);
+        channel.update(dto.name(),dto.type());
         return channel;
     }
 
@@ -57,10 +62,8 @@ public class JCFChannelRepository implements ChannelRepository {
     }
 
     @Override
-    public List<Channel> getChannelList() {
-        List<Channel> ch = new ArrayList<>(channels.values());
-
-        return Optional.ofNullable(ch)
+    public Map<UUID,Channel>  getChannelList() {
+        return Optional.ofNullable(channels)
                 .orElse(null);
     }
 }

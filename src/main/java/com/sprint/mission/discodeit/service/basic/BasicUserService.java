@@ -2,8 +2,8 @@ package com.sprint.mission.discodeit.service.basic;
 
 import com.sprint.mission.discodeit.dto.user.LoginSerachDTO;
 import com.sprint.mission.discodeit.dto.user.UserStatusCreateDTO;
+import com.sprint.mission.discodeit.dto.user.UserStatusDTO;
 import com.sprint.mission.discodeit.dto.user.UserStatusFindDTO;
-import com.sprint.mission.discodeit.dto.user.UserStatusUpdateDTO;
 import com.sprint.mission.discodeit.entity.User;
 import com.sprint.mission.discodeit.entity.UserStatus;
 import com.sprint.mission.discodeit.repository.BinaryContentRepository;
@@ -23,7 +23,7 @@ public class BasicUserService implements AuthService {
     private final BinaryContentRepository bcRepository;
 
     @Override
-    public UserStatusCreateDTO create(UserStatusCreateDTO createDTO) {
+    public UserStatusDTO create(UserStatusCreateDTO createDTO) {
         userService.getUsers().values().forEach(
                 user -> {
                     if (user.getName().equals(createDTO.name())) {
@@ -37,17 +37,26 @@ public class BasicUserService implements AuthService {
         User u = new User(createDTO);
         UserStatus us = new UserStatus(u.getId());
 
+        UserStatusDTO usDto = new UserStatusDTO(
+                u.getId(),
+                u.getName(),
+                u.getPassword(),
+                u.getEmail(),
+                u.getProfileImg()
+        );
+
         userStatus.create(us);
         userService.create(u);
         // 이거 근데 실제 이미지랑 다른게 좀 필요할거 같은데
 //        bcRepository.create(new BinaryContent());
 
         // 생성 말고 다른 dto? 유저 정보만 있는걸로? 그러면 vo가 낮지 않나?
-        return createDTO;
+//        return createDTO;
+        return usDto;
     }
 
     @Override
-    public UserStatusUpdateDTO update(UserStatusUpdateDTO updateDTO) {
+    public UserStatusDTO update(UserStatusDTO updateDTO) {
         if (userService.findById(updateDTO.userid()) == null) {
             throw new IllegalArgumentException("유저가 없습니다.");
         }
@@ -78,7 +87,7 @@ public class BasicUserService implements AuthService {
     @Override
     public UserStatusFindDTO findById(UUID id) {
         // 온라인 상태 포함해서 내보네기
-        UserStatus us = userStatus.findById(id);
+        UserStatus us = userStatus.find(id);
         User u = userService.findById(id);
 
         if (u != null) {

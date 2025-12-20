@@ -1,13 +1,18 @@
 package com.sprint.mission.discodeit.repository.jcf;
 
+import com.sprint.mission.discodeit.dto.user.UserStatusDTO;
 import com.sprint.mission.discodeit.entity.User;
 import com.sprint.mission.discodeit.repository.UserRepository;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.stereotype.Repository;
-
 
 import java.util.*;
 
 @Repository
+@ConditionalOnProperty(
+        name = "discodeit.repository.type",
+        havingValue = "jcf"
+)
 public class JCFUserRepository implements UserRepository {
     private final Map<UUID, User> users;
 
@@ -24,11 +29,11 @@ public class JCFUserRepository implements UserRepository {
 
     // 사람 수정
     @Override
-    public User update(UUID userid,String name,String password,String email) {
-        User user = Optional.ofNullable(users.get(userid))
+    public User update(UserStatusDTO dto) {
+        User user = Optional.ofNullable(users.get(dto.userid()))
                 .orElseThrow(() -> new NoSuchElementException("채널이 없습니다."));
 
-        user.update(name,password,email);
+        user.update(dto);
         return user;
     }
 
@@ -63,10 +68,8 @@ public class JCFUserRepository implements UserRepository {
     // 유저 리스트 넘기는거 만들기
     // 채널 만들 때 필요
     @Override
-    public List<User> getUsers() {
-        List<User> user = new ArrayList<>(users.values());
-
-        return Optional.ofNullable(user)
+    public Map<UUID,User>  getUsers() {
+        return Optional.ofNullable(users)
                 .orElse(null);
     }
 }

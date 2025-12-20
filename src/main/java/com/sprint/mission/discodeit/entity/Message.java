@@ -1,9 +1,12 @@
 package com.sprint.mission.discodeit.entity;
 
+import com.sprint.mission.discodeit.dto.meg.MegCreateDTO;
 import lombok.Getter;
 
 import java.io.Serializable;
 import java.time.Instant;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.UUID;
 
 @Getter
@@ -16,12 +19,18 @@ public class Message extends BasicEntity implements Serializable {
     private UUID sender;
     // 보낸 방번호
     private UUID roomId;
+    // Binary
+    List<UUID> attchmentIds;
 
-    public Message(String m, UUID userId, UUID chId) {
+//    public Message(String m, UUID userId, UUID chId, UUID attchmentId) {
+    public Message(MegCreateDTO dto) {
         super();
-        meg = m;
-        sender = userId;
-        roomId = chId;
+        meg = dto.m();
+        sender = dto.userId();
+        roomId = dto.chId();
+
+        attchmentIds = new ArrayList<>();
+        attchmentIds.add(dto.attchmentId());
     }
 
     // 수정

@@ -1,8 +1,10 @@
 package com.sprint.mission.discodeit.repository.file;
 
-import com.sprint.mission.discodeit.dto.user.UserStatusUpdateDTO;
+import com.sprint.mission.discodeit.dto.user.UserStatusDTO;
 import com.sprint.mission.discodeit.entity.User;
 import com.sprint.mission.discodeit.repository.UserRepository;
+import jakarta.annotation.PostConstruct;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.stereotype.Repository;
 
 import java.nio.file.Path;
@@ -10,12 +12,17 @@ import java.nio.file.Paths;
 import java.util.*;
 
 @Repository
-public class FileUserReposiory extends SaveLoadHelper implements UserRepository {
+@ConditionalOnProperty(
+        name = "discodeit.repository.type",
+        havingValue = "file"
+)
+public class FileUserRepository extends SaveLoadHelper implements UserRepository {
     private static final Path directory = Paths.get(System.getProperty("user.dir"), "data");
     private static final Path file = Paths.get(String.valueOf(directory), "user.ser");
-    private final Map<UUID, User> users;
+    private   Map<UUID, User> users;
 
-    public FileUserReposiory() {
+    @PostConstruct
+    public void initRepository() {
         init(directory);
         users = load(file);
     }
@@ -30,7 +37,7 @@ public class FileUserReposiory extends SaveLoadHelper implements UserRepository 
 
     // 사람 수정
     @Override
-    public User update(UserStatusUpdateDTO updateDTO) {
+    public User update(UserStatusDTO updateDTO) {
         User user = findById(updateDTO.userid());
         user.update(updateDTO);
         save(file, users);

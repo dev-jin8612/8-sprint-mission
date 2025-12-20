@@ -14,7 +14,7 @@ public interface BinaryContentRepository {
     // 삭제, 유저 삭제시 같이
     void delete(UUID id);
 
-    BinaryContent findById(UUID id);
+    BinaryContent find(UUID id);
 
-    Map<UUID, BinaryContent> findAll();
+    Map<UUID, BinaryContent> findAllByIdIn();
 }
