@@ -1,43 +1,45 @@
 package com.sprint.mission.discodeit.entity;
 
-import com.sprint.mission.discodeit.dto.meg.MegCreateDTO;
 import lombok.Getter;
 
 import java.io.Serializable;
 import java.time.Instant;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
 @Getter
-public class Message extends BasicEntity implements Serializable {
+public class Message implements Serializable {
     private static final long serialVersionUID = 1L;
 
-    //메세지 내용
-    private String meg;
-    //보낸 사람
-    private UUID sender;
-    // 보낸 방번호
-    private UUID roomId;
-    // Binary
-    List<UUID> attchmentIds;
+    private UUID id;
+    private Instant createdAt;
+    private Instant updatedAt;
+    //
+    private String content;
+    //
+    private UUID channelId;
+    private UUID authorId;
+    private List<UUID> attachmentIds;
 
-//    public Message(String m, UUID userId, UUID chId, UUID attchmentId) {
-    public Message(MegCreateDTO dto) {
-        super();
-        meg = dto.m();
-        sender = dto.userId();
-        roomId = dto.chId();
-
-        attchmentIds = new ArrayList<>();
-        attchmentIds.add(dto.attchmentId());
+    public Message(String content, UUID channelId, UUID authorId, List<UUID> attachmentIds) {
+        this.id = UUID.randomUUID();
+        this.createdAt = Instant.now();
+        //
+        this.content = content;
+        this.channelId = channelId;
+        this.authorId = authorId;
+        this.attachmentIds = attachmentIds;
     }
 
-    // 수정
-    public void update(String m) {
-        if (meg != null && meg.trim().length() > 0) {
-            meg = m;
-            updated = Instant.now();
+    public void update(String newContent) {
+        boolean anyValueUpdated = false;
+        if (newContent != null && !newContent.equals(this.content)) {
+            this.content = newContent;
+            anyValueUpdated = true;
+        }
+
+        if (anyValueUpdated) {
+            this.updatedAt = Instant.now();
         }
     }
 }

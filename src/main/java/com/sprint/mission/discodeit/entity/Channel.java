@@ -4,49 +4,41 @@ import lombok.Getter;
 
 import java.io.Serializable;
 import java.time.Instant;
-import java.util.*;
+import java.util.UUID;
 
 @Getter
-public class Channel extends BasicEntity implements Serializable {
+public class Channel implements Serializable {
     private static final long serialVersionUID = 1L;
-
-    // 방이름
+    private UUID id;
+    private Instant createdAt;
+    private Instant updatedAt;
+    //
+    private ChannelType type;
     private String name;
-    // 참가자 명단
-    private Set<UUID> users;
-    // 타입
-    private ChType type;
+    private String description;
 
-    // 생성자
-    public Channel(String name, List<UUID> users, ChType type) {
-        super();
-        this.users = new HashSet<>(users);
-        this.name = name;
+    public Channel(ChannelType type, String name, String description) {
+        this.id = UUID.randomUUID();
+        this.createdAt = Instant.now();
+        //
         this.type = type;
+        this.name = name;
+        this.description = description;
     }
 
-    // 수정
-    public void update(String name, ChType type) {
-        boolean check = false;
-
-        if (name != null && name.isEmpty() == false) {
-            this.name = name;
-            check = true;
+    public void update(String newName, String newDescription) {
+        boolean anyValueUpdated = false;
+        if (newName != null && !newName.equals(this.name)) {
+            this.name = newName;
+            anyValueUpdated = true;
+        }
+        if (newDescription != null && !newDescription.equals(this.description)) {
+            this.description = newDescription;
+            anyValueUpdated = true;
         }
 
-        if (type != null) {
-            try {
-                this.type = type;
-                check = true;
-            } catch (IllegalArgumentException e) {
-                // 뭔가 실패 했다는 메세지 나와야 할거 같은데
-                check = false;
-            }
-        }
-
-        if (check == false) {
-            this.updated = Instant.now();
+        if (anyValueUpdated) {
+            this.updatedAt = Instant.now();
         }
     }
-
 }

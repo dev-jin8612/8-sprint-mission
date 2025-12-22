@@ -1,27 +1,17 @@
 package com.sprint.mission.discodeit.service;
 
-import com.sprint.mission.discodeit.dto.meg.MegBCDTO;
-import com.sprint.mission.discodeit.dto.meg.MegUpdateDTO;
+import com.sprint.mission.discodeit.dto.request.BinaryContentCreateRequest;
+import com.sprint.mission.discodeit.dto.request.MessageCreateRequest;
+import com.sprint.mission.discodeit.dto.request.MessageUpdateRequest;
 import com.sprint.mission.discodeit.entity.Message;
 
 import java.util.List;
 import java.util.UUID;
 
 public interface MessageService {
-    // 등록
-    Message create(MegBCDTO dto);
-
-    // 정보 수정
-    Message update(MegUpdateDTO dto);
-
-    // 삭제
-    void delete(UUID id);
-
-    // 내용으로 찾기
-    List<Message> searchByContent(List<String> contents);
-
-    // id로 찾기
-    Message findById(UUID id);
-
-    List<Message> getMessages();
+    Message create(MessageCreateRequest messageCreateRequest, List<BinaryContentCreateRequest> binaryContentCreateRequests);
+    Message find(UUID messageId);
+    List<Message> findAllByChannelId(UUID channelId);
+    Message update(UUID messageId, MessageUpdateRequest request);
+    void delete(UUID messageId);
 }

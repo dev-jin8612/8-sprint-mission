@@ -1,7 +1,5 @@
 package com.sprint.mission.discodeit.repository.jcf;
 
-import com.sprint.mission.discodeit.dto.meg.MegUpdateDTO;
-import com.sprint.mission.discodeit.entity.Channel;
 import com.sprint.mission.discodeit.entity.Message;
 import com.sprint.mission.discodeit.repository.MessageRepository;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
@@ -9,66 +7,44 @@ import org.springframework.stereotype.Repository;
 
 import java.util.*;
 
+@ConditionalOnProperty(name = "discodeit.repository.type", havingValue = "jcf", matchIfMissing = true)
 @Repository
-@ConditionalOnProperty(
-        name = "discodeit.repository.type",
-        havingValue = "jcf"
-)
 public class JCFMessageRepository implements MessageRepository {
-    private final Map<UUID, Message> messages;
+    private final Map<UUID, Message> data;
 
     public JCFMessageRepository() {
-        this.messages = new HashMap<>();
-    }
-
-    // 메세지 추가
-    @Override
-    public Message create(Message m) {
-        messages.put(m.getId(), m);
-        return m;
-    }
-
-    // 메세지 수정
-    @Override
-    public Message update(MegUpdateDTO dto) {
-        Message m = Optional.ofNullable(messages.get(dto.mesUid()))
-                .orElseThrow(() -> new NoSuchElementException("메세지가 없습니다."));
-
-        m.update(dto.contents());
-        return m;
-    }
-
-    // 메세지 삭제
-    @Override
-    public void delete(UUID mesUId) {
-        if (!messages.containsKey(mesUId)) {
-            throw new NoSuchElementException("이미 삭제 되었습니다.");
-        }
-        messages.remove(mesUId);
-    }
-
-    // 메세지 찾아서 단일객체 넘기기
-    @Override
-    public List<Message> searchByContent(List<String> contents) {
-        List<Message> meg = messages.values().stream()
-                .filter(m ->
-                        contents.stream().anyMatch(txt -> m.getMeg().contains(txt))
-                ).toList();
-
-        return Optional.ofNullable(meg)
-                .orElse(null);
+        this.data = new HashMap<>();
     }
 
     @Override
-    public Message findById(UUID id) {
-        return Optional.ofNullable(messages.get(id))
-                .orElse(null);
+    public Message save(Message message) {
+        this.data.put(message.getId(), message);
+        return message;
     }
 
     @Override
-    public List<Message> getMessages() {
-        List<Message> meg = new ArrayList<>(messages.values());
-        return Optional.ofNullable(meg)
-                .orElse(null);
+    public Optional<Message> findById(UUID id) {
+        return Optional.ofNullable(this.data.get(id));
+    }
+
+    @Override
+    public List<Message> findAllByChannelId(UUID channelId) {
+        return this.data.values().stream().filter(message -> message.getChannelId().equals(channelId)).toList();
+    }
+
+    @Override
+    public boolean existsById(UUID id) {
+        return this.data.containsKey(id);
+    }
+
+    @Override
+    public void deleteById(UUID id) {
+        this.data.remove(id);
+    }
+
+    @Override
+    public void deleteAllByChannelId(UUID channelId) {
+        this.findAllByChannelId(channelId)
+                .forEach(message -> this.deleteById(message.getId()));
     }
 }

@@ -1,73 +1,94 @@
 package com.sprint.mission.discodeit.service.basic;
 
-import com.sprint.mission.discodeit.dto.meg.MegBCDTO;
-import com.sprint.mission.discodeit.dto.meg.MegCreateDTO;
-import com.sprint.mission.discodeit.dto.meg.MegUpdateDTO;
-import com.sprint.mission.discodeit.dto.user.BinaryCreateDTO;
+import com.sprint.mission.discodeit.dto.request.BinaryContentCreateRequest;
+import com.sprint.mission.discodeit.dto.request.MessageCreateRequest;
+import com.sprint.mission.discodeit.dto.request.MessageUpdateRequest;
 import com.sprint.mission.discodeit.entity.BinaryContent;
 import com.sprint.mission.discodeit.entity.Message;
 import com.sprint.mission.discodeit.repository.BinaryContentRepository;
+import com.sprint.mission.discodeit.repository.ChannelRepository;
 import com.sprint.mission.discodeit.repository.MessageRepository;
+import com.sprint.mission.discodeit.repository.UserRepository;
 import com.sprint.mission.discodeit.service.MessageService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
 import java.util.NoSuchElementException;
-import java.util.Optional;
 import java.util.UUID;
 
-@Service
 @RequiredArgsConstructor
+@Service
 public class BasicMessageService implements MessageService {
-    private final MessageRepository messageService;
-    private final BinaryContentRepository bcRepository;
+    private final MessageRepository messageRepository;
+    //
+    private final ChannelRepository channelRepository;
+    private final UserRepository userRepository;
+    private final BinaryContentRepository binaryContentRepository;
 
     @Override
-    public Message create(MegBCDTO dto) {
-        Message m = null;
+    public Message create(MessageCreateRequest messageCreateRequest, List<BinaryContentCreateRequest> binaryContentCreateRequests) {
+        UUID channelId = messageCreateRequest.channelId();
+        UUID authorId = messageCreateRequest.authorId();
 
-        if (dto.ch().getUsers().stream().anyMatch(u -> u.equals(dto.userId()))) {
-            if (dto.contents() != null && dto.contents().trim().length() > 0) {
-
-                BinaryCreateDTO bcDto = new BinaryCreateDTO(dto.profileImg(), dto.megfile(),null);
-                BinaryContent bc = new BinaryContent(bcDto);
-                bcRepository.create(bc);
-
-                MegCreateDTO mc = new MegCreateDTO(dto.contents(),dto.userId(),dto.ch().getId(),bc.getId());
-                m = new Message(mc);
-
-                messageService.create(m);
-                System.out.println("메세지가 생성 됐습니다.");
-            }
+        if (!channelRepository.existsById(channelId)) {
+            throw new NoSuchElementException("Channel with id " + channelId + " does not exist");
+        }
+        if (!userRepository.existsById(authorId)) {
+            throw new NoSuchElementException("Author with id " + authorId + " does not exist");
         }
 
-        return m;
+        List<UUID> attachmentIds = binaryContentCreateRequests.stream()
+                .map(attachmentRequest -> {
+                    String fileName = attachmentRequest.fileName();
+                    String contentType = attachmentRequest.contentType();
+                    byte[] bytes = attachmentRequest.bytes();
+
+                    BinaryContent binaryContent = new BinaryContent(fileName, (long) bytes.length, contentType, bytes);
+                    BinaryContent createdBinaryContent = binaryContentRepository.save(binaryContent);
+                    return createdBinaryContent.getId();
+                })
+                .toList();
+
+        String content = messageCreateRequest.content();
+        Message message = new Message(
+                content,
+                channelId,
+                authorId,
+                attachmentIds
+        );
+        return messageRepository.save(message);
     }
 
     @Override
-    public Message update(MegUpdateDTO dto) {
-        return messageService.update(dto);
+    public Message find(UUID messageId) {
+        return messageRepository.findById(messageId)
+                .orElseThrow(() -> new NoSuchElementException("Message with id " + messageId + " not found"));
     }
 
     @Override
-    public void delete(UUID id) {
-        //binary 삭제 추가하기
-        messageService.delete(id);
+    public List<Message> findAllByChannelId(UUID channelId) {
+        return messageRepository.findAllByChannelId(channelId).stream()
+                .toList();
     }
 
     @Override
-    public List<Message> searchByContent(List<String> contents) {
-        return messageService.searchByContent(contents);
+    public Message update(UUID messageId, MessageUpdateRequest request) {
+        String newContent = request.newContent();
+        Message message = messageRepository.findById(messageId)
+                .orElseThrow(() -> new NoSuchElementException("Message with id " + messageId + " not found"));
+        message.update(newContent);
+        return messageRepository.save(message);
     }
 
     @Override
-    public Message findById(UUID id) {
-        return messageService.findById(id);
-    }
+    public void delete(UUID messageId) {
+        Message message = messageRepository.findById(messageId)
+                .orElseThrow(() -> new NoSuchElementException("Message with id " + messageId + " not found"));
 
-    @Override
-    public List<Message> getMessages() {
-        return messageService.getMessages();
+        message.getAttachmentIds()
+                .forEach(binaryContentRepository::deleteById);
+
+        messageRepository.deleteById(messageId);
     }
 }
