@@ -1,6 +1,12 @@
 spring:
   application:
     name: discodeit
+  servlet:
+    multipart:
+      enabled: true               # 파일 업로드 활성화 여부 (기본값 true)
+      max-file-size: 10MB         # 업로드 가능한 개별 파일 최대 크기
+      max-request-size: 20MB      # 전체 요청의 최대 크기
+      location: /tmp
 
 discodeit:
   repository:

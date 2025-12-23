@@ -68,6 +68,7 @@ public class BasicUserService implements UserService {
                 .orElseThrow(() -> new NoSuchElementException("User with id " + userId + " not found"));
     }
 
+
     @Override
     public List<UserDto> findAll() {
         return userRepository.findAll()
@@ -83,6 +84,7 @@ public class BasicUserService implements UserService {
 
         String newUsername = userUpdateRequest.newUsername();
         String newEmail = userUpdateRequest.newEmail();
+
         if (userRepository.existsByEmail(newEmail)) {
             throw new IllegalArgumentException("User with email " + newEmail + " already exists");
         }
