@@ -1,7 +1,6 @@
 package com.sprint.mission.discodeit.repository.jcf;
 
-import com.sprint.mission.discodeit.dto.meg.MegUpdateDTO;
-import com.sprint.mission.discodeit.entity.Channel;
+import com.sprint.mission.discodeit.dto.meg.MessageUpdateReqeust;
 import com.sprint.mission.discodeit.entity.Message;
 import com.sprint.mission.discodeit.repository.MessageRepository;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
@@ -30,7 +29,7 @@ public class JCFMessageRepository implements MessageRepository {
 
     // 메세지 수정
     @Override
-    public Message update(MegUpdateDTO dto) {
+    public Message update(MessageUpdateReqeust dto) {
         Message m = Optional.ofNullable(messages.get(dto.mesUid()))
                 .orElseThrow(() -> new NoSuchElementException("메세지가 없습니다."));
 

@@ -2,7 +2,7 @@ package com.sprint.mission.discodeit.dto.user;
 
 import java.util.UUID;
 
-public record UserStatusCreateDTO(
+public record UserStatusCreateReqeust(
         String name,
         String password,
         String email,
@@ -18,7 +18,7 @@ public record UserStatusCreateDTO(
     생성시에는 비밀번호나 메일이 공백이면 안되기에
     공백을 확인하는 로직으로 만들어 보았다.
     */
-    public UserStatusCreateDTO {
+    public UserStatusCreateReqeust {
         if (name == null || name.isBlank()) {
             throw new IllegalArgumentException("이름이 비어있어요.");
         }

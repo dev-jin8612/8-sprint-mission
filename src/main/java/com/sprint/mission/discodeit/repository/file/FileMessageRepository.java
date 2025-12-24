@@ -1,10 +1,8 @@
 package com.sprint.mission.discodeit.repository.file;
 
-import com.sprint.mission.discodeit.dto.meg.MegUpdateDTO;
-import com.sprint.mission.discodeit.entity.Channel;
+import com.sprint.mission.discodeit.dto.meg.MessageUpdateReqeust;
 import com.sprint.mission.discodeit.entity.Message;
 import com.sprint.mission.discodeit.repository.MessageRepository;
-import jakarta.annotation.PostConstruct;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.stereotype.Repository;
@@ -44,7 +42,7 @@ public class FileMessageRepository extends SaveLoadHelper implements MessageRepo
 
     // 메세지 수정
     @Override
-    public Message update(MegUpdateDTO dto) {
+    public Message update(MessageUpdateReqeust dto) {
         Message m = Optional.ofNullable(messages.get(dto.mesUid()))
                 .orElseThrow(() -> new NoSuchElementException("메세지가 없습니다."));
 

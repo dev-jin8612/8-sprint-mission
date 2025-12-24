@@ -1,6 +1,6 @@
 package com.sprint.mission.discodeit.repository;
 
-import com.sprint.mission.discodeit.dto.user.UserStatusDTO;
+import com.sprint.mission.discodeit.dto.user.UserStatusReqeust;
 import com.sprint.mission.discodeit.entity.User;
 
 import java.util.List;
@@ -12,7 +12,7 @@ public interface UserRepository {
     User create(User user);
 
     // 정보 수정
-    User update(UserStatusDTO updateDTO);
+    User update(UserStatusReqeust updateDTO);
 
     // 삭제
     void delete(UUID id);

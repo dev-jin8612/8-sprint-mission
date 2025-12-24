@@ -1,11 +1,8 @@
 package com.sprint.mission.discodeit.repository.file;
 
-import com.sprint.mission.discodeit.dto.ch.ChUpdateDTO;
-import com.sprint.mission.discodeit.dto.ch.FindDTO;
-import com.sprint.mission.discodeit.entity.ChType;
+import com.sprint.mission.discodeit.dto.channel.ChannelUpdateReqeust;
 import com.sprint.mission.discodeit.entity.Channel;
 import com.sprint.mission.discodeit.repository.ChannelRepository;
-import jakarta.annotation.PostConstruct;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.stereotype.Repository;
@@ -42,7 +39,7 @@ public class FileChannelRepository extends SaveLoadHelper implements ChannelRepo
     }
 
     @Override
-    public Channel update(ChUpdateDTO dto) {
+    public Channel update(ChannelUpdateReqeust dto) {
         Channel channel = Optional.ofNullable(channels.get(dto.chId()))
                 .orElseThrow(() -> new NoSuchElementException("채널이 없습니다."));
 

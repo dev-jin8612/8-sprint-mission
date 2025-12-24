@@ -6,7 +6,7 @@ import java.io.File;
 import java.util.Map;
 import java.util.UUID;
 
-public record MegBCDTO(
+public record MessageBinaryContentReqeust(
         Map<UUID, File> profileImg,
         Map<UUID, File> megfile,
         String contents,

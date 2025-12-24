@@ -1,6 +1,6 @@
 package com.sprint.mission.discodeit.repository.jcf;
 
-import com.sprint.mission.discodeit.dto.user.UserStatusDTO;
+import com.sprint.mission.discodeit.dto.user.UserStatusReqeust;
 import com.sprint.mission.discodeit.entity.User;
 import com.sprint.mission.discodeit.repository.UserRepository;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
@@ -29,7 +29,7 @@ public class JCFUserRepository implements UserRepository {
 
     // 사람 수정
     @Override
-    public User update(UserStatusDTO dto) {
+    public User update(UserStatusReqeust dto) {
         User user = Optional.ofNullable(users.get(dto.userid()))
                 .orElseThrow(() -> new NoSuchElementException("채널이 없습니다."));
 

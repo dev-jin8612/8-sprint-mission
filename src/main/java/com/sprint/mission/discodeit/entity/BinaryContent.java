@@ -1,6 +1,6 @@
 package com.sprint.mission.discodeit.entity;
 
-import com.sprint.mission.discodeit.dto.user.BinaryCreateDTO;
+import com.sprint.mission.discodeit.dto.user.BinaryCreateReqeust;
 import lombok.Getter;
 
 import java.io.Serializable;
@@ -19,7 +19,7 @@ public class BinaryContent implements Serializable {
     // 파일을 넣으면 되지 않을까?
     private Map<UUID, File> megfile;
 
-    public BinaryContent(BinaryCreateDTO dto) {
+    public BinaryContent(BinaryCreateReqeust dto) {
         this.id = UUID.randomUUID();
         this.profileImg = dto.profileImg();
         this.megfile = dto.megfile();

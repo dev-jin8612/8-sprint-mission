@@ -1,10 +1,10 @@
 package com.sprint.mission.discodeit.service.basic;
 
-import com.sprint.mission.discodeit.dto.ch.ChUpdateDTO;
-import com.sprint.mission.discodeit.dto.ch.FindDTO;
-import com.sprint.mission.discodeit.dto.ch.ReadStatusCreateDTO;
-import com.sprint.mission.discodeit.entity.ChType;
+import com.sprint.mission.discodeit.dto.channel.ChannelUpdateReqeust;
+import com.sprint.mission.discodeit.dto.channel.FindReqeust;
+import com.sprint.mission.discodeit.dto.channel.ReadStatusCreateReqeust;
 import com.sprint.mission.discodeit.entity.Channel;
+import com.sprint.mission.discodeit.entity.ChannelType;
 import com.sprint.mission.discodeit.entity.ReadStatus;
 import com.sprint.mission.discodeit.repository.ChannelRepository;
 import com.sprint.mission.discodeit.repository.ReadStatusRepository;
@@ -25,7 +25,7 @@ public class BasicChannelService implements ChannelService {
 
     @Override
     public Channel createPrivate(List<UUID> memberIds) {
-        Channel channel = new Channel("", memberIds, ChType.PRIVATE);
+        Channel channel = new Channel("", memberIds, ChannelType.PRIVATE);
 
         for (UUID memberId : memberIds) {
             readRespository.create(new ReadStatus(channel.getId(), memberId));
@@ -35,8 +35,8 @@ public class BasicChannelService implements ChannelService {
     }
 
     @Override
-    public Channel createPublic(ReadStatusCreateDTO dto) {
-        Channel channel = new Channel(dto.name(), dto.memberIds(), ChType.PUBLIC);
+    public Channel createPublic(ReadStatusCreateReqeust dto) {
+        Channel channel = new Channel(dto.name(), dto.memberIds(), ChannelType.PUBLIC);
 
         for (UUID memberId : dto.memberIds()) {
             readRespository.create(new ReadStatus(channel.getId(), memberId));
@@ -46,8 +46,8 @@ public class BasicChannelService implements ChannelService {
     }
 
     @Override
-    public Channel update(ChUpdateDTO dto) {
-        if (dto.type() == ChType.PUBLIC) {
+    public Channel update(ChannelUpdateReqeust dto) {
+        if (dto.type() == ChannelType.PUBLIC) {
             return chService.update(dto);
         }
         return null;
@@ -72,16 +72,16 @@ public class BasicChannelService implements ChannelService {
     }
 
     @Override
-    public FindDTO findById(UUID id) {
+    public FindReqeust findById(UUID id) {
         Channel ch = chService.findById(id);
         ReadStatus read = readRespository.findById(id);
 
         if (ch == null) {
             return null;
-        }else if (ch.getType() == ChType.PRIVATE) {
-            return new FindDTO(ch.getId(), ch.getUsers(), ch.getName(), ch.getType(), read.getUpdated());
+        }else if (ch.getType() == ChannelType.PRIVATE) {
+            return new FindReqeust(ch.getId(), ch.getUsers(), ch.getName(), ch.getType(), read.getUpdated());
         } else {
-            return new FindDTO(ch.getId(), null, ch.getName(), ch.getType(), read.getUpdated());
+            return new FindReqeust(ch.getId(), null, ch.getName(), ch.getType(), read.getUpdated());
         }
     }
 

@@ -1,7 +1,7 @@
 package com.sprint.mission.discodeit.service;
 
-import com.sprint.mission.discodeit.dto.meg.MegBCDTO;
-import com.sprint.mission.discodeit.dto.meg.MegUpdateDTO;
+import com.sprint.mission.discodeit.dto.meg.MessageBinaryContentReqeust;
+import com.sprint.mission.discodeit.dto.meg.MessageUpdateReqeust;
 import com.sprint.mission.discodeit.entity.Message;
 
 import java.util.List;
@@ -9,10 +9,10 @@ import java.util.UUID;
 
 public interface MessageService {
     // 등록
-    Message create(MegBCDTO dto);
+    Message create(MessageBinaryContentReqeust dto);
 
     // 정보 수정
-    Message update(MegUpdateDTO dto);
+    Message update(MessageUpdateReqeust dto);
 
     // 삭제
     void delete(UUID id);

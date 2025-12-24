@@ -1,7 +1,7 @@
 package com.sprint.mission.discodeit.entity;
 
-import com.sprint.mission.discodeit.dto.user.UserStatusCreateDTO;
-import com.sprint.mission.discodeit.dto.user.UserStatusDTO;
+import com.sprint.mission.discodeit.dto.user.UserStatusCreateReqeust;
+import com.sprint.mission.discodeit.dto.user.UserStatusReqeust;
 import lombok.Getter;
 
 import java.io.Serializable;
@@ -25,7 +25,7 @@ public class User extends BasicEntity implements Serializable {
     private UUID profileImg;
 
     // 생성자
-    public User(UserStatusCreateDTO createDTO) {
+    public User(UserStatusCreateReqeust createDTO) {
         super();
         this.name = createDTO.name();
         this.password = createDTO.password();
@@ -35,7 +35,7 @@ public class User extends BasicEntity implements Serializable {
     }
 
     // 수정
-    public void update(UserStatusDTO updateDTO) {
+    public void update(UserStatusReqeust updateDTO) {
         boolean check =false;
 
         if (updateDTO.name() != null && updateDTO.name().isEmpty() == false) {

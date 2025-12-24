@@ -1,9 +1,9 @@
 package com.sprint.mission.discodeit.service.basic;
 
-import com.sprint.mission.discodeit.dto.user.LoginSerachDTO;
-import com.sprint.mission.discodeit.dto.user.UserStatusCreateDTO;
-import com.sprint.mission.discodeit.dto.user.UserStatusDTO;
-import com.sprint.mission.discodeit.dto.user.UserStatusFindDTO;
+import com.sprint.mission.discodeit.dto.user.LoginReqeust;
+import com.sprint.mission.discodeit.dto.user.UserStatusCreateReqeust;
+import com.sprint.mission.discodeit.dto.user.UserStatusReqeust;
+import com.sprint.mission.discodeit.dto.user.UserStatusFindReqeust;
 import com.sprint.mission.discodeit.entity.User;
 import com.sprint.mission.discodeit.entity.UserStatus;
 import com.sprint.mission.discodeit.repository.BinaryContentRepository;
@@ -18,13 +18,13 @@ import java.util.*;
 @Service
 @RequiredArgsConstructor
 public class BasicUserService implements AuthService {
-    private final UserRepository userService;
+    private final UserRepository userRepository;
     private final UserStatusRepository userStatus;
     private final BinaryContentRepository bcRepository;
 
     @Override
-    public UserStatusDTO create(UserStatusCreateDTO createDTO) {
-        userService.getUsers().values().forEach(
+    public UserStatusReqeust create(UserStatusCreateReqeust createDTO) {
+        userRepository.getUsers().values().forEach(
                 user -> {
                     if (user.getName().equals(createDTO.name())) {
                         throw new IllegalArgumentException("이미 존재합니다.");
@@ -37,7 +37,7 @@ public class BasicUserService implements AuthService {
         User u = new User(createDTO);
         UserStatus us = new UserStatus(u.getId());
 
-        UserStatusDTO usDto = new UserStatusDTO(
+        UserStatusReqeust usDto = new UserStatusReqeust(
                 u.getId(),
                 u.getName(),
                 u.getPassword(),
@@ -46,7 +46,7 @@ public class BasicUserService implements AuthService {
         );
 
         userStatus.create(us);
-        userService.create(u);
+        userRepository.create(u);
         // 이거 근데 실제 이미지랑 다른게 좀 필요할거 같은데
 //        bcRepository.create(new BinaryContent());
 
@@ -56,12 +56,12 @@ public class BasicUserService implements AuthService {
     }
 
     @Override
-    public UserStatusDTO update(UserStatusDTO updateDTO) {
-        if (userService.findById(updateDTO.userid()) == null) {
+    public UserStatusReqeust update(UserStatusReqeust updateDTO) {
+        if (userRepository.findById(updateDTO.userid()) == null) {
             throw new IllegalArgumentException("유저가 없습니다.");
         }
 
-        userService.update(updateDTO);
+        userRepository.update(updateDTO);
 
         // 다른 dto 반환하게 만들어야 하나?
         // 유저 정보만 있는걸로? 그러면 vo가 낫지 않나?
@@ -70,28 +70,28 @@ public class BasicUserService implements AuthService {
 
     @Override
     public void delete(UUID id) {
-        if (userService.findById(id) == null) {
+        if (userRepository.findById(id) == null) {
             throw new IllegalArgumentException("이미 삭제 되었습니다.");
         }
 
         userStatus.delete(id);
         bcRepository.delete(id);
-        userService.delete(id);
+        userRepository.delete(id);
     }
 
     @Override
     public List<User> searchByName(List<String> name) {
-        return userService.searchByName(name);
+        return userRepository.searchByName(name);
     }
 
     @Override
-    public UserStatusFindDTO findById(UUID id) {
+    public UserStatusFindReqeust findById(UUID id) {
         // 온라인 상태 포함해서 내보네기
         UserStatus us = userStatus.find(id);
-        User u = userService.findById(id);
+        User u = userRepository.findById(id);
 
         if (u != null) {
-            return new UserStatusFindDTO(u.getId(), u.getName(), u.getEmail(), u.getProfile(), us.checkLogin());
+            return new UserStatusFindReqeust(u.getId(), u.getName(), u.getEmail(), u.getProfile(), us.checkLogin());
         }
 
         return null;
@@ -99,16 +99,16 @@ public class BasicUserService implements AuthService {
 
     @Override
     public Map<UUID, User> getUsers() {
-        return userService.getUsers();
+        return userRepository.getUsers();
     }
 
     @Override
-    public UserStatusFindDTO login(LoginSerachDTO dto) {
-        for (User u : userService.getUsers().values()) {
+    public UserStatusFindReqeust login(LoginReqeust dto) {
+        for (User u : userRepository.getUsers().values()) {
             if (u.getName().equals(dto.name()) &&
                     u.getPassword().equals(dto.password())) {
 
-                return new UserStatusFindDTO(
+                return new UserStatusFindReqeust(
                         u.getId(),
                         u.getName(),
                         u.getEmail(),

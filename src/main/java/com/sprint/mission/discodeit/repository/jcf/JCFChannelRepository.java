@@ -1,6 +1,6 @@
 package com.sprint.mission.discodeit.repository.jcf;
 
-import com.sprint.mission.discodeit.dto.ch.ChUpdateDTO;
+import com.sprint.mission.discodeit.dto.channel.ChannelUpdateReqeust;
 import com.sprint.mission.discodeit.entity.Channel;
 import com.sprint.mission.discodeit.repository.ChannelRepository;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
@@ -27,7 +27,7 @@ public class JCFChannelRepository implements ChannelRepository {
     }
 
     @Override
-    public Channel update(ChUpdateDTO dto) {
+    public Channel update(ChannelUpdateReqeust dto) {
         Channel channel = Optional.ofNullable(channels.get(dto.chId()))
                 .orElseThrow(() -> new NoSuchElementException("채널이 없습니다."));
 

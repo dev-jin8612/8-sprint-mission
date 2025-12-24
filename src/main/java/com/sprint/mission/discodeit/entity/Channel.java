@@ -15,10 +15,10 @@ public class Channel extends BasicEntity implements Serializable {
     // 참가자 명단
     private Set<UUID> users;
     // 타입
-    private ChType type;
+    private ChannelType type;
 
     // 생성자
-    public Channel(String name, List<UUID> users, ChType type) {
+    public Channel(String name, List<UUID> users, ChannelType type) {
         super();
         this.users = new HashSet<>(users);
         this.name = name;
@@ -26,7 +26,7 @@ public class Channel extends BasicEntity implements Serializable {
     }
 
     // 수정
-    public void update(String name, ChType type) {
+    public void update(String name, ChannelType type) {
         boolean check = false;
 
         if (name != null && name.isEmpty() == false) {

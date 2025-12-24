@@ -1,6 +1,6 @@
 package com.sprint.mission.discodeit.entity;
 
-import com.sprint.mission.discodeit.dto.meg.MegCreateDTO;
+import com.sprint.mission.discodeit.dto.meg.MessageCreateReqeust;
 import lombok.Getter;
 
 import java.io.Serializable;
@@ -23,7 +23,7 @@ public class Message extends BasicEntity implements Serializable {
     List<UUID> attchmentIds;
 
 //    public Message(String m, UUID userId, UUID chId, UUID attchmentId) {
-    public Message(MegCreateDTO dto) {
+    public Message(MessageCreateReqeust dto) {
         super();
         meg = dto.m();
         sender = dto.userId();
