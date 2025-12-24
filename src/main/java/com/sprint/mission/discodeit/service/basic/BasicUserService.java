@@ -68,6 +68,13 @@ public class BasicUserService implements UserService {
                 .orElseThrow(() -> new NoSuchElementException("User with id " + userId + " not found"));
     }
 
+    @Override
+    public UserDto findByUsername(String username) {
+        return userRepository.findByUsername(username)
+                .map(this::toDto)
+                .orElseThrow(() -> new NoSuchElementException("User with id " + username + " not found"));
+    }
+
 
     @Override
     public List<UserDto> findAll() {
