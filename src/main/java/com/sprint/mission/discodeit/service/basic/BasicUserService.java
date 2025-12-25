@@ -10,6 +10,7 @@ import com.sprint.mission.discodeit.repository.BinaryContentRepository;
 import com.sprint.mission.discodeit.repository.UserRepository;
 import com.sprint.mission.discodeit.repository.UserStatusRepository;
 import com.sprint.mission.discodeit.service.AuthService;
+import com.sprint.mission.discodeit.service.UserService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -17,7 +18,7 @@ import java.util.*;
 
 @Service
 @RequiredArgsConstructor
-public class BasicUserService implements AuthService {
+public class BasicUserService implements UserService {
     private final UserRepository userRepository;
     private final UserStatusRepository UserStatusRepository;
     private final BinaryContentRepository binaryContentRepository;
@@ -96,23 +97,5 @@ public class BasicUserService implements AuthService {
     @Override
     public Map<UUID, User> getUsers() {
         return userRepository.getUsers();
-    }
-
-    @Override
-    public UserStatusFindReqeust login(LoginReqeust dto) {
-        for (User u : userRepository.getUsers().values()) {
-            if (u.getName().equals(dto.name()) &&
-                    u.getPassword().equals(dto.password())) {
-
-                return new UserStatusFindReqeust(
-                        u.getId(),
-                        u.getName(),
-                        u.getEmail(),
-                        u.getProfileImg(),
-                        true
-                );
-            }
-        }
-        return null;
     }
 }

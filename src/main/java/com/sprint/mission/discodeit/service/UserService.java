@@ -12,7 +12,7 @@ import java.util.UUID;
 
 public interface UserService {
     // 등록
-    UserStatusCreateReqeust create(UserStatusCreateReqeust createDTO);
+    UserStatusReqeust create(UserStatusCreateReqeust createDTO);
 
     // 정보 수정
     UserStatusReqeust update(UserStatusReqeust updateDTO);

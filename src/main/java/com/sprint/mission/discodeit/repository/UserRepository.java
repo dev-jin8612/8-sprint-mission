@@ -5,6 +5,7 @@ import com.sprint.mission.discodeit.entity.User;
 
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.UUID;
 
 public interface UserRepository {
@@ -19,6 +20,7 @@ public interface UserRepository {
 
     // 이름으로 찾기
     List<User> searchByName(List<String> name);
+    Optional<User> findByUsername(String username);
 
     // id로 찾기
     User findById(UUID id);

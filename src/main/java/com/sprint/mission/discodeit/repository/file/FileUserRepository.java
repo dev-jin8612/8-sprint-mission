@@ -82,4 +82,12 @@ public class FileUserRepository extends SaveLoadHelper implements UserRepository
         return Optional.ofNullable(users)
                 .orElse(null);
     }
+
+    @Override
+    public Optional<User> findByUsername(String username) {
+        return this.getUsers().values().stream()
+                .filter(user -> user.getName().equals(username))
+                .findFirst();
+    }
+
 }
