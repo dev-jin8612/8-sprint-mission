@@ -6,6 +6,6 @@ import java.util.UUID;
 
 public record BinaryCreateReqeust(
         Map<UUID, File> profileImg,
-        Map<UUID, File> megfile,
+        byte[] megfile,
         UUID megId
 ) {}

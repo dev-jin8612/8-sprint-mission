@@ -17,7 +17,7 @@ public class BinaryContent implements Serializable {
     private Map<UUID, File> profileImg;
     // UUID에 megid 넣고 file에 해당 메세지로 보낸
     // 파일을 넣으면 되지 않을까?
-    private Map<UUID, File> megfile;
+    private byte[] megfile;
 
     public BinaryContent(BinaryCreateReqeust dto) {
         this.id = UUID.randomUUID();

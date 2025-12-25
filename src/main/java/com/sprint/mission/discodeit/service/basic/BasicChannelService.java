@@ -20,7 +20,7 @@ import java.util.UUID;
 @Service
 @RequiredArgsConstructor
 public class BasicChannelService implements ChannelService {
-    private final ChannelRepository chService;
+    private final ChannelRepository channelRepository;
     private final ReadStatusRepository readRespository;
 
     @Override
@@ -31,7 +31,7 @@ public class BasicChannelService implements ChannelService {
             readRespository.create(new ReadStatus(channel.getId(), memberId));
         }
 
-        return chService.create(channel);
+        return channelRepository.create(channel);
     }
 
     @Override
@@ -42,20 +42,21 @@ public class BasicChannelService implements ChannelService {
             readRespository.create(new ReadStatus(channel.getId(), memberId));
         }
 
-        return chService.create(channel);
+        return channelRepository.create(channel);
     }
 
     @Override
     public Channel update(ChannelUpdateReqeust dto) {
         if (dto.type() == ChannelType.PUBLIC) {
-            return chService.update(dto);
+            return channelRepository.update(dto);
+        }else{
+            throw new IllegalArgumentException("수정 불가능한 채널입니다.");
         }
-        return null;
     }
 
     @Override
     public void delete(UUID id) {
-        Map<UUID, Channel> clist = chService.getChannelList();
+        Map<UUID, Channel> clist = channelRepository.getChannelList();
 
         if (!clist.containsKey(id)) {
             throw new NoSuchElementException("이미 삭제 되었습니다.");
@@ -63,17 +64,17 @@ public class BasicChannelService implements ChannelService {
 
         // 해당 채팅방의 메세지도 지우게 만들기
         readRespository.delete(id);
-        chService.delete(id);
+        channelRepository.delete(id);
     }
 
     @Override
     public List<Channel> searchByName(List<String> name) {
-        return chService.searchByName(name);
+        return channelRepository.searchByName(name);
     }
 
     @Override
     public FindReqeust findById(UUID id) {
-        Channel ch = chService.findById(id);
+        Channel ch = channelRepository.findById(id);
         ReadStatus read = readRespository.findById(id);
 
         if (ch == null) {
@@ -87,6 +88,6 @@ public class BasicChannelService implements ChannelService {
 
     @Override
     public Map<UUID, Channel> getChannelList() {
-        return chService.getChannelList();
+        return channelRepository.getChannelList();
     }
 }

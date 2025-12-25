@@ -18,7 +18,7 @@ import java.util.UUID;
 @Service
 @RequiredArgsConstructor
 public class BasicMessageService implements MessageService {
-    private final MessageRepository messageService;
+    private final MessageRepository messageRepository;
     private final BinaryContentRepository bcRepository;
 
     @Override
@@ -35,7 +35,7 @@ public class BasicMessageService implements MessageService {
                 MessageCreateReqeust mc = new MessageCreateReqeust(dto.contents(),dto.userId(),dto.ch().getId(),bc.getId());
                 m = new Message(mc);
 
-                messageService.create(m);
+                messageRepository.create(m);
                 System.out.println("메세지가 생성 됐습니다.");
             }
         }
@@ -45,27 +45,27 @@ public class BasicMessageService implements MessageService {
 
     @Override
     public Message update(MessageUpdateReqeust dto) {
-        return messageService.update(dto);
+        return messageRepository.update(dto);
     }
 
     @Override
     public void delete(UUID id) {
         //binary 삭제 추가하기
-        messageService.delete(id);
+        messageRepository.delete(id);
     }
 
     @Override
     public List<Message> searchByContent(List<String> contents) {
-        return messageService.searchByContent(contents);
+        return messageRepository.searchByContent(contents);
     }
 
     @Override
     public Message findById(UUID id) {
-        return messageService.findById(id);
+        return messageRepository.findById(id);
     }
 
     @Override
     public List<Message> getMessages() {
-        return messageService.getMessages();
+        return messageRepository.getMessages();
     }
 }

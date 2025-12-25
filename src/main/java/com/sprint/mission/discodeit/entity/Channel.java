@@ -42,6 +42,8 @@ public class Channel extends BasicEntity implements Serializable {
                 // 뭔가 실패 했다는 메세지 나와야 할거 같은데
                 check = false;
             }
+        }else{
+            this.type = ChannelType.PUBLIC;
         }
 
         if (check == false) {

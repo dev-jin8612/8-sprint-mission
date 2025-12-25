@@ -83,29 +83,30 @@ public class DiscodeitApplication {
         System.out.println("_________________구분선, 채널__________________");
         List<UUID> uerList = List.of(testUser1.userid());
 
-        BasicChannelService cTest = context.getBean(BasicChannelService.class);
+        BasicChannelService channelTest = context.getBean(BasicChannelService.class);
 
-        ReadStatusCreateReqeust rscDto = new ReadStatusCreateReqeust("1번 채널", uerList);
-        Channel cTest1 = setupChannel(cTest, rscDto, "PUBLIC");
+        ReadStatusCreateReqeust readStatusDto = new ReadStatusCreateReqeust("1번 채널", uerList);
+        Channel channelTest1 = setupChannel(channelTest, readStatusDto, "PUBLIC");
 
         {
             // 수정
-            ChannelUpdateReqeust cuDto = new ChannelUpdateReqeust(cTest1.getId(), "서", ChannelType.PUBLIC);
-            System.out.println(cTest.update(cuDto).getName());
+            ChannelUpdateReqeust cuDto = new ChannelUpdateReqeust(channelTest1.getId(), "서", ChannelType.PRIVATE);
+            System.out.println(channelTest.update(cuDto).getName());
+            System.out.println(channelTest.update(cuDto).getType());
 
             // 찾기
-            List<Channel> cList = cTest.searchByName(List.of("ctest1", "ctest2"));
+            List<Channel> channelList = channelTest.searchByName(List.of("channelTest1", "channelTest2"));
 
-            cList.forEach(channel -> {
+            channelList.forEach(channel -> {
                 System.out.println(channel.getName());
             });
 
         }
         // 삭제
-            cTest.delete(cTest1.getId());
+            channelTest.delete(channelTest1.getId());
 
         // 삭제 확인
-        FindReqeust checkC = cTest.findById(cTest1.getId());
+        FindReqeust checkC = channelTest.findById(channelTest1.getId());
         if (checkC != null) {
             System.out.println("삭제 안됐습니다.");
         } else {
@@ -117,15 +118,15 @@ public class DiscodeitApplication {
         BasicMessageService megTest = context.getBean(BasicMessageService.class);
 
         // 추가
-        MessageBinaryContentReqeust mcDto = new MessageBinaryContentReqeust(null, null, "황의 메세지1", cTest1, testUser1.userid());
+        MessageBinaryContentReqeust mcDto = new MessageBinaryContentReqeust(null, null, "황의 메세지1", channelTest1, testUser1.userid());
         Message m1 = messageCreateTest(megTest, mcDto);
 
         {
             // 찾기
             megTest.searchByContent(List.of("진", "1"));
 
-            List<Message> MList = megTest.searchByContent(List.of("ctest1", "ctest2"));
-            MList.forEach(m -> {
+            List<Message> messagelList = megTest.searchByContent(List.of("channelTest1", "channelTest2"));
+            messagelList.forEach(m -> {
                 System.out.println(m.getMeg());
             });
 

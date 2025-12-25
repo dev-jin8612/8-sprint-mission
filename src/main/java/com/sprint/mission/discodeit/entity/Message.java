@@ -20,7 +20,7 @@ public class Message extends BasicEntity implements Serializable {
     // 보낸 방번호
     private UUID roomId;
     // Binary
-    List<UUID> attchmentIds;
+    UUID attchmentIds;
 
 //    public Message(String m, UUID userId, UUID chId, UUID attchmentId) {
     public Message(MessageCreateReqeust dto) {
@@ -29,8 +29,7 @@ public class Message extends BasicEntity implements Serializable {
         sender = dto.userId();
         roomId = dto.chId();
 
-        attchmentIds = new ArrayList<>();
-        attchmentIds.add(dto.attchmentId());
+        attchmentIds = dto.attchmentId();
     }
 
     // 수정

@@ -19,20 +19,16 @@ import java.util.*;
 @RequiredArgsConstructor
 public class BasicUserService implements AuthService {
     private final UserRepository userRepository;
-    private final UserStatusRepository userStatus;
-    private final BinaryContentRepository bcRepository;
+    private final UserStatusRepository UserStatusRepository;
+    private final BinaryContentRepository binaryContentRepository;
 
     @Override
     public UserStatusReqeust create(UserStatusCreateReqeust createDTO) {
-        userRepository.getUsers().values().forEach(
-                user -> {
-                    if (user.getName().equals(createDTO.name())) {
-                        throw new IllegalArgumentException("이미 존재합니다.");
-                    } else if (user.getEmail().equals(createDTO.email())) {
-                        throw new IllegalArgumentException("이미 존재합니다.");
-                    }
-                }
-        );
+        List<User> users = userRepository.searchByName(List.of(createDTO.name()));
+
+        if (!users.isEmpty()) {
+            throw new IllegalArgumentException("이미 존재합니다.");
+        }
 
         User u = new User(createDTO);
         UserStatus us = new UserStatus(u.getId());
@@ -45,10 +41,10 @@ public class BasicUserService implements AuthService {
                 u.getProfileImg()
         );
 
-        userStatus.create(us);
+        UserStatusRepository.create(us);
         userRepository.create(u);
         // 이거 근데 실제 이미지랑 다른게 좀 필요할거 같은데
-//        bcRepository.create(new BinaryContent());
+//        binaryContentRepository.create(new BinaryContent());
 
         // 생성 말고 다른 dto? 유저 정보만 있는걸로? 그러면 vo가 낮지 않나?
 //        return createDTO;
@@ -74,8 +70,8 @@ public class BasicUserService implements AuthService {
             throw new IllegalArgumentException("이미 삭제 되었습니다.");
         }
 
-        userStatus.delete(id);
-        bcRepository.delete(id);
+        UserStatusRepository.delete(id);
+        binaryContentRepository.delete(id);
         userRepository.delete(id);
     }
 
@@ -87,7 +83,7 @@ public class BasicUserService implements AuthService {
     @Override
     public UserStatusFindReqeust findById(UUID id) {
         // 온라인 상태 포함해서 내보네기
-        UserStatus us = userStatus.find(id);
+        UserStatus us = UserStatusRepository.find(id);
         User u = userRepository.findById(id);
 
         if (u != null) {

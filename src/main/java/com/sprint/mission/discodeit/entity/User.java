@@ -30,7 +30,6 @@ public class User extends BasicEntity implements Serializable {
         this.name = createDTO.name();
         this.password = createDTO.password();
         this.email = createDTO.email();
-        // 일단 랜덤으로 자리만 잡기
         this.profile=createDTO.profileId();
     }
 
