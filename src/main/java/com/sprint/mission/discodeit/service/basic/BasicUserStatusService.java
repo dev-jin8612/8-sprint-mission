@@ -10,6 +10,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.time.Instant;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.NoSuchElementException;
 import java.util.UUID;
@@ -24,57 +25,57 @@ public class BasicUserStatusService implements UserStatusService {
     public UserStatus create(UserStatusCreateRequest request) {
         UUID userId = request.userId();
 
-        if (!userRepository.existsById(userId)) {
+        if (userRepository.findById(userId)==null) {
             throw new NoSuchElementException("User with id " + userId + " does not exist");
         }
-        if (userStatusRepository.findByUserId(userId).isPresent()) {
+        if (userStatusRepository.find(userId)!=null) {
             throw new IllegalArgumentException("UserStatus with id " + userId + " already exists");
         }
 
-        Instant lastActiveAt = request.lastActiveAt();
-        UserStatus userStatus = new UserStatus(userId, lastActiveAt);
-        return userStatusRepository.save(userStatus);
+//        Instant lastActiveAt = request.lastActiveAt();
+//        UserStatus userStatus = new UserStatus(userId, lastActiveAt);
+        UserStatus userStatus = new UserStatus(userId);
+        return userStatusRepository.create(userStatus);
     }
 
     @Override
     public UserStatus find(UUID userStatusId) {
-        return userStatusRepository.findById(userStatusId)
+        return userStatusRepository.find(userStatusId)
                 .orElseThrow(() -> new NoSuchElementException("UserStatus with id " + userStatusId + " not found"));
     }
 
     @Override
     public List<UserStatus> findAll() {
-        return userStatusRepository.findAll().stream()
-                .toList();
+        return new ArrayList(userStatusRepository.findAll().keySet());
     }
 
     @Override
-    public UserStatus update(UUID userStatusId, UserStatusUpdateRequest request) {
-        Instant newLastActiveAt = request.newLastActiveAt();
+    public UserStatus update(UUID userStatusId) {
 
-        UserStatus userStatus = userStatusRepository.findById(userStatusId)
+        UserStatus userStatus = userStatusRepository.find(userStatusId)
                 .orElseThrow(() -> new NoSuchElementException("UserStatus with id " + userStatusId + " not found"));
-        userStatus.update(newLastActiveAt);
 
-        return userStatusRepository.save(userStatus);
+        userStatus.update();
+
+        return userStatusRepository.create(userStatus);
     }
 
     @Override
-    public UserStatus updateByUserId(UUID userId, UserStatusUpdateRequest request) {
-        Instant newLastActiveAt = request.newLastActiveAt();
+    public UserStatus updateByUserId(UUID userId) {
 
-        UserStatus userStatus = userStatusRepository.findByUserId(userId)
+        UserStatus userStatus = userStatusRepository.find(userId)
                 .orElseThrow(() -> new NoSuchElementException("UserStatus with userId " + userId + " not found"));
-        userStatus.update(newLastActiveAt);
 
-        return userStatusRepository.save(userStatus);
+        userStatus.update();
+
+        return userStatusRepository.create(userStatus);
     }
 
     @Override
     public void delete(UUID userStatusId) {
-        if (!userStatusRepository.existsById(userStatusId)) {
+        if (userStatusRepository.find(userStatusId) == null) {
             throw new NoSuchElementException("UserStatus with id " + userStatusId + " not found");
         }
-        userStatusRepository.deleteById(userStatusId);
+        userStatusRepository.delete(userStatusId);
     }
 }

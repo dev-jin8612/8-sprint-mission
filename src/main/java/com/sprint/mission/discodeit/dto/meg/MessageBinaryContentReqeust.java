@@ -7,8 +7,8 @@ import java.util.Map;
 import java.util.UUID;
 
 public record MessageBinaryContentReqeust(
-        Map<UUID, File> profileImg,
-        Map<UUID, File> megfile,
+        String fileName,
+        byte[] profileImg,
         String contents,
         Channel ch,
         UUID userId

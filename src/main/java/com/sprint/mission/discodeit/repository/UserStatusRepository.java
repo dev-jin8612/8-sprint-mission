@@ -4,6 +4,7 @@ import com.sprint.mission.discodeit.entity.UserStatus;
 
 import java.time.Instant;
 import java.util.Map;
+import java.util.Optional;
 import java.util.UUID;
 
 public interface UserStatusRepository {
@@ -19,7 +20,7 @@ public interface UserStatusRepository {
     // 삭제, 유저 삭제시 같이
     void delete(UUID userid);
 
-    UserStatus find(UUID id);
+    Optional<UserStatus> find(UUID id);
 
     Map<UUID, UserStatus> findAll();
 }

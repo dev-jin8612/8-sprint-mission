@@ -64,9 +64,8 @@ public class FileUserStatusRepository extends SaveLoadHelper implements UserStat
     }
 
     @Override
-    public UserStatus find(UUID id) {
-        return Optional.ofNullable(status.get(id))
-                .orElse(null);
+    public Optional<UserStatus> find(UUID id) {
+        return Optional.ofNullable(status.get(id));
     }
 
     @Override

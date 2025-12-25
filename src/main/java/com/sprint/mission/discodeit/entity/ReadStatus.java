@@ -12,11 +12,13 @@ public class ReadStatus extends BasicEntity implements Serializable {
 
     private final UUID chId;
     private final UUID userId;
+    private Instant lastReadAt;
 
-    public ReadStatus(UUID chId, UUID userId) {
+    public ReadStatus(UUID chId, UUID userId, Instant lastReadAt) {
         super();
         this.chId = chId;
         this.userId = userId;
+        this.lastReadAt = lastReadAt;
     }
 
     public Instant update() {

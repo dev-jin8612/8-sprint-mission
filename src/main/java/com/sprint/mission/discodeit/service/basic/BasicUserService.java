@@ -84,7 +84,8 @@ public class BasicUserService implements UserService {
     @Override
     public UserStatusFindReqeust findById(UUID id) {
         // 온라인 상태 포함해서 내보네기
-        UserStatus us = UserStatusRepository.find(id);
+        UserStatus us = UserStatusRepository.find(id)
+                .orElseThrow(()->new NoSuchElementException("찾는 유저가 없습니다."));
         User u = userRepository.findById(id);
 
         if (u != null) {

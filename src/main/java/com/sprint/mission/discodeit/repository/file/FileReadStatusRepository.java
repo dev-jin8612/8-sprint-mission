@@ -53,9 +53,8 @@ public class FileReadStatusRepository extends SaveLoadHelper implements ReadStat
     }
 
     @Override
-    public ReadStatus findById(UUID id) {
-        return Optional.ofNullable(read.get(id))
-                .orElse(null);
+    public Optional<ReadStatus> findById(UUID id) {
+        return Optional.ofNullable(read.get(id)) ;
     }
 
     @Override

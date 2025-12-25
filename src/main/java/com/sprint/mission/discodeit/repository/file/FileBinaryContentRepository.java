@@ -1,5 +1,6 @@
 package com.sprint.mission.discodeit.repository.file;
 
+import com.sprint.mission.discodeit.dto.request.BinaryContentCreateRequest;
 import com.sprint.mission.discodeit.entity.BinaryContent;
 import com.sprint.mission.discodeit.repository.BinaryContentRepository;
 import jakarta.annotation.PostConstruct;
@@ -10,8 +11,7 @@ import org.springframework.stereotype.Repository;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.time.Instant;
-import java.util.Map;
-import java.util.UUID;
+import java.util.*;
 
 @Repository
 @ConditionalOnProperty(
@@ -19,13 +19,12 @@ import java.util.UUID;
         havingValue = "file",
         matchIfMissing = true
 )
-public class FileBinaryContentRepository extends SaveLoadHelper implements BinaryContentRepository {    private final Path directory;
+public class FileBinaryContentRepository extends SaveLoadHelper implements BinaryContentRepository {
+    private final Path directory;
     private final Path file;
-    private   Map<UUID, BinaryContent> bc;
+    private Map<UUID, BinaryContent> bc;
 
-    public FileBinaryContentRepository(
-            @Value("${discodeit.repository.file-directory}") String dir
-    ) {
+    public FileBinaryContentRepository(@Value("${discodeit.repository.file-directory}") String dir) {
         this.directory = Paths.get(dir);
         this.file = directory.resolve("bc.ser");
         init(directory);
@@ -34,7 +33,7 @@ public class FileBinaryContentRepository extends SaveLoadHelper implements Binar
 
     @Override
     public BinaryContent create(BinaryContent binaryContent) {
-        bc.put(binaryContent.getId(),binaryContent);
+        bc.put(binaryContent.getId(), binaryContent);
         save(file, bc);
         return binaryContent;
     }
@@ -45,12 +44,18 @@ public class FileBinaryContentRepository extends SaveLoadHelper implements Binar
     }
 
     @Override
-    public BinaryContent find(UUID id) {
-        return null;
+    public Optional<BinaryContent> find(UUID id) {
+        return Optional.ofNullable(bc.get(id));
     }
 
     @Override
-    public Map<UUID, BinaryContent> findAllByIdIn() {
-        return Map.of();
+    public List<BinaryContent> findAllByIdIn(List<UUID> binaryContentIds) {
+        List<BinaryContent> bcList = new ArrayList<>();
+
+        binaryContentIds.stream().map(uuid ->
+                bcList.add(bc.get(uuid))
+        );
+
+        return bcList;
     }
 }

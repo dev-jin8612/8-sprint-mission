@@ -12,6 +12,7 @@ import com.sprint.mission.discodeit.service.ChannelService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
+import java.time.Instant;
 import java.util.List;
 import java.util.Map;
 import java.util.NoSuchElementException;
@@ -28,7 +29,7 @@ public class BasicChannelService implements ChannelService {
         Channel channel = new Channel("", memberIds, ChannelType.PRIVATE);
 
         for (UUID memberId : memberIds) {
-            readRespository.create(new ReadStatus(channel.getId(), memberId));
+            readRespository.create(new ReadStatus(channel.getId(), memberId,Instant.now()));
         }
 
         return channelRepository.create(channel);
@@ -39,7 +40,7 @@ public class BasicChannelService implements ChannelService {
         Channel channel = new Channel(dto.name(), dto.memberIds(), ChannelType.PUBLIC);
 
         for (UUID memberId : dto.memberIds()) {
-            readRespository.create(new ReadStatus(channel.getId(), memberId));
+            readRespository.create(new ReadStatus(channel.getId(), memberId, Instant.now()));
         }
 
         return channelRepository.create(channel);
@@ -75,7 +76,8 @@ public class BasicChannelService implements ChannelService {
     @Override
     public FindReqeust findById(UUID id) {
         Channel ch = channelRepository.findById(id);
-        ReadStatus read = readRespository.findById(id);
+        ReadStatus read = readRespository.findById(id)
+                .orElseThrow(()->new NoSuchElementException("읽은게 없습니다."));
 
         if (ch == null) {
             return null;

@@ -3,7 +3,7 @@ package com.sprint.mission.discodeit.service.basic;
 import com.sprint.mission.discodeit.dto.meg.MessageBinaryContentReqeust;
 import com.sprint.mission.discodeit.dto.meg.MessageCreateReqeust;
 import com.sprint.mission.discodeit.dto.meg.MessageUpdateReqeust;
-import com.sprint.mission.discodeit.dto.user.BinaryCreateReqeust;
+import com.sprint.mission.discodeit.dto.request.BinaryContentCreateRequest;
 import com.sprint.mission.discodeit.entity.BinaryContent;
 import com.sprint.mission.discodeit.entity.Message;
 import com.sprint.mission.discodeit.repository.BinaryContentRepository;
@@ -28,8 +28,7 @@ public class BasicMessageService implements MessageService {
         if (dto.ch().getUsers().stream().anyMatch(u -> u.equals(dto.userId()))) {
             if (dto.contents() != null && dto.contents().trim().length() > 0) {
 
-                BinaryCreateReqeust bcDto = new BinaryCreateReqeust(dto.profileImg(), dto.megfile(),null);
-                BinaryContent bc = new BinaryContent(bcDto);
+                BinaryContent bc = new BinaryContent(dto.fileName(),dto.contents(),dto.profileImg());
                 bcRepository.create(bc);
 
                 MessageCreateReqeust mc = new MessageCreateReqeust(dto.contents(),dto.userId(),dto.ch().getId(),bc.getId());

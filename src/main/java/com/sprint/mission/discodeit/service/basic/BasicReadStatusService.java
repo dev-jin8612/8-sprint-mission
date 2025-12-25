@@ -27,20 +27,20 @@ public class BasicReadStatusService implements ReadStatusService {
         UUID userId = request.userId();
         UUID channelId = request.channelId();
 
-        if (!userRepository.existsById(userId)) {
+        if (userRepository.findById(userId) == null) {
             throw new NoSuchElementException("User with id " + userId + " does not exist");
         }
-        if (!channelRepository.existsById(channelId)) {
+        if (channelRepository.findById(channelId)==null) {
             throw new NoSuchElementException("Channel with id " + channelId + " does not exist");
         }
-        if (readStatusRepository.findAllByUserId(userId).stream()
-                .anyMatch(readStatus -> readStatus.getChannelId().equals(channelId))) {
+
+        if (readStatusRepository.findAll().get(userId)!=null) {
             throw new IllegalArgumentException("ReadStatus with userId " + userId + " and channelId " + channelId + " already exists");
         }
 
         Instant lastReadAt = request.lastReadAt();
-        ReadStatus readStatus = new ReadStatus(userId, channelId, lastReadAt);
-        return readStatusRepository.save(readStatus);
+        ReadStatus readStatus = new ReadStatus(channelId,userId, lastReadAt);
+        return readStatusRepository.create(readStatus);
     }
 
     @Override
@@ -50,25 +50,23 @@ public class BasicReadStatusService implements ReadStatusService {
     }
 
     @Override
-    public List<ReadStatus> findAllByUserId(UUID userId) {
-        return readStatusRepository.findAllByUserId(userId).stream()
-                .toList();
+    public ReadStatus findAllByUserId(UUID userId) {
+        return readStatusRepository.findAll().get(userId);
     }
 
     @Override
     public ReadStatus update(UUID readStatusId, ReadStatusUpdateRequest request) {
-        Instant newLastReadAt = request.newLastReadAt();
         ReadStatus readStatus = readStatusRepository.findById(readStatusId)
                 .orElseThrow(() -> new NoSuchElementException("ReadStatus with id " + readStatusId + " not found"));
-        readStatus.update(newLastReadAt);
-        return readStatusRepository.save(readStatus);
+        readStatus.update();
+        return readStatusRepository.create(readStatus);
     }
 
     @Override
     public void delete(UUID readStatusId) {
-        if (!readStatusRepository.existsById(readStatusId)) {
+        if (readStatusRepository.findById(readStatusId) ==null) {
             throw new NoSuchElementException("ReadStatus with id " + readStatusId + " not found");
         }
-        readStatusRepository.deleteById(readStatusId);
+        readStatusRepository.delete(readStatusId);
     }
 }

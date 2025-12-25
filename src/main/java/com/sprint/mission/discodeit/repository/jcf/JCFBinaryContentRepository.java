@@ -2,15 +2,10 @@ package com.sprint.mission.discodeit.repository.jcf;
 
 import com.sprint.mission.discodeit.entity.BinaryContent;
 import com.sprint.mission.discodeit.repository.BinaryContentRepository;
-import jakarta.annotation.PostConstruct;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.stereotype.Repository;
 
-import java.nio.file.Path;
-import java.nio.file.Paths;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.UUID;
+import java.util.*;
 
 @Repository
 @ConditionalOnProperty(
@@ -36,12 +31,18 @@ public class JCFBinaryContentRepository implements BinaryContentRepository {
     }
 
     @Override
-    public BinaryContent find(UUID id) {
-        return null;
+    public Optional<BinaryContent> find(UUID id) {
+        return Optional.ofNullable(bc.get(id));
     }
 
     @Override
-    public Map<UUID, BinaryContent> findAllByIdIn() {
-        return Map.of();
+    public List<BinaryContent> findAllByIdIn(List<UUID> binaryContentIds) {
+        List<BinaryContent> bcList = new ArrayList<>();
+
+        binaryContentIds.stream().map(uuid ->
+                bcList.add(bc.get(uuid))
+        );
+
+        return bcList;
     }
 }

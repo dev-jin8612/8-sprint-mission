@@ -5,6 +5,7 @@ import com.sprint.mission.discodeit.entity.UserStatus;
 
 import java.time.Instant;
 import java.util.Map;
+import java.util.Optional;
 import java.util.UUID;
 
 public interface ReadStatusRepository {
@@ -17,7 +18,7 @@ public interface ReadStatusRepository {
     // 삭제, 채널 삭제시 같이
     void delete(UUID chid);
 
-    ReadStatus findById(UUID id);
+    Optional<ReadStatus> findById(UUID id);
 
     Map<UUID, ReadStatus> findAll();
 }
