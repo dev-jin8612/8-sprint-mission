@@ -1,6 +1,7 @@
 package com.sprint.mission.discodeit.service.basic;
 
-import com.sprint.mission.discodeit.dto.user.UserStatusCreateRequest;
+import com.sprint.mission.discodeit.dto.user.UserStatusCreateReqeust;
+import com.sprint.mission.discodeit.entity.User;
 import com.sprint.mission.discodeit.entity.UserStatus;
 import com.sprint.mission.discodeit.repository.UserRepository;
 import com.sprint.mission.discodeit.repository.UserStatusRepository;
@@ -8,10 +9,7 @@ import com.sprint.mission.discodeit.service.UserStatusService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.NoSuchElementException;
-import java.util.UUID;
+import java.util.*;
 
 @RequiredArgsConstructor
 @Service
@@ -20,19 +18,17 @@ public class BasicUserStatusService implements UserStatusService {
     private final UserRepository userRepository;
 
     @Override
-    public UserStatus create(UserStatusCreateRequest request) {
-        UUID userId = request.userId();
+    public UserStatus create(UserStatusCreateReqeust request) {
+        Optional<User> user =userRepository.findByUsername(request.name());
 
-        if (userRepository.findById(userId)==null) {
-            throw new NoSuchElementException("User with id " + userId + " does not exist");
+        if (user==null) {
+            throw new NoSuchElementException("User does not exist");
         }
-        if (userStatusRepository.find(userId)!=null) {
-            throw new IllegalArgumentException("UserStatus with id " + userId + " already exists");
+        if (userStatusRepository.find(user.get().getId())!=null) {
+            throw new IllegalArgumentException("UserStatus already exists");
         }
 
-//        Instant lastActiveAt = request.lastActiveAt();
-//        UserStatus userStatus = new UserStatus(userId, lastActiveAt);
-        UserStatus userStatus = new UserStatus(userId);
+        UserStatus userStatus = new UserStatus(user.get().getId());
         return userStatusRepository.create(userStatus);
     }
 

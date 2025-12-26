@@ -2,7 +2,7 @@ package com.sprint.mission.discodeit;
 
 import com.sprint.mission.discodeit.dto.channel.ChannelUpdateReqeust;
 import com.sprint.mission.discodeit.dto.channel.FindReqeust;
-import com.sprint.mission.discodeit.dto.channel.ReadStatusCreateReqeust;
+import com.sprint.mission.discodeit.dto.channel.ReadStatusCreateRequest;
 import com.sprint.mission.discodeit.dto.message.MessageBinaryContentReqeust;
 import com.sprint.mission.discodeit.dto.user.UserStatusCreateReqeust;
 import com.sprint.mission.discodeit.dto.user.UserStatusReqeust;
@@ -18,6 +18,7 @@ import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.ConfigurableApplicationContext;
 
+import java.time.Instant;
 import java.util.List;
 import java.util.UUID;
 
@@ -29,7 +30,7 @@ public class DiscodeitApplication {
                 new UserStatusCreateReqeust("황", "1544", "123@gmail.com", null));
     }
 
-    static Channel setupChannel(BasicChannelService chService, ReadStatusCreateReqeust dto, String type) {
+    static Channel setupChannel(BasicChannelService chService, ReadStatusCreateRequest dto, String type) {
         if (type.equals(ChannelType.PRIVATE.toString())) {
             return chService.createPrivate(dto.memberIds());
         }
@@ -85,7 +86,8 @@ public class DiscodeitApplication {
 
         BasicChannelService channelTest = context.getBean(BasicChannelService.class);
 
-        ReadStatusCreateReqeust readStatusDto = new ReadStatusCreateReqeust("1번 채널", uerList);
+        // dto 정리를 하면 쫌 꼬여서 null이 들어갑니다.
+        ReadStatusCreateRequest readStatusDto = new ReadStatusCreateRequest(null,null, Instant.now(), "1번 채널", uerList);
         Channel channelTest1 = setupChannel(channelTest, readStatusDto, "PUBLIC");
 
         {

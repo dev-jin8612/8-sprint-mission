@@ -2,7 +2,7 @@ package com.sprint.mission.discodeit.service;
 
 import com.sprint.mission.discodeit.dto.channel.ChannelUpdateReqeust;
 import com.sprint.mission.discodeit.dto.channel.FindReqeust;
-import com.sprint.mission.discodeit.dto.channel.ReadStatusCreateReqeust;
+import com.sprint.mission.discodeit.dto.channel.ReadStatusCreateRequest;
 import com.sprint.mission.discodeit.entity.Channel;
 
 import java.util.List;
@@ -12,7 +12,7 @@ import java.util.UUID;
 public interface ChannelService {
     // 등록
     Channel createPrivate(List<UUID> memberIds);
-    Channel createPublic(ReadStatusCreateReqeust dto);
+    Channel createPublic(ReadStatusCreateRequest dto);
 
     // 정보 수정
     Channel update(ChannelUpdateReqeust dto);

@@ -2,7 +2,7 @@ package com.sprint.mission.discodeit.service.basic;
 
 import com.sprint.mission.discodeit.dto.channel.ChannelUpdateReqeust;
 import com.sprint.mission.discodeit.dto.channel.FindReqeust;
-import com.sprint.mission.discodeit.dto.channel.ReadStatusCreateReqeust;
+import com.sprint.mission.discodeit.dto.channel.ReadStatusCreateRequest;
 import com.sprint.mission.discodeit.entity.Channel;
 import com.sprint.mission.discodeit.entity.ChannelType;
 import com.sprint.mission.discodeit.entity.ReadStatus;
@@ -36,7 +36,7 @@ public class BasicChannelService implements ChannelService {
     }
 
     @Override
-    public Channel createPublic(ReadStatusCreateReqeust dto) {
+    public Channel createPublic(ReadStatusCreateRequest dto) {
         Channel channel = new Channel(dto.name(), dto.memberIds(), ChannelType.PUBLIC);
 
         for (UUID memberId : dto.memberIds()) {
