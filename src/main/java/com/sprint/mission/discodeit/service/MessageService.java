@@ -1,7 +1,7 @@
 package com.sprint.mission.discodeit.service;
 
-import com.sprint.mission.discodeit.dto.meg.MessageBinaryContentReqeust;
-import com.sprint.mission.discodeit.dto.meg.MessageUpdateReqeust;
+import com.sprint.mission.discodeit.dto.message.MessageBinaryContentReqeust;
+import com.sprint.mission.discodeit.dto.message.MessageUpdateReqeust;
 import com.sprint.mission.discodeit.entity.Message;
 
 import java.util.List;

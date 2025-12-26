@@ -3,7 +3,7 @@ package com.sprint.mission.discodeit;
 import com.sprint.mission.discodeit.dto.channel.ChannelUpdateReqeust;
 import com.sprint.mission.discodeit.dto.channel.FindReqeust;
 import com.sprint.mission.discodeit.dto.channel.ReadStatusCreateReqeust;
-import com.sprint.mission.discodeit.dto.meg.MessageBinaryContentReqeust;
+import com.sprint.mission.discodeit.dto.message.MessageBinaryContentReqeust;
 import com.sprint.mission.discodeit.dto.user.UserStatusCreateReqeust;
 import com.sprint.mission.discodeit.dto.user.UserStatusReqeust;
 import com.sprint.mission.discodeit.dto.user.UserStatusFindReqeust;

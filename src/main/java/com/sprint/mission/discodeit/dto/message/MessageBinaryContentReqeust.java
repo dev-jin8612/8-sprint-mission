@@ -1,9 +1,7 @@
-package com.sprint.mission.discodeit.dto.meg;
+package com.sprint.mission.discodeit.dto.message;
 
 import com.sprint.mission.discodeit.entity.Channel;
 
-import java.io.File;
-import java.util.Map;
 import java.util.UUID;
 
 public record MessageBinaryContentReqeust(

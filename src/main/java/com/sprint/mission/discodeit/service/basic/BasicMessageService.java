@@ -1,9 +1,8 @@
 package com.sprint.mission.discodeit.service.basic;
 
-import com.sprint.mission.discodeit.dto.meg.MessageBinaryContentReqeust;
-import com.sprint.mission.discodeit.dto.meg.MessageCreateReqeust;
-import com.sprint.mission.discodeit.dto.meg.MessageUpdateReqeust;
-import com.sprint.mission.discodeit.dto.request.BinaryContentCreateRequest;
+import com.sprint.mission.discodeit.dto.message.MessageBinaryContentReqeust;
+import com.sprint.mission.discodeit.dto.message.MessageCreateReqeust;
+import com.sprint.mission.discodeit.dto.message.MessageUpdateReqeust;
 import com.sprint.mission.discodeit.entity.BinaryContent;
 import com.sprint.mission.discodeit.entity.Message;
 import com.sprint.mission.discodeit.repository.BinaryContentRepository;
