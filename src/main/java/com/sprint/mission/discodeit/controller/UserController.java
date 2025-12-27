@@ -20,7 +20,7 @@ import java.util.*;
 @Controller
 @RequestMapping("/user")
 @RequiredArgsConstructor
-public class AboutUserController {
+public class UserController {
     private final UserService userService;
     private final UserStatusService userStatusService;
     private final AuthService authService;
@@ -40,6 +40,7 @@ public class AboutUserController {
              * DTO 같은 객체를 읽을 때는 그냥 그대로 적어 넣기*/
             @RequestParam(required = false) MultipartFile img
     ) throws IOException {
+
         Optional<BinaryContentCreateRequest> binaryContentCreateRequest =
                 Optional.ofNullable(img)
                         .map(file -> {
