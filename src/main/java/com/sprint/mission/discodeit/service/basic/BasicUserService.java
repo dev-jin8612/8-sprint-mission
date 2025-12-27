@@ -1,6 +1,6 @@
 package com.sprint.mission.discodeit.service.basic;
 
-import com.sprint.mission.discodeit.dto.data.UserDto;
+import com.sprint.mission.discodeit.dto.data.UserReqeust;
 import com.sprint.mission.discodeit.dto.request.BinaryContentCreateRequest;
 import com.sprint.mission.discodeit.dto.request.UserCreateRequest;
 import com.sprint.mission.discodeit.dto.request.UserUpdateRequest;
@@ -62,14 +62,14 @@ public class BasicUserService implements UserService {
     }
 
     @Override
-    public UserDto find(UUID userId) {
+    public UserReqeust find(UUID userId) {
         return userRepository.findById(userId)
                 .map(this::toDto)
                 .orElseThrow(() -> new NoSuchElementException("User with id " + userId + " not found"));
     }
 
     @Override
-    public UserDto findByUsername(String username) {
+    public UserReqeust findByUsername(String username) {
         return userRepository.findByUsername(username)
                 .map(this::toDto)
                 .orElseThrow(() -> new NoSuchElementException("User with id " + username + " not found"));
@@ -77,7 +77,7 @@ public class BasicUserService implements UserService {
 
 
     @Override
-    public List<UserDto> findAll() {
+    public List<UserReqeust> findAll() {
         return userRepository.findAll()
                 .stream()
                 .map(this::toDto)
@@ -130,12 +130,12 @@ public class BasicUserService implements UserService {
         userRepository.deleteById(userId);
     }
 
-    private UserDto toDto(User user) {
+    private UserReqeust toDto(User user) {
         Boolean online = userStatusRepository.findByUserId(user.getId())
                 .map(UserStatus::isOnline)
                 .orElse(null);
 
-        return new UserDto(
+        return new UserReqeust(
                 user.getId(),
                 user.getCreatedAt(),
                 user.getUpdatedAt(),

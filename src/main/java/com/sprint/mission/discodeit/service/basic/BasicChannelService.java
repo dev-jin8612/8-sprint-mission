@@ -1,6 +1,6 @@
 package com.sprint.mission.discodeit.service.basic;
 
-import com.sprint.mission.discodeit.dto.data.ChannelDto;
+import com.sprint.mission.discodeit.dto.data.ChannelReqeust;
 import com.sprint.mission.discodeit.dto.request.PrivateChannelCreateRequest;
 import com.sprint.mission.discodeit.dto.request.PublicChannelCreateRequest;
 import com.sprint.mission.discodeit.dto.request.PublicChannelUpdateRequest;
@@ -17,6 +17,7 @@ import org.springframework.stereotype.Service;
 
 import java.time.Instant;
 import java.util.*;
+import java.util.stream.Collectors;
 
 @RequiredArgsConstructor
 @Service
@@ -48,17 +49,18 @@ public class BasicChannelService implements ChannelService {
     }
 
     @Override
-    public ChannelDto find(UUID channelId) {
+    public ChannelReqeust find(UUID channelId) {
         return channelRepository.findById(channelId)
                 .map(this::toDto)
                 .orElseThrow(() -> new NoSuchElementException("Channel with id " + channelId + " not found"));
     }
 
     @Override
-    public List<ChannelDto> findAllByUserId(UUID userId) {
-        List<UUID> mySubscribedChannelIds = readStatusRepository.findAllByUserId(userId).stream()
-                .map(ReadStatus::getChannelId)
-                .toList();
+    public List<ChannelReqeust> findAllByUserId(UUID userId) {
+        List<UUID> mySubscribedChannelIds =
+                readStatusRepository.findAllByUserId(userId).stream()
+                        .map(ReadStatus::getChannelId)
+                        .toList();
 
         return channelRepository.findAll().stream()
                 .filter(channel ->
@@ -70,14 +72,34 @@ public class BasicChannelService implements ChannelService {
     }
 
     @Override
+    public ChannelReqeust findByName(String channelName) {
+        // 나중에는 방 개설자인지도 확인하는게 필요할것 같다.
+
+        ChannelReqeust channelReqeust =
+                channelRepository.findAll().stream()
+                        .filter(channel ->
+                                // private 채널을 이름이 없으니 없으면 넘어가게 만들기
+                                channel.getName() != null &&
+                                        !channel.getName().isEmpty() &&
+                                        channel.getName().equals(channelName)
+                        )
+                        .map(this::toDto).findFirst().orElse(null);
+
+        return channelReqeust;
+    }
+
+    @Override
     public Channel update(UUID channelId, PublicChannelUpdateRequest request) {
         String newName = request.newName();
         String newDescription = request.newDescription();
+
         Channel channel = channelRepository.findById(channelId)
                 .orElseThrow(() -> new NoSuchElementException("Channel with id " + channelId + " not found"));
+
         if (channel.getType().equals(ChannelType.PRIVATE)) {
             throw new IllegalArgumentException("Private channel cannot be updated");
         }
+
         channel.update(newName, newDescription);
         return channelRepository.save(channel);
     }
@@ -93,7 +115,7 @@ public class BasicChannelService implements ChannelService {
         channelRepository.deleteById(channelId);
     }
 
-    private ChannelDto toDto(Channel channel) {
+    private ChannelReqeust toDto(Channel channel) {
         Instant lastMessageAt = messageRepository.findAllByChannelId(channel.getId())
                 .stream()
                 .sorted(Comparator.comparing(Message::getCreatedAt).reversed())
@@ -110,7 +132,7 @@ public class BasicChannelService implements ChannelService {
                     .forEach(participantIds::add);
         }
 
-        return new ChannelDto(
+        return new ChannelReqeust(
                 channel.getId(),
                 channel.getType(),
                 channel.getName(),

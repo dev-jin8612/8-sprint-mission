@@ -1,11 +1,10 @@
 package com.sprint.mission.discodeit.controller;
 
-import com.sprint.mission.discodeit.dto.data.UserDto;
+import com.sprint.mission.discodeit.dto.data.UserReqeust;
 import com.sprint.mission.discodeit.dto.request.*;
 import com.sprint.mission.discodeit.entity.User;
 import com.sprint.mission.discodeit.entity.UserStatus;
 import com.sprint.mission.discodeit.service.AuthService;
-import com.sprint.mission.discodeit.service.BinaryContentService;
 import com.sprint.mission.discodeit.service.UserService;
 import com.sprint.mission.discodeit.service.UserStatusService;
 import lombok.RequiredArgsConstructor;
@@ -86,12 +85,11 @@ public class AboutUserController {
                             }
                         });
 
-        UserDto userDto = userService.findByUsername(userName);
+        UserReqeust userReqeust = userService.findByUsername(userName);
 
-        User test = userService.update(userDto.id(), userRequest, binaryContentCreateRequest);
-        System.out.println(userDto.username() + "에서 " + test.getUsername() + " 수정까지는 성공");
+        User test = userService.update(userReqeust.id(), userRequest, binaryContentCreateRequest);
+        System.out.println(userReqeust.username() + "에서 " + test.getUsername() + " 수정까지는 성공");
     }
-
 
     // 전체 조회
     @ResponseBody
@@ -100,11 +98,10 @@ public class AboutUserController {
             method = RequestMethod.GET
     )
     public void allUser() {
-
-        List<UserDto> userDto = userService.findAll();
+        List<UserReqeust> userReqeust = userService.findAll();
 
         System.out.println("전체 유저 불러오기");
-        userDto.forEach(System.out::println);
+        userReqeust.forEach(System.out::println);
     }
 
     // 유저 상태 수정
@@ -112,13 +109,11 @@ public class AboutUserController {
     @RequestMapping(value = "/userStatus/{userName}", method = RequestMethod.GET)
     // 이번엔 다른 어노테이션도 써보기 위해서 pathvariable사용
     public void userStatusUpdate(@PathVariable String userName) {
+
         UserStatusUpdateRequest userStatusUpdateRequest = new UserStatusUpdateRequest(Instant.now());
+        UserReqeust userReqeust = userService.findByUsername(userName);
+        UserStatus userStatus = userStatusService.updateByUserId(userReqeust.id(), userStatusUpdateRequest);
 
-        UserDto userdto = userService.findAll().stream()
-                .filter(user -> user.username().equals(userName))
-                .findFirst().get();
-
-        UserStatus userStatus = userStatusService.updateByUserId(userdto.id(), userStatusUpdateRequest);
         System.out.println(userStatus.getUpdatedAt()+" 상태 수정까지는 성공");
     }
 
@@ -126,12 +121,9 @@ public class AboutUserController {
     @ResponseBody
     @RequestMapping(value = "/delete/{userName}", method = RequestMethod.GET)
     public void deleteUser(@PathVariable String userName) {
+        UserReqeust userReqeust = userService.findByUsername(userName);
 
-        UserDto userDto = userService.findAll().stream()
-                .filter(user -> user.username().equals(userName))
-                .findFirst().get();
-
-        userService.delete(userDto.id());
+        userService.delete(userReqeust.id());
         System.out.println("삭제까지는 성공");
     }
 
