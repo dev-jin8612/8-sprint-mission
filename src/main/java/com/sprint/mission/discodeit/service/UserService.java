@@ -1,16 +1,21 @@
 package com.sprint.mission.discodeit.service;
 
+import com.sprint.mission.discodeit.dto.user.UserStatusCreateReqeust;
+import com.sprint.mission.discodeit.dto.user.UserStatusReqeust;
+import com.sprint.mission.discodeit.dto.user.UserStatusFindReqeust;
 import com.sprint.mission.discodeit.entity.User;
-import java.util.ArrayList;
+
 import java.util.List;
+import java.util.Map;
 import java.util.UUID;
+
 
 public interface UserService {
     // 등록
-    User create(User user);
+    UserStatusReqeust create(UserStatusCreateReqeust createDTO);
 
     // 정보 수정
-    User update(UUID userid, String username);
+    UserStatusReqeust update(UserStatusReqeust updateDTO);
 
     // 삭제
     void delete(UUID id);
@@ -19,7 +24,7 @@ public interface UserService {
     List<User> searchByName(List<String> name);
 
     // id로 찾기
-    User findById(UUID id);
+    UserStatusFindReqeust findById(UUID id);
 
-    List<User> getUsers();
+    Map<UUID,User> getUsers();
 }

@@ -1,61 +1,40 @@
 package com.sprint.mission.discodeit.entity;
 
+import com.sprint.mission.discodeit.dto.message.MessageCreateReqeust;
+import lombok.Getter;
+
 import java.io.Serializable;
+import java.time.Instant;
 import java.util.UUID;
 
-public class Message implements Serializable {
+@Getter
+public class Message extends BasicEntity implements Serializable {
     private static final long serialVersionUID = 1L;
-    //메세지 번호
-    private UUID id;
+
     //메세지 내용
     private String meg;
     //보낸 사람
     private UUID sender;
     // 보낸 방번호
     private UUID roomId;
-    // 생성 시간
-    private long created;
-    // 수정 시간
-    private long updated;
+    // Binary
+    UUID attchmentIds;
 
-    public Message(String m, UUID userId, UUID chId) {
-        id = UUID.randomUUID();
-        meg = m;
-        sender = userId;
-        roomId = chId;
-        long now = System.currentTimeMillis();
-        created = now;
-        updated = now;
-    }
+//    public Message(String m, UUID userId, UUID chId, UUID attchmentId) {
+    public Message(MessageCreateReqeust dto) {
+        super();
+        meg = dto.m();
+        sender = dto.userId();
+        roomId = dto.chId();
 
-    // getter
-    public UUID getRoomId() {
-        return roomId;
-    }
-
-    public UUID getId() {
-        return id;
-    }
-
-    public String getMeg() {
-        return meg;
-    }
-
-    public UUID getSender() {
-        return sender;
-    }
-
-    public long getCreated() {
-        return created;
-    }
-
-    public long getUpdated() {
-        return updated;
+        attchmentIds = dto.attchmentId();
     }
 
     // 수정
     public void update(String m) {
-        meg = m;
-        updated = System.currentTimeMillis();
+        if (meg != null && meg.trim().length() > 0) {
+            meg = m;
+            updated = Instant.now();
+        }
     }
 }

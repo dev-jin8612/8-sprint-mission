@@ -1,18 +1,32 @@
 package com.sprint.mission.discodeit.repository.file;
 
+import com.sprint.mission.discodeit.dto.channel.ChannelUpdateReqeust;
 import com.sprint.mission.discodeit.entity.Channel;
 import com.sprint.mission.discodeit.repository.ChannelRepository;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
+import org.springframework.stereotype.Repository;
 
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.*;
 
-public class FileChannelReposiory extends SaveLoadHelper implements ChannelRepository {
-    private static final Path directory = Paths.get(System.getProperty("user.dir"), "data");
-    private static final Path file = Paths.get(String.valueOf(directory), "ch.ser");
-    private final Map<UUID, Channel> channels;
+@Repository
+@ConditionalOnProperty(
+        name = "discodeit.repository.type",
+        havingValue = "file",
+        matchIfMissing = true
+)
+public class FileChannelRepository extends SaveLoadHelper implements ChannelRepository {
+    private final Path directory;
+    private final Path file;
+    private Map<UUID, Channel> channels;
 
-    public FileChannelReposiory() {
+    public FileChannelRepository(
+            @Value("${discodeit.repository.file-directory}") String dir
+    ) {
+        this.directory = Paths.get(dir);
+        this.file = directory.resolve("ch.ser");
         init(directory);
         channels = load(file);
     }
@@ -25,20 +39,17 @@ public class FileChannelReposiory extends SaveLoadHelper implements ChannelRepos
     }
 
     @Override
-    public Channel update(UUID channelId, String channelName, List<UUID> usersId) {
-        Channel channel = Optional.ofNullable(channels.get(channelId))
+    public Channel update(ChannelUpdateReqeust dto) {
+        Channel channel = Optional.ofNullable(channels.get(dto.chId()))
                 .orElseThrow(() -> new NoSuchElementException("채널이 없습니다."));
 
-        channel.update(channelName);
+        channel.update(dto.name(), dto.type());
         save(file, channels);
         return channel;
     }
 
     @Override
     public void delete(UUID channelId) {
-        if (!channels.containsKey(channelId)) {
-            throw new NoSuchElementException("이미 삭제 되었습니다.");
-        }
 
         channels.remove(channelId);
         save(file, channels);
@@ -48,7 +59,7 @@ public class FileChannelReposiory extends SaveLoadHelper implements ChannelRepos
     public List<Channel> searchByName(List<String> name) {
         List<Channel> ch = channels.values().stream()
                 .filter(cha ->
-                        name.stream().anyMatch(na -> cha.getChannelName().contains(na))
+                        name.stream().anyMatch(na -> cha.getName().contains(na))
                 ).toList();
 
         return Optional.ofNullable(ch)
@@ -62,10 +73,8 @@ public class FileChannelReposiory extends SaveLoadHelper implements ChannelRepos
     }
 
     @Override
-    public List<Channel> getChannelList() {
-        List<Channel> ch = new ArrayList<>(channels.values());
-
-        return Optional.ofNullable(ch)
+    public Map<UUID, Channel> getChannelList() {
+        return Optional.ofNullable(channels)
                 .orElse(null);
     }
 }

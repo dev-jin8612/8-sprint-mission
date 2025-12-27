@@ -1,19 +1,21 @@
 package com.sprint.mission.discodeit.service;
 
+import com.sprint.mission.discodeit.dto.channel.ChannelUpdateReqeust;
+import com.sprint.mission.discodeit.dto.channel.FindReqeust;
+import com.sprint.mission.discodeit.dto.channel.ReadStatusCreateRequest;
 import com.sprint.mission.discodeit.entity.Channel;
-import com.sprint.mission.discodeit.entity.Message;
-import com.sprint.mission.discodeit.entity.User;
 
-import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import java.util.UUID;
 
 public interface ChannelService {
     // 등록
-    Channel create(Channel channel);
+    Channel createPrivate(List<UUID> memberIds);
+    Channel createPublic(ReadStatusCreateRequest dto);
 
     // 정보 수정
-    Channel update(UUID channelId, String channelname, List<UUID> usersIds);
+    Channel update(ChannelUpdateReqeust dto);
 
     // 삭제
     void delete(UUID channelId);
@@ -22,8 +24,8 @@ public interface ChannelService {
     List<Channel> searchByName(List<String> name);
 
     // 방 id로 찾기
-    Channel findById(UUID id);
+    FindReqeust findById(UUID id);
 
     // 방 정보 넘기기
-    List<Channel> getChannelList();
+    Map<UUID,Channel> getChannelList();
 }

@@ -1,11 +1,18 @@
 package com.sprint.mission.discodeit.repository.jcf;
 
+import com.sprint.mission.discodeit.dto.user.UserStatusReqeust;
 import com.sprint.mission.discodeit.entity.User;
 import com.sprint.mission.discodeit.repository.UserRepository;
-
+import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
+import org.springframework.stereotype.Repository;
 
 import java.util.*;
 
+@Repository
+@ConditionalOnProperty(
+        name = "discodeit.repository.type",
+        havingValue = "jcf"
+)
 public class JCFUserRepository implements UserRepository {
     private final Map<UUID, User> users;
 
@@ -22,11 +29,11 @@ public class JCFUserRepository implements UserRepository {
 
     // 사람 수정
     @Override
-    public User update(UUID userid, String username) {
-        User user = Optional.ofNullable(users.get(userid))
+    public User update(UserStatusReqeust dto) {
+        User user = Optional.ofNullable(users.get(dto.userid()))
                 .orElseThrow(() -> new NoSuchElementException("채널이 없습니다."));
 
-        user.update(username);
+        user.update(dto);
         return user;
     }
 
@@ -44,7 +51,7 @@ public class JCFUserRepository implements UserRepository {
     public List<User> searchByName(List<String> name) {
         List<User> result = users.values().stream()
                 .filter(user ->
-                        name.stream().anyMatch(na -> user.getUserName().contains(na))
+                        name.stream().anyMatch(na -> user.getName().contains(na))
                 ).toList();
 
         return Optional.ofNullable(result)
@@ -58,11 +65,19 @@ public class JCFUserRepository implements UserRepository {
                 .orElse(null);
     }
 
-    // 유저 리스트 채널 만들 때 필요
-    public List<User> getUsers() {
-        List<User> user = new ArrayList<>(users.values());
-
-        return Optional.ofNullable(user)
+    // 유저 리스트 넘기는거 만들기
+    // 채널 만들 때 필요
+    @Override
+    public Map<UUID,User>  getUsers() {
+        return Optional.ofNullable(users)
                 .orElse(null);
     }
+
+    @Override
+    public Optional<User> findByUsername(String username) {
+        return this.getUsers().values().stream()
+                .filter(user -> user.getName().equals(username))
+                .findFirst();
+    }
+
 }

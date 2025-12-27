@@ -1,47 +1,54 @@
 package com.sprint.mission.discodeit.repository.file;
 
-import com.sprint.mission.discodeit.entity.Channel;
+import com.sprint.mission.discodeit.dto.message.MessageUpdateReqeust;
 import com.sprint.mission.discodeit.entity.Message;
 import com.sprint.mission.discodeit.repository.MessageRepository;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
+import org.springframework.stereotype.Repository;
 
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.*;
 
-public class FileMessageReposiory extends SaveLoadHelper implements MessageRepository {
-    private static final Path directory = Paths.get(System.getProperty("user.dir"), "data");
-    private static final Path filepath = Paths.get(String.valueOf(directory), "meg.ser");
-    private final Map<UUID, Message> messages;
+@Repository
+@ConditionalOnProperty(
+        name = "discodeit.repository.type",
+        havingValue = "file",
+        matchIfMissing = true
+)
+public class FileMessageRepository extends SaveLoadHelper implements MessageRepository {
+    private final Path directory;
+    private final Path filepath;
+    private Map<UUID, Message> messages;
 
-    public FileMessageReposiory() {
+    public FileMessageRepository(
+            @Value("${discodeit.repository.file-directory}") String dir
+    ) {
+        this.directory = Paths.get(dir);
+        this.filepath = directory.resolve("meg.ser");
         init(directory);
         messages = load(filepath);
     }
 
     // 메세지 추가
     @Override
-    public Message create(String contents, Channel ch, UUID userId) {
-        Message m = null;
+    public Message create(Message m) {
+        messages.put(m.getId(), m);
+        save(filepath, messages);
 
-        if (ch.getUsers().stream().anyMatch(u -> u.equals(userId))) {
-            m = new Message(contents, userId, ch.getId());
-            messages.put(m.getId(), m);
-            save(filepath, messages);
-            System.out.println("메세지가 생성 됐습니다.");
-        }
-
-        return Optional.ofNullable(m)
-                .orElseThrow(() -> new NoSuchElementException("잘못된 형식입니다."));
+        return m;
     }
 
     // 메세지 수정
     @Override
-    public Message update(UUID mesUid, String contents) {
-        Message m = Optional.ofNullable(messages.get(mesUid))
+    public Message update(MessageUpdateReqeust dto) {
+        Message m = Optional.ofNullable(messages.get(dto.mesUid()))
                 .orElseThrow(() -> new NoSuchElementException("메세지가 없습니다."));
 
-        m.update(contents);
+        m.update(dto.contents());
         save(filepath, messages);
+
         return m;
     }
 
@@ -52,8 +59,8 @@ public class FileMessageReposiory extends SaveLoadHelper implements MessageRepos
             throw new NoSuchElementException("이미 삭제 되었습니다.");
         }
 
-        save(filepath, messages);
         messages.remove(mesUId);
+        save(filepath, messages);
     }
 
     // 메세지 찾아서 단일객체 넘기기

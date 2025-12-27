@@ -1,0 +1,9 @@
+spring:
+  application:
+    name: discodeit
+
+# application.yaml
+discodeit:
+  repository:
+    type: file   # jcf/file 둘 중 하나로 쓰기
+    file-directory: .discodeit

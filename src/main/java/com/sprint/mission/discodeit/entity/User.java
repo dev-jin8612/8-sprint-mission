@@ -1,55 +1,62 @@
 package com.sprint.mission.discodeit.entity;
 
+import com.sprint.mission.discodeit.dto.user.UserStatusCreateReqeust;
+import com.sprint.mission.discodeit.dto.user.UserStatusReqeust;
+import lombok.Getter;
+
 import java.io.Serializable;
+import java.time.Instant;
 import java.util.UUID;
 
 //유저 정보는 간략하게 비번 등을 생략
-public class User implements Serializable {
+@Getter
+public class User extends BasicEntity implements Serializable {
     private static final long serialVersionUID = 1L;
-    //유저 id
-    private UUID id;
-    //이름, 입력이 없다면 기본 이름
-    private String name = "defaultName";
-    // 생성 시간
-    private long created;
-    // 수정 시간
-    private long updated;
 
-    // getter
-    public UUID getId() {
-        return id;
-    }
-
-    public String getUserName() {
-        return name;
-    }
-
-    public long getCreated() {
-        return created;
-    }
-
-    public long getUpdated() {
-        return updated;
-    }
+    // 이름
+    private String name;
+    // 비번
+    private String password;
+    // 메일
+    private String email;
+    // 프로필 이미지
+    private UUID profile;
+    // 현 프로필
+    private UUID profileImg;
 
     // 생성자
-    public User(String name) {
-        this.id = UUID.randomUUID();
-        long now = System.currentTimeMillis();
-        this.created = now;
-        this.updated = now;
-
-        // 찾아보니 spring5.3이상에서는 ObjectUtils로 null,blank 확인 가능
-        // ex) ObjectUtils.isEmpty(String name);
-        //이름이 공백이거나 없는지 확인, 없다면 기본이름이 될것임
-        if (name != null && name.isEmpty() == false) {
-            this.name = name;
-        }
+    public User(UserStatusCreateReqeust createDTO) {
+        super();
+        this.name = createDTO.name();
+        this.password = createDTO.password();
+        this.email = createDTO.email();
+        this.profile=createDTO.profileId();
     }
 
-    // 수정, 비번은 없으니 간략하게
-    public void update(String name) {
-        this.name = name;
-        this.updated = System.currentTimeMillis();
+    // 수정
+    public void update(UserStatusReqeust updateDTO) {
+        boolean check =false;
+
+        if (updateDTO.name() != null && updateDTO.name().isEmpty() == false) {
+            this.name = updateDTO.name();
+            check = true;
+        }
+
+        if (updateDTO.password() != null && updateDTO.password().isEmpty() == false) {
+            this.password = updateDTO.password();
+            check = true;
+        }
+
+        if (updateDTO.email() != null && updateDTO.email().isEmpty() == false) {
+            this.email = updateDTO.email();
+            check = true;
+        }
+
+        if (updateDTO.profileImg() != null) {
+            this.profileImg = updateDTO.profileImg();
+            check = true;
+        }
+
+        if (check == false) {this.updated = Instant.now();}
     }
 }
