@@ -18,7 +18,6 @@ import org.springframework.web.multipart.MultipartFile;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Optional;
 import java.util.UUID;
 
 @Controller
@@ -85,7 +84,6 @@ public class MessageController {
          List<Message> message= messageService.findAllByChannelId(channelId);
          message.stream().forEach(message1 -> System.out.println(message1.getContent()));
     }
-
 
     @ResponseBody
     @RequestMapping(value = "/delete/{messageId}")
