@@ -18,6 +18,7 @@ import java.time.Instant;
 import java.util.*;
 
 @Controller
+@ResponseBody
 @RequestMapping("/user")
 @RequiredArgsConstructor
 public class UserController {
@@ -28,19 +29,18 @@ public class UserController {
     // 화면에 돌려주는거 없으니
     // ResponseBody 하고 void로 200만 나오게
     // 유저 생성
-    @ResponseBody
     @RequestMapping(
             value = "/create",
             method = RequestMethod.GET,
             consumes = MediaType.MULTIPART_FORM_DATA_VALUE
-    )
-    public void createUser(
+
+    ) public void createUser(
             UserCreateRequest userRequest,
             /*@ReuestParam은 String으로 값을 받기 때문에
              * DTO 같은 객체를 읽을 때는 그냥 그대로 적어 넣기*/
             @RequestParam(required = false) MultipartFile img
-    ) throws IOException {
 
+    ) throws IOException {
         Optional<BinaryContentCreateRequest> binaryContentCreateRequest =
                 Optional.ofNullable(img)
                         .map(file -> {
@@ -60,18 +60,17 @@ public class UserController {
     }
 
     // 유저 수정
-    @ResponseBody
     @RequestMapping(
             value = "/update",
             method = RequestMethod.GET,
             consumes = MediaType.MULTIPART_FORM_DATA_VALUE
-    )
-    public void updateUser(
+
+    ) public void updateUser(
             @RequestParam String userName,
             UserUpdateRequest userRequest,
             @RequestParam(required = false) MultipartFile img
-    ) throws IOException {
 
+    ) throws IOException {
         Optional<BinaryContentCreateRequest> binaryContentCreateRequest =
                 Optional.ofNullable(img)
                         .map(file -> {
@@ -93,12 +92,11 @@ public class UserController {
     }
 
     // 전체 조회
-    @ResponseBody
     @RequestMapping(
-            value = "/allUser",
+            value = "/findAll",
             method = RequestMethod.GET
-    )
-    public void allUser() {
+
+    ) public void allUser() {
         List<UserReqeust> userReqeust = userService.findAll();
 
         System.out.println("전체 유저 불러오기");
@@ -106,7 +104,6 @@ public class UserController {
     }
 
     // 유저 상태 수정
-    @ResponseBody
     @RequestMapping(value = "/userStatus/{userName}", method = RequestMethod.GET)
     // 이번엔 다른 어노테이션도 써보기 위해서 pathvariable사용
     public void userStatusUpdate(@PathVariable String userName) {
@@ -114,26 +111,26 @@ public class UserController {
         UserStatusUpdateRequest userStatusUpdateRequest = new UserStatusUpdateRequest(Instant.now());
         UserReqeust userReqeust = userService.findByUsername(userName);
         UserStatus userStatus = userStatusService.updateByUserId(userReqeust.id(), userStatusUpdateRequest);
-
         System.out.println(userStatus.getUpdatedAt()+" 상태 수정까지는 성공");
     }
 
     // 유저 삭제
-    @ResponseBody
     @RequestMapping(value = "/delete/{userName}", method = RequestMethod.GET)
     public void deleteUser(@PathVariable String userName) {
         UserReqeust userReqeust = userService.findByUsername(userName);
-
         userService.delete(userReqeust.id());
         System.out.println("삭제까지는 성공");
     }
 
     // 로그인
-    @ResponseBody
     @RequestMapping(value = "/auth", method = RequestMethod.GET)
     // 이번엔 다른 어노테이션도 써보기 위해서 RequestParam 사용
     public void auth(LoginRequest loginRequest) {
         User user = authService.login(loginRequest);
+
+        UserStatusUpdateRequest userStatusUpdateRequest = new UserStatusUpdateRequest(Instant.now());
+
+        userStatusService.updateByUserId(user.getId(),userStatusUpdateRequest);
         System.out.println(user.getUsername()+" 로그인까지는 성공");
     }
 }

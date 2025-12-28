@@ -21,6 +21,7 @@ import java.util.List;
 import java.util.UUID;
 
 @Controller
+@ResponseBody
 @RequestMapping("/message")
 @RequiredArgsConstructor
 public class MessageController {
@@ -28,19 +29,19 @@ public class MessageController {
     private final ChannelService channelService;
     private final UserService userService;
 
-    @ResponseBody
     @RequestMapping(
             value = "/send",
             method = RequestMethod.GET,
             consumes = MediaType.MULTIPART_FORM_DATA_VALUE
-    )
-    public void createMessage(
+
+    ) public void createMessage(
             @RequestParam String content,
 //            @RequestParam String channelName,
             @RequestParam UUID channelId,
             @RequestParam String senderName,
             @RequestParam(required = false) List<MultipartFile> img
     ) throws IOException {
+
 //        ChannelReqeust channelReqeust = channelService.findByName(channelName);
         UserReqeust userReqeust = userService.findByUsername(senderName);
         ChannelReqeust channelReqeust = channelService.find(channelId);
@@ -65,12 +66,11 @@ public class MessageController {
         System.out.println("메세지 보내기 성공");
     }
 
-    @ResponseBody
     @RequestMapping(
             value = "/update",
             method = RequestMethod.GET
-    )
-    public void updateMessage(
+
+    ) public void updateMessage(
             @RequestParam UUID messageId,
             @RequestParam MessageUpdateRequest newContent
     ){
@@ -78,14 +78,12 @@ public class MessageController {
         System.out.println(message.getContent() + "로 메세지 수정 성공");
     }
 
-    @ResponseBody
     @RequestMapping(value = "/search/{channelId}")
     public void searchMessage(@PathVariable UUID channelId){
          List<Message> message= messageService.findAllByChannelId(channelId);
          message.stream().forEach(message1 -> System.out.println(message1.getContent()));
     }
 
-    @ResponseBody
     @RequestMapping(value = "/delete/{messageId}")
     public void deleteMessage(@PathVariable UUID messageId){
         messageService.delete(messageId);

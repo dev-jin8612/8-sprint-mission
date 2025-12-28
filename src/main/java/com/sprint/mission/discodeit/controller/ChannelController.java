@@ -18,6 +18,7 @@ import java.util.List;
 import java.util.UUID;
 
 @Controller
+@ResponseBody
 @RequestMapping("/channel")
 @RequiredArgsConstructor
 public class ChannelController {
@@ -26,12 +27,11 @@ public class ChannelController {
     private final UserService userService;
 
     // 채널 생성
-    @ResponseBody
     @RequestMapping(
             value = "/create/{channelType}",
             method = RequestMethod.GET
-    )
-    public void createChannel(
+
+    ) public void createChannel(
             @RequestParam String[] name, // private면 참여자들의 이름, public이면 방 이름 입력
             @RequestParam(required = false) String description, //private면 필요없으니 false로
             // public와 private의 name이 서로 타입이 달라
@@ -43,12 +43,11 @@ public class ChannelController {
         if (name == null) throw new IllegalArgumentException("Channel name is null");
 
         if (channelType.equals(ChannelType.PRIVATE)) {
-
             List<UUID> participantIds = new ArrayList<>();
             for (String username : name) participantIds.add(userService.findByUsername(username).id());
             channelService.create(new PrivateChannelCreateRequest(participantIds));
-
             System.out.println("비공개 채널 생성까지는 성공");
+
         } else {
             channel = channelService.create(new PublicChannelCreateRequest(name[0], description));
             System.out.println(channel.getName() + "채널 생성까지는 성공");
@@ -56,12 +55,11 @@ public class ChannelController {
     }
 
     // 채널 수정
-    @ResponseBody
     @RequestMapping(
             value = "/update/{channelName}",
             method = RequestMethod.GET
-    )
-    public void updateChannel(
+
+    ) public void updateChannel(
             @PathVariable String channelName,
             PublicChannelUpdateRequest request
     ) {
@@ -71,12 +69,11 @@ public class ChannelController {
     }
 
     // 검색 조회
-    @ResponseBody
     @RequestMapping(
             value = "/channelSearch",
             method = RequestMethod.GET
-    )
-    public void channelSearch(@RequestParam String[] names) {
+
+    ) public void channelSearch(@RequestParam String[] names) {
         for (String name : names) {
             List<ChannelReqeust> channelReqeust = channelService.findAllByUserId(
                     userService.findByUsername(name).id());
@@ -86,13 +83,12 @@ public class ChannelController {
     }
 
     // 채널 삭제
-    @ResponseBody
     @RequestMapping(value = "/delete", method = RequestMethod.GET)
     public void deleteChannel(
             @RequestParam(required = false) String channelName,
             @RequestParam(required = false) UUID channelId
-    ) {
-        ChannelReqeust channelReqeust;
+
+    ) {ChannelReqeust channelReqeust;
 
         if (channelId != null) {
             System.out.println("channel ID로 삭제 시도");

@@ -24,7 +24,7 @@ import java.util.UUID;
 @Service
 public class BasicUserService implements UserService {
     private final UserRepository userRepository;
-    //
+
     private final BinaryContentRepository binaryContentRepository;
     private final UserStatusRepository userStatusRepository;
 
@@ -74,7 +74,6 @@ public class BasicUserService implements UserService {
                 .map(this::toDto)
                 .orElseThrow(() -> new NoSuchElementException("User with id " + username + " not found"));
     }
-
 
     @Override
     public List<UserReqeust> findAll() {
