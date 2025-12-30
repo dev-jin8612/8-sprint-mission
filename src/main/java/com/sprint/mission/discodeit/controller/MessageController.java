@@ -2,15 +2,16 @@ package com.sprint.mission.discodeit.controller;
 
 import com.sprint.mission.discodeit.dto.data.ChannelReqeust;
 import com.sprint.mission.discodeit.dto.data.UserReqeust;
-import com.sprint.mission.discodeit.dto.request.BinaryContentCreateRequest;
-import com.sprint.mission.discodeit.dto.request.MessageCreateRequest;
-import com.sprint.mission.discodeit.dto.request.MessageUpdateRequest;
+import com.sprint.mission.discodeit.dto.user.BinaryContentCreateRequest;
+import com.sprint.mission.discodeit.dto.message.MessageCreateRequest;
+import com.sprint.mission.discodeit.dto.message.MessageUpdateRequest;
 import com.sprint.mission.discodeit.entity.Message;
 import com.sprint.mission.discodeit.service.ChannelService;
 import com.sprint.mission.discodeit.service.MessageService;
 import com.sprint.mission.discodeit.service.UserService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
@@ -34,15 +35,13 @@ public class MessageController {
             method = RequestMethod.GET,
             consumes = MediaType.MULTIPART_FORM_DATA_VALUE
 
-    ) public void createMessage(
+    ) public ResponseEntity<Message> createMessage(
             @RequestParam String content,
-//            @RequestParam String channelName,
             @RequestParam UUID channelId,
             @RequestParam String senderName,
             @RequestParam(required = false) List<MultipartFile> img
     ) throws IOException {
 
-//        ChannelReqeust channelReqeust = channelService.findByName(channelName);
         UserReqeust userReqeust = userService.findByUsername(senderName);
         ChannelReqeust channelReqeust = channelService.find(channelId);
         List<BinaryContentCreateRequest> binaryContentCreateRequest = new ArrayList<>();
@@ -62,26 +61,30 @@ public class MessageController {
                         throw new RuntimeException(e);
                     }});
 
-        messageService.create(messageCreateRequest,binaryContentCreateRequest);
+        Message message = messageService.create(messageCreateRequest,binaryContentCreateRequest);
         System.out.println("메세지 보내기 성공");
+
+        return ResponseEntity.ok(message);
     }
 
     @RequestMapping(
             value = "/update",
             method = RequestMethod.GET
 
-    ) public void updateMessage(
+    ) public ResponseEntity<Message> updateMessage(
             @RequestParam UUID messageId,
             @RequestParam MessageUpdateRequest newContent
     ){
         Message message = messageService.update(messageId,newContent);
         System.out.println(message.getContent() + "로 메세지 수정 성공");
+        return ResponseEntity.ok(message);
     }
 
     @RequestMapping(value = "/search/{channelId}")
-    public void searchMessage(@PathVariable UUID channelId){
+    public ResponseEntity<List<Message>> searchMessage(@PathVariable UUID channelId){
          List<Message> message= messageService.findAllByChannelId(channelId);
          message.stream().forEach(message1 -> System.out.println(message1.getContent()));
+         return ResponseEntity.ok(message);
     }
 
     @RequestMapping(value = "/delete/{messageId}")

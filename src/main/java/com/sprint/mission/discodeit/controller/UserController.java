@@ -1,7 +1,7 @@
 package com.sprint.mission.discodeit.controller;
 
 import com.sprint.mission.discodeit.dto.data.UserReqeust;
-import com.sprint.mission.discodeit.dto.request.*;
+import com.sprint.mission.discodeit.dto.user.*;
 import com.sprint.mission.discodeit.entity.User;
 import com.sprint.mission.discodeit.entity.UserStatus;
 import com.sprint.mission.discodeit.service.AuthService;
@@ -9,13 +9,15 @@ import com.sprint.mission.discodeit.service.UserService;
 import com.sprint.mission.discodeit.service.UserStatusService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
 import java.time.Instant;
-import java.util.*;
+import java.util.List;
+import java.util.Optional;
 
 @Controller
 @ResponseBody
@@ -26,15 +28,14 @@ public class UserController {
     private final UserStatusService userStatusService;
     private final AuthService authService;
 
-    // 화면에 돌려주는거 없으니
-    // ResponseBody 하고 void로 200만 나오게
     // 유저 생성
     @RequestMapping(
             value = "/create",
             method = RequestMethod.GET,
             consumes = MediaType.MULTIPART_FORM_DATA_VALUE
 
-    ) public void createUser(
+    )
+    public ResponseEntity<User> createUser(
             UserCreateRequest userRequest,
             /*@ReuestParam은 String으로 값을 받기 때문에
              * DTO 같은 객체를 읽을 때는 그냥 그대로 적어 넣기*/
@@ -57,6 +58,8 @@ public class UserController {
 
         User user = userService.create(userRequest, binaryContentCreateRequest);
         System.out.println(user.getUsername() + " 생성까지는 성공");
+
+        return ResponseEntity.ok(user);
     }
 
     // 유저 수정
@@ -65,7 +68,8 @@ public class UserController {
             method = RequestMethod.GET,
             consumes = MediaType.MULTIPART_FORM_DATA_VALUE
 
-    ) public void updateUser(
+    )
+    public ResponseEntity<User> updateUser(
             @RequestParam String userName,
             UserUpdateRequest userRequest,
             @RequestParam(required = false) MultipartFile img
@@ -89,6 +93,8 @@ public class UserController {
 
         User test = userService.update(userReqeust.id(), userRequest, binaryContentCreateRequest);
         System.out.println(userReqeust.username() + "에서 " + test.getUsername() + " 수정까지는 성공");
+
+        return ResponseEntity.ok(test);
     }
 
     // 전체 조회
@@ -96,22 +102,27 @@ public class UserController {
             value = "/findAll",
             method = RequestMethod.GET
 
-    ) public void allUser() {
+    )
+    public ResponseEntity<List<UserReqeust>> finaAll() {
         List<UserReqeust> userReqeust = userService.findAll();
 
         System.out.println("전체 유저 불러오기");
         userReqeust.forEach(System.out::println);
+
+        return ResponseEntity.ok(userReqeust);
     }
 
     // 유저 상태 수정
     @RequestMapping(value = "/userStatus/{userName}", method = RequestMethod.GET)
     // 이번엔 다른 어노테이션도 써보기 위해서 pathvariable사용
-    public void userStatusUpdate(@PathVariable String userName) {
+    public ResponseEntity<UserReqeust> userStatusUpdate(@PathVariable String userName) {
 
         UserStatusUpdateRequest userStatusUpdateRequest = new UserStatusUpdateRequest(Instant.now());
         UserReqeust userReqeust = userService.findByUsername(userName);
         UserStatus userStatus = userStatusService.updateByUserId(userReqeust.id(), userStatusUpdateRequest);
-        System.out.println(userStatus.getUpdatedAt()+" 상태 수정까지는 성공");
+        System.out.println(userStatus.getUpdatedAt() + " 상태 수정까지는 성공");
+
+        return ResponseEntity.ok(userReqeust);
     }
 
     // 유저 삭제
@@ -125,12 +136,14 @@ public class UserController {
     // 로그인
     @RequestMapping(value = "/auth", method = RequestMethod.GET)
     // 이번엔 다른 어노테이션도 써보기 위해서 RequestParam 사용
-    public void auth(LoginRequest loginRequest) {
+    public ResponseEntity<User> auth(LoginRequest loginRequest) {
         User user = authService.login(loginRequest);
 
         UserStatusUpdateRequest userStatusUpdateRequest = new UserStatusUpdateRequest(Instant.now());
 
-        userStatusService.updateByUserId(user.getId(),userStatusUpdateRequest);
-        System.out.println(user.getUsername()+" 로그인까지는 성공");
+        userStatusService.updateByUserId(user.getId(), userStatusUpdateRequest);
+        System.out.println(user.getUsername() + " 로그인까지는 성공");
+
+        return ResponseEntity.ok(user);
     }
 }
