@@ -12,34 +12,36 @@ import org.springframework.web.bind.annotation.*;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
+import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.multipart.MultipartFile;
 
-@Controller
+@RestController
 @ResponseBody
 @RequestMapping("/binaryContent")
 @RequiredArgsConstructor
 public class BinaryContentController {
-    private final BinaryContentService binaryContentService;
-    private final UserService userService;
 
-    @RequestMapping(value = "/find", method = RequestMethod.GET)
-    public ResponseEntity<BinaryContent> find(@RequestParam UUID binaryContentId) {
-        BinaryContent binaryContent = binaryContentService.find(binaryContentId);
-        System.out.println(binaryContent.getFileName() + " 검색까지는 성공");
+  private final BinaryContentService binaryContentService;
 
-        return ResponseEntity.ok(binaryContent);
+  @RequestMapping(value = "/find", method = RequestMethod.GET)
+  public ResponseEntity<BinaryContent> find(@RequestParam UUID binaryContentId) {
+    BinaryContent binaryContent = binaryContentService.find(binaryContentId);
+    System.out.println(binaryContent.getFileName() + " 검색까지는 성공");
+
+    return ResponseEntity.ok(binaryContent);
+  }
+
+  @RequestMapping(value = "/multiSerach", method = RequestMethod.GET)
+  public ResponseEntity<List<BinaryContent>> binaryMulitSerach(@RequestParam UUID[] profileIds) {
+    List<BinaryContent> binaryContent = new ArrayList<>();
+    BinaryContent img = null;
+
+    for (UUID s : profileIds) {
+      img = binaryContentService.find(s);
+      binaryContent.add(img);
+      System.out.println(img.getFileName() + " 이미지 검색까지는 성공");
     }
 
-    @RequestMapping(value = "/multiSerach", method = RequestMethod.GET)
-    public ResponseEntity<List<BinaryContent>> binaryMulitSerach(@RequestParam("names") String[] names) {
-        List<BinaryContent> binaryContent = new ArrayList<>();
-        UserReqeust user;
-
-        for (String s : names) {
-            user = userService.findByUsername(s);
-            binaryContent.add(binaryContentService.find(user.profileId()));
-            System.out.println(user.username() + " 검색까지는 성공");
-        }
-
-        return ResponseEntity.ok(binaryContent);
-    }
+    return ResponseEntity.ok(binaryContent);
+  }
 }

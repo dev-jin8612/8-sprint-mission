@@ -19,131 +19,104 @@ import java.time.Instant;
 import java.util.List;
 import java.util.Optional;
 
-@Controller
+@RestController
 @ResponseBody
 @RequestMapping("/user")
 @RequiredArgsConstructor
 public class UserController {
-    private final UserService userService;
-    private final UserStatusService userStatusService;
-    private final AuthService authService;
 
-    // 유저 생성
-    @RequestMapping(
-            value = "/create",
-            method = RequestMethod.GET,
-            consumes = MediaType.MULTIPART_FORM_DATA_VALUE
+  private final UserService userService;
 
-    )
-    public ResponseEntity<User> createUser(
-            UserCreateRequest userRequest,
-            /*@ReuestParam은 String으로 값을 받기 때문에
-             * DTO 같은 객체를 읽을 때는 그냥 그대로 적어 넣기*/
-            @RequestParam(required = false) MultipartFile img
+  // 유저 생성
+  @RequestMapping(
+      value = "/create",
+      method = RequestMethod.GET,
+      consumes = MediaType.MULTIPART_FORM_DATA_VALUE
 
-    ) throws IOException {
-        Optional<BinaryContentCreateRequest> binaryContentCreateRequest =
-                Optional.ofNullable(img)
-                        .map(file -> {
-                            try {
-                                return new BinaryContentCreateRequest(
-                                        file.getOriginalFilename(),
-                                        file.getContentType(),
-                                        file.getBytes()
-                                );
-                            } catch (IOException e) {
-                                throw new RuntimeException(e);
-                            }
-                        });
+  )
+  public ResponseEntity<User> createUser(
+      UserCreateRequest userRequest,
+      /*@ReuestParam은 String으로 값을 받기 때문에
+       * DTO 같은 객체를 읽을 때는 그냥 그대로 적어 넣기*/
+      @RequestParam(required = false) MultipartFile img
 
-        User user = userService.create(userRequest, binaryContentCreateRequest);
-        System.out.println(user.getUsername() + " 생성까지는 성공");
+  ) throws IOException {
+    Optional<BinaryContentCreateRequest> binaryContentCreateRequest =
+        Optional.ofNullable(img)
+            .map(file -> {
+              try {
+                return new BinaryContentCreateRequest(
+                    file.getOriginalFilename(),
+                    file.getContentType(),
+                    file.getBytes()
+                );
+              } catch (IOException e) {
+                throw new RuntimeException(e);
+              }
+            });
 
-        return ResponseEntity.ok(user);
-    }
+    User user = userService.create(userRequest, binaryContentCreateRequest);
+    System.out.println(user.getUsername() + " 생성까지는 성공");
 
-    // 유저 수정
-    @RequestMapping(
-            value = "/update",
-            method = RequestMethod.GET,
-            consumes = MediaType.MULTIPART_FORM_DATA_VALUE
+    return ResponseEntity.ok(user);
+  }
 
-    )
-    public ResponseEntity<User> updateUser(
-            @RequestParam String userName,
-            UserUpdateRequest userRequest,
-            @RequestParam(required = false) MultipartFile img
+  // 유저 수정
+  @RequestMapping(
+      value = "/update",
+      method = RequestMethod.GET,
+      consumes = MediaType.MULTIPART_FORM_DATA_VALUE
 
-    ) throws IOException {
-        Optional<BinaryContentCreateRequest> binaryContentCreateRequest =
-                Optional.ofNullable(img)
-                        .map(file -> {
-                            try {
-                                return new BinaryContentCreateRequest(
-                                        file.getOriginalFilename(),
-                                        file.getContentType(),
-                                        file.getBytes()
-                                );
-                            } catch (IOException e) {
-                                throw new RuntimeException(e);
-                            }
-                        });
+  )
+  public ResponseEntity<User> updateUser(
+      @RequestParam String userName,
+      UserUpdateRequest userRequest,
+      @RequestParam(required = false) MultipartFile img
 
-        UserReqeust userReqeust = userService.findByUsername(userName);
+  ) throws IOException {
+    Optional<BinaryContentCreateRequest> binaryContentCreateRequest =
+        Optional.ofNullable(img)
+            .map(file -> {
+              try {
+                return new BinaryContentCreateRequest(
+                    file.getOriginalFilename(),
+                    file.getContentType(),
+                    file.getBytes()
+                );
+              } catch (IOException e) {
+                throw new RuntimeException(e);
+              }
+            });
 
-        User test = userService.update(userReqeust.id(), userRequest, binaryContentCreateRequest);
-        System.out.println(userReqeust.username() + "에서 " + test.getUsername() + " 수정까지는 성공");
+    UserReqeust userReqeust = userService.findByUsername(userName);
 
-        return ResponseEntity.ok(test);
-    }
+    User test = userService.update(userReqeust.id(), userRequest, binaryContentCreateRequest);
+    System.out.println(userReqeust.username() + "에서 " + test.getUsername() + " 수정까지는 성공");
 
-    // 전체 조회
-    @RequestMapping(
-            value = "/findAll",
-            method = RequestMethod.GET
+    return ResponseEntity.ok(test);
+  }
 
-    )
-    public ResponseEntity<List<UserReqeust>> finaAll() {
-        List<UserReqeust> userReqeust = userService.findAll();
+  // 전체 조회
+  @RequestMapping(
+      value = "/findAll",
+      method = RequestMethod.GET
 
-        System.out.println("전체 유저 불러오기");
-        userReqeust.forEach(System.out::println);
+  )
+  public ResponseEntity<List<UserReqeust>> finaAll() {
+    List<UserReqeust> userReqeust = userService.findAll();
 
-        return ResponseEntity.ok(userReqeust);
-    }
+    System.out.println("전체 유저 불러오기");
+    userReqeust.forEach(System.out::println);
 
-    // 유저 상태 수정
-    @RequestMapping(value = "/userStatus/{userName}", method = RequestMethod.GET)
-    // 이번엔 다른 어노테이션도 써보기 위해서 pathvariable사용
-    public ResponseEntity<UserReqeust> userStatusUpdate(@PathVariable String userName) {
+    return ResponseEntity.ok(userReqeust);
+  }
 
-        UserStatusUpdateRequest userStatusUpdateRequest = new UserStatusUpdateRequest(Instant.now());
-        UserReqeust userReqeust = userService.findByUsername(userName);
-        UserStatus userStatus = userStatusService.updateByUserId(userReqeust.id(), userStatusUpdateRequest);
-        System.out.println(userStatus.getUpdatedAt() + " 상태 수정까지는 성공");
 
-        return ResponseEntity.ok(userReqeust);
-    }
-
-    // 유저 삭제
-    @RequestMapping(value = "/delete/{userName}", method = RequestMethod.GET)
-    public void deleteUser(@PathVariable String userName) {
-        UserReqeust userReqeust = userService.findByUsername(userName);
-        userService.delete(userReqeust.id());
-        System.out.println("삭제까지는 성공");
-    }
-
-    // 로그인
-    @RequestMapping(value = "/auth", method = RequestMethod.GET)
-    // 이번엔 다른 어노테이션도 써보기 위해서 RequestParam 사용
-    public ResponseEntity<User> auth(LoginRequest loginRequest) {
-        User user = authService.login(loginRequest);
-
-        UserStatusUpdateRequest userStatusUpdateRequest = new UserStatusUpdateRequest(Instant.now());
-
-        userStatusService.updateByUserId(user.getId(), userStatusUpdateRequest);
-        System.out.println(user.getUsername() + " 로그인까지는 성공");
-
-        return ResponseEntity.ok(user);
-    }
+  // 유저 삭제
+  @RequestMapping(value = "/delete/{userName}", method = RequestMethod.GET)
+  public void deleteUser(@PathVariable String userName) {
+    UserReqeust userReqeust = userService.findByUsername(userName);
+    userService.delete(userReqeust.id());
+    System.out.println("삭제까지는 성공");
+  }
 }

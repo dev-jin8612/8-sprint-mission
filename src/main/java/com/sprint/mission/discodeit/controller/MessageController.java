@@ -20,76 +20,75 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
+import org.springframework.web.bind.annotation.RestController;
 
-@Controller
+@RestController
 @ResponseBody
 @RequestMapping("/message")
 @RequiredArgsConstructor
 public class MessageController {
-    private final MessageService messageService;
-    private final ChannelService channelService;
-    private final UserService userService;
 
-    @RequestMapping(
-            value = "/send",
-            method = RequestMethod.GET,
-            consumes = MediaType.MULTIPART_FORM_DATA_VALUE
+  private final MessageService messageService;
 
-    ) public ResponseEntity<Message> createMessage(
-            @RequestParam String content,
-            @RequestParam UUID channelId,
-            @RequestParam String senderName,
-            @RequestParam(required = false) List<MultipartFile> img
-    ) throws IOException {
+  @RequestMapping(
+      value = "/send",
+      method = RequestMethod.GET,
+      consumes = MediaType.MULTIPART_FORM_DATA_VALUE
 
-        UserReqeust userReqeust = userService.findByUsername(senderName);
-        ChannelReqeust channelReqeust = channelService.find(channelId);
-        List<BinaryContentCreateRequest> binaryContentCreateRequest = new ArrayList<>();
+  )
+  public ResponseEntity<Message> createMessage(
+      @RequestParam String content,
+      @RequestParam UUID channelId,
+      @RequestParam UUID senderId,
+      @RequestParam(required = false) List<MultipartFile> img
+  ) throws IOException {
 
-        MessageCreateRequest messageCreateRequest = new MessageCreateRequest(
-                content, channelReqeust.id(),userReqeust.id()
-        );
+    List<BinaryContentCreateRequest> binaryContentCreateRequest = new ArrayList<>();
+    MessageCreateRequest messageCreateRequest = new MessageCreateRequest(content, channelId,
+        senderId);
 
-        img.forEach(upload -> {
-                    try {
-                        binaryContentCreateRequest.add(new BinaryContentCreateRequest(
-                                upload.getOriginalFilename(),
-                                upload.getContentType(),
-                                upload.getBytes()
-                        ));
-                    }catch (IOException e){
-                        throw new RuntimeException(e);
-                    }});
+    img.forEach(upload -> {
+      try {
+        binaryContentCreateRequest.add(new BinaryContentCreateRequest(
+            upload.getOriginalFilename(),
+            upload.getContentType(),
+            upload.getBytes()
+        ));
+      } catch (IOException e) {
+        throw new RuntimeException(e);
+      }
+    });
 
-        Message message = messageService.create(messageCreateRequest,binaryContentCreateRequest);
-        System.out.println("메세지 보내기 성공");
+    Message message = messageService.create(messageCreateRequest, binaryContentCreateRequest);
+    System.out.println("메세지 보내기 성공");
 
-        return ResponseEntity.ok(message);
-    }
+    return ResponseEntity.ok(message);
+  }
 
-    @RequestMapping(
-            value = "/update",
-            method = RequestMethod.GET
+  @RequestMapping(
+      value = "/update",
+      method = RequestMethod.GET
 
-    ) public ResponseEntity<Message> updateMessage(
-            @RequestParam UUID messageId,
-            @RequestParam MessageUpdateRequest newContent
-    ){
-        Message message = messageService.update(messageId,newContent);
-        System.out.println(message.getContent() + "로 메세지 수정 성공");
-        return ResponseEntity.ok(message);
-    }
+  )
+  public ResponseEntity<Message> updateMessage(
+      @RequestParam UUID messageId,
+      @RequestParam MessageUpdateRequest newContent
+  ) {
+    Message message = messageService.update(messageId, newContent);
+    System.out.println(message.getContent() + "로 메세지 수정 성공");
+    return ResponseEntity.ok(message);
+  }
 
-    @RequestMapping(value = "/search/{channelId}")
-    public ResponseEntity<List<Message>> searchMessage(@PathVariable UUID channelId){
-         List<Message> message= messageService.findAllByChannelId(channelId);
-         message.stream().forEach(message1 -> System.out.println(message1.getContent()));
-         return ResponseEntity.ok(message);
-    }
+  @RequestMapping(value = "/search/{channelId}")
+  public ResponseEntity<List<Message>> searchMessage(@PathVariable UUID channelId) {
+    List<Message> message = messageService.findAllByChannelId(channelId);
+    message.stream().forEach(message1 -> System.out.println(message1.getContent()));
+    return ResponseEntity.ok(message);
+  }
 
-    @RequestMapping(value = "/delete/{messageId}")
-    public void deleteMessage(@PathVariable UUID messageId){
-        messageService.delete(messageId);
-        System.out.println("메세지 삭제 성공");
-    }
+  @RequestMapping(value = "/delete/{messageId}")
+  public void deleteMessage(@PathVariable UUID messageId) {
+    messageService.delete(messageId);
+    System.out.println("메세지 삭제 성공");
+  }
 }

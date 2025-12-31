@@ -3,11 +3,13 @@ package com.sprint.mission.discodeit.controller;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RestController;
 
-@Controller
+@RestController
 public class MainController {
-    @RequestMapping(value = "/", method = RequestMethod.GET)
-    public String userlist() {
-        return "redirect:/user-list.html";
-    }
+
+  @RequestMapping(value = "/", method = RequestMethod.GET)
+  public String userlist() {
+    return "redirect:/user-list.html";
+  }
 }
