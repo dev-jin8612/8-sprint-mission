@@ -1,90 +1,115 @@
 package com.sprint.mission.discodeit.repository.file;
 
-import com.sprint.mission.discodeit.dto.message.MessageUpdateReqeust;
 import com.sprint.mission.discodeit.entity.Message;
 import com.sprint.mission.discodeit.repository.MessageRepository;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.stereotype.Repository;
 
+import java.io.*;
+import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.util.*;
+import java.util.List;
+import java.util.Optional;
+import java.util.UUID;
+import java.util.stream.Stream;
 
+@ConditionalOnProperty(name = "discodeit.repository.type", havingValue = "file")
 @Repository
-@ConditionalOnProperty(
-        name = "discodeit.repository.type",
-        havingValue = "file",
-        matchIfMissing = true
-)
-public class FileMessageRepository extends SaveLoadHelper implements MessageRepository {
-    private final Path directory;
-    private final Path filepath;
-    private Map<UUID, Message> messages;
+public class FileMessageRepository implements MessageRepository {
+    private final Path DIRECTORY;
+    private final String EXTENSION = ".ser";
 
     public FileMessageRepository(
-            @Value("${discodeit.repository.file-directory}") String dir
+            @Value("${discodeit.repository.file-directory:data}") String fileDirectory
     ) {
-        this.directory = Paths.get(dir);
-        this.filepath = directory.resolve("meg.ser");
-        init(directory);
-        messages = load(filepath);
-    }
-
-    // 메세지 추가
-    @Override
-    public Message create(Message m) {
-        messages.put(m.getId(), m);
-        save(filepath, messages);
-
-        return m;
-    }
-
-    // 메세지 수정
-    @Override
-    public Message update(MessageUpdateReqeust dto) {
-        Message m = Optional.ofNullable(messages.get(dto.mesUid()))
-                .orElseThrow(() -> new NoSuchElementException("메세지가 없습니다."));
-
-        m.update(dto.contents());
-        save(filepath, messages);
-
-        return m;
-    }
-
-    // 메세지 삭제
-    @Override
-    public void delete(UUID mesUId) {
-        if (!messages.containsKey(mesUId)) {
-            throw new NoSuchElementException("이미 삭제 되었습니다.");
+        this.DIRECTORY = Paths.get(System.getProperty("user.dir"), fileDirectory, Message.class.getSimpleName());
+        if (Files.notExists(DIRECTORY)) {
+            try {
+                Files.createDirectories(DIRECTORY);
+            } catch (IOException e) {
+                throw new RuntimeException(e);
+            }
         }
-
-        messages.remove(mesUId);
-        save(filepath, messages);
     }
 
-    // 메세지 찾아서 단일객체 넘기기
-    @Override
-    public List<Message> searchByContent(List<String> contents) {
-        List<Message> meg = messages.values().stream()
-                .filter(m ->
-                        contents.stream().anyMatch(txt -> m.getMeg().contains(txt))
-                ).toList();
-
-        return Optional.ofNullable(meg)
-                .orElse(null);
+    private Path resolvePath(UUID id) {
+        return DIRECTORY.resolve(id + EXTENSION);
     }
 
     @Override
-    public Message findById(UUID id) {
-        return Optional.ofNullable(messages.get(id))
-                .orElse(null);
+    public Message save(Message message) {
+        Path path = resolvePath(message.getId());
+        try (
+                FileOutputStream fos = new FileOutputStream(path.toFile());
+                ObjectOutputStream oos = new ObjectOutputStream(fos)
+        ) {
+            oos.writeObject(message);
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+        return message;
     }
 
     @Override
-    public List<Message> getMessages() {
-        List<Message> meg = new ArrayList<>(messages.values());
-        return Optional.ofNullable(meg)
-                .orElse(null);
+    public Optional<Message> findById(UUID id) {
+        Message messageNullable = null;
+        Path path = resolvePath(id);
+        if (Files.exists(path)) {
+            try (
+                    FileInputStream fis = new FileInputStream(path.toFile());
+                    ObjectInputStream ois = new ObjectInputStream(fis)
+            ) {
+                messageNullable = (Message) ois.readObject();
+            } catch (IOException | ClassNotFoundException e) {
+                throw new RuntimeException(e);
+            }
+        }
+        return Optional.ofNullable(messageNullable);
+    }
+
+    @Override
+    public List<Message> findAllByChannelId(UUID channelId) {
+        try (Stream<Path> paths = Files.list(DIRECTORY)) {
+            return paths
+                    .filter(path -> path.toString().endsWith(EXTENSION))
+                    .map(path -> {
+                        try (
+                                FileInputStream fis = new FileInputStream(path.toFile());
+                                ObjectInputStream ois = new ObjectInputStream(fis)
+                        ) {
+                            return (Message) ois.readObject();
+                        } catch (IOException | ClassNotFoundException e) {
+                            throw new RuntimeException(e);
+                        }
+                    })
+                    .filter(message -> message.getChannelId().equals(channelId))
+                    .toList();
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    @Override
+    public boolean existsById(UUID id) {
+        Path path = resolvePath(id);
+        return Files.exists(path);
+    }
+
+    @Override
+    public void deleteById(UUID id) {
+        Path path = resolvePath(id);
+        try {
+            Files.delete(path);
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    @Override
+    public void deleteAllByChannelId(UUID channelId) {
+        this.findAllByChannelId(channelId)
+                .forEach(message -> this.deleteById(message.getId()));
     }
 }

@@ -1,5 +1,6 @@
 package com.sprint.mission.discodeit.service.basic;
 
+
 import com.sprint.mission.discodeit.dto.user.BinaryContentCreateRequest;
 import com.sprint.mission.discodeit.entity.BinaryContent;
 import com.sprint.mission.discodeit.repository.BinaryContentRepository;
@@ -23,28 +24,32 @@ public class BasicBinaryContentService implements BinaryContentService {
         String contentType = request.contentType();
         BinaryContent binaryContent = new BinaryContent(
                 fileName,
+                (long) bytes.length,
                 contentType,
                 bytes
         );
-        return binaryContentRepository.create(binaryContent);
+        return binaryContentRepository.save(binaryContent);
     }
 
     @Override
     public BinaryContent find(UUID binaryContentId) {
-        return binaryContentRepository.find(binaryContentId)
-                .orElseThrow(() -> new NoSuchElementException("BinaryContent with id " + binaryContentId + " not found"));
+        return binaryContentRepository.findById(binaryContentId)
+                .orElseThrow(() -> new NoSuchElementException(
+                        "BinaryContent with id " + binaryContentId + " not found"));
     }
 
     @Override
     public List<BinaryContent> findAllByIdIn(List<UUID> binaryContentIds) {
-        return binaryContentRepository.findAllByIdIn(binaryContentIds);
+        return binaryContentRepository.findAllByIdIn(binaryContentIds).stream()
+                .toList();
     }
 
     @Override
     public void delete(UUID binaryContentId) {
-        if (binaryContentRepository.find(binaryContentId) != null) {
-            throw new NoSuchElementException("BinaryContent with id " + binaryContentId + " not found");
+        if (!binaryContentRepository.existsById(binaryContentId)) {
+            throw new NoSuchElementException("BinaryContent with id "
+                    + binaryContentId + " not found");
         }
-        binaryContentRepository.delete(binaryContentId);
+        binaryContentRepository.deleteById(binaryContentId);
     }
 }

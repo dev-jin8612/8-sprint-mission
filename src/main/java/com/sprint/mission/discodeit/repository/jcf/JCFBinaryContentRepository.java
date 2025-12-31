@@ -7,42 +7,40 @@ import org.springframework.stereotype.Repository;
 
 import java.util.*;
 
+@ConditionalOnProperty(name = "discodeit.repository.type", havingValue = "jcf", matchIfMissing = true)
 @Repository
-@ConditionalOnProperty(
-        name = "discodeit.repository.type",
-        havingValue = "jcf"
-)
 public class JCFBinaryContentRepository implements BinaryContentRepository {
-    private   Map<UUID, BinaryContent> bc;
+    private final Map<UUID, BinaryContent> data;
 
     public JCFBinaryContentRepository() {
-        this.bc = new HashMap<>();
+        this.data = new HashMap<>();
     }
 
     @Override
-    public BinaryContent create(BinaryContent binaryContent) {
-        bc.put(binaryContent.getId(),binaryContent);
+    public BinaryContent save(BinaryContent binaryContent) {
+        this.data.put(binaryContent.getId(), binaryContent);
         return binaryContent;
     }
 
     @Override
-    public void delete(UUID id) {
-        bc.remove(id);
+    public Optional<BinaryContent> findById(UUID id) {
+        return Optional.ofNullable(this.data.get(id));
     }
 
     @Override
-    public Optional<BinaryContent> find(UUID id) {
-        return Optional.ofNullable(bc.get(id));
+    public List<BinaryContent> findAllByIdIn(List<UUID> ids) {
+        return this.data.values().stream()
+                .filter(content -> ids.contains(content.getId()))
+                .toList();
     }
 
     @Override
-    public List<BinaryContent> findAllByIdIn(List<UUID> binaryContentIds) {
-        List<BinaryContent> bcList = new ArrayList<>();
+    public boolean existsById(UUID id) {
+        return this.data.containsKey(id);
+    }
 
-        binaryContentIds.stream().map(uuid ->
-                bcList.add(bc.get(uuid))
-        );
-
-        return bcList;
+    @Override
+    public void deleteById(UUID id) {
+        this.data.remove(id);
     }
 }

@@ -1,6 +1,5 @@
 package com.sprint.mission.discodeit.repository.jcf;
 
-import com.sprint.mission.discodeit.dto.user.UserStatusReqeust;
 import com.sprint.mission.discodeit.entity.User;
 import com.sprint.mission.discodeit.repository.UserRepository;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
@@ -8,76 +7,55 @@ import org.springframework.stereotype.Repository;
 
 import java.util.*;
 
+@ConditionalOnProperty(name = "discodeit.repository.type", havingValue = "jcf", matchIfMissing = true)
 @Repository
-@ConditionalOnProperty(
-        name = "discodeit.repository.type",
-        havingValue = "jcf"
-)
 public class JCFUserRepository implements UserRepository {
-    private final Map<UUID, User> users;
+    private final Map<UUID, User> data;
 
     public JCFUserRepository() {
-        this.users = new HashMap<>();
+        this.data = new HashMap<>();
     }
 
-    // 사람 추가
     @Override
-    public User create(User user) {
-        users.put(user.getId(), user);
+    public User save(User user) {
+        this.data.put(user.getId(), user);
         return user;
     }
 
-    // 사람 수정
     @Override
-    public User update(UserStatusReqeust dto) {
-        User user = Optional.ofNullable(users.get(dto.userid()))
-                .orElseThrow(() -> new NoSuchElementException("채널이 없습니다."));
-
-        user.update(dto);
-        return user;
-    }
-
-    // 사람 삭제
-    @Override
-    public void delete(UUID userId) {
-        if (!users.containsKey(userId)) {
-            throw new NoSuchElementException("이미 삭제 되었습니다.");
-        }
-        users.remove(userId);
-    }
-
-    // 사람 찾아서 객체 넘기기
-    @Override
-    public List<User> searchByName(List<String> name) {
-        List<User> result = users.values().stream()
-                .filter(user ->
-                        name.stream().anyMatch(na -> user.getName().contains(na))
-                ).toList();
-
-        return Optional.ofNullable(result)
-                .orElse(null);
-    }
-
-    // 사람 찾기
-    @Override
-    public User findById(UUID id) {
-        return Optional.ofNullable(users.get(id))
-                .orElse(null);
-    }
-
-    // 유저 리스트 넘기는거 만들기
-    // 채널 만들 때 필요
-    @Override
-    public Map<UUID,User>  getUsers() {
-        return Optional.ofNullable(users)
-                .orElse(null);
+    public Optional<User> findById(UUID id) {
+        return Optional.ofNullable(this.data.get(id));
     }
 
     @Override
     public Optional<User> findByUsername(String username) {
-        return this.getUsers().values().stream()
-                .filter(user -> user.getName().equals(username))
+        return this.findAll().stream()
+                .filter(user -> user.getUsername().equals(username))
                 .findFirst();
     }
 
+    @Override
+    public List<User> findAll() {
+        return this.data.values().stream().toList();
+    }
+
+    @Override
+    public boolean existsById(UUID id) {
+        return this.data.containsKey(id);
+    }
+
+    @Override
+    public void deleteById(UUID id) {
+        this.data.remove(id);
+    }
+
+    @Override
+    public boolean existsByEmail(String email) {
+        return this.findAll().stream().anyMatch(user -> user.getEmail().equals(email));
+    }
+
+    @Override
+    public boolean existsByUsername(String username) {
+        return this.findAll().stream().anyMatch(user -> user.getUsername().equals(username));
+    }
 }

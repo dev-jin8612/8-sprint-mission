@@ -1,6 +1,5 @@
 package com.sprint.mission.discodeit.repository.jcf;
 
-import com.sprint.mission.discodeit.dto.channel.ChannelUpdateReqeust;
 import com.sprint.mission.discodeit.entity.Channel;
 import com.sprint.mission.discodeit.repository.ChannelRepository;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
@@ -8,62 +7,38 @@ import org.springframework.stereotype.Repository;
 
 import java.util.*;
 
+@ConditionalOnProperty(name = "discodeit.repository.type", havingValue = "jcf", matchIfMissing = true)
 @Repository
-@ConditionalOnProperty(
-        name = "discodeit.repository.type",
-        havingValue = "jcf"
-)
 public class JCFChannelRepository implements ChannelRepository {
-    private final Map<UUID, Channel> channels;
+    private final Map<UUID, Channel> data;
 
     public JCFChannelRepository() {
-        this.channels = new HashMap<>();
+        this.data = new HashMap<>();
     }
 
     @Override
-    public Channel create(Channel channel) {
-        channels.put(channel.getId(), channel);
+    public Channel save(Channel channel) {
+        this.data.put(channel.getId(), channel);
         return channel;
     }
 
     @Override
-    public Channel update(ChannelUpdateReqeust dto) {
-        Channel channel = Optional.ofNullable(channels.get(dto.chId()))
-                .orElseThrow(() -> new NoSuchElementException("채널이 없습니다."));
-
-        channel.update(dto.name(),dto.type());
-        return channel;
+    public Optional<Channel> findById(UUID id) {
+        return Optional.ofNullable(this.data.get(id));
     }
 
     @Override
-    public void delete(UUID channelId) {
-        if (!channels.containsKey(channelId)) {
-            throw new NoSuchElementException("이미 삭제 되었습니다.");
-        }
-
-        channels.remove(channelId);
+    public List<Channel> findAll() {
+        return this.data.values().stream().toList();
     }
 
     @Override
-    public List<Channel> searchByName(List<String> name) {
-        List<Channel> ch = channels.values().stream()
-                .filter(cha ->
-                        name.stream().anyMatch(na -> cha.getName().contains(na))
-                ).toList();
-
-        return Optional.ofNullable(ch)
-                .orElse(null);
+    public boolean existsById(UUID id) {
+        return this.data.containsKey(id);
     }
 
     @Override
-    public Channel findById(UUID id) {
-        return Optional.ofNullable(channels.get(id))
-                .orElse(null);
-    }
-
-    @Override
-    public Map<UUID,Channel>  getChannelList() {
-        return Optional.ofNullable(channels)
-                .orElse(null);
+    public void deleteById(UUID id) {
+        this.data.remove(id);
     }
 }

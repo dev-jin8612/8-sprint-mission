@@ -1,27 +1,17 @@
 package com.sprint.mission.discodeit.service;
 
-import com.sprint.mission.discodeit.dto.message.MessageBinaryContentReqeust;
-import com.sprint.mission.discodeit.dto.message.MessageUpdateReqeust;
+import com.sprint.mission.discodeit.dto.user.BinaryContentCreateRequest;
+import com.sprint.mission.discodeit.dto.message.MessageCreateRequest;
+import com.sprint.mission.discodeit.dto.message.MessageUpdateRequest;
 import com.sprint.mission.discodeit.entity.Message;
 
 import java.util.List;
 import java.util.UUID;
 
 public interface MessageService {
-    // 등록
-    Message create(MessageBinaryContentReqeust dto);
-
-    // 정보 수정
-    Message update(MessageUpdateReqeust dto);
-
-    // 삭제
-    void delete(UUID id);
-
-    // 내용으로 찾기
-    List<Message> searchByContent(List<String> contents);
-
-    // id로 찾기
-    Message findById(UUID id);
-
-    List<Message> getMessages();
+    Message create(MessageCreateRequest messageCreateRequest, List<BinaryContentCreateRequest> binaryContentCreateRequests);
+    Message find(UUID messageId);
+    List<Message> findAllByChannelId(UUID channelId);
+    Message update(UUID messageId, MessageUpdateRequest request);
+    void delete(UUID messageId);
 }
