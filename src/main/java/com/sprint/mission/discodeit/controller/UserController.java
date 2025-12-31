@@ -1,26 +1,32 @@
 package com.sprint.mission.discodeit.controller;
 
-import com.sprint.mission.discodeit.dto.data.UserReqeust;
-import com.sprint.mission.discodeit.dto.user.*;
+import com.sprint.mission.discodeit.dto.data.UserResponse;
+import com.sprint.mission.discodeit.dto.user.BinaryContentCreateRequest;
+import com.sprint.mission.discodeit.dto.user.UserCreateRequest;
+import com.sprint.mission.discodeit.dto.user.UserUpdateRequest;
 import com.sprint.mission.discodeit.entity.User;
-import com.sprint.mission.discodeit.entity.UserStatus;
-import com.sprint.mission.discodeit.service.AuthService;
 import com.sprint.mission.discodeit.service.UserService;
-import com.sprint.mission.discodeit.service.UserStatusService;
-import lombok.RequiredArgsConstructor;
-import org.springframework.http.MediaType;
-import org.springframework.http.ResponseEntity;
-import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.*;
-import org.springframework.web.multipart.MultipartFile;
-
 import java.io.IOException;
-import java.time.Instant;
 import java.util.List;
 import java.util.Optional;
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RequestPart;
+import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.multipart.MultipartFile;
 
+@Slf4j
 @RestController
-@ResponseBody
 @RequestMapping("/user")
 @RequiredArgsConstructor
 public class UserController {
@@ -28,17 +34,15 @@ public class UserController {
   private final UserService userService;
 
   // 유저 생성
-  @RequestMapping(
+  @PostMapping(
       value = "/create",
-      method = RequestMethod.GET,
       consumes = MediaType.MULTIPART_FORM_DATA_VALUE
-
   )
   public ResponseEntity<User> createUser(
-      UserCreateRequest userRequest,
+      @RequestBody UserCreateRequest userRequest,
       /*@ReuestParam은 String으로 값을 받기 때문에
        * DTO 같은 객체를 읽을 때는 그냥 그대로 적어 넣기*/
-      @RequestParam(required = false) MultipartFile img
+      @RequestPart(required = false) MultipartFile img
 
   ) throws IOException {
     Optional<BinaryContentCreateRequest> binaryContentCreateRequest =
@@ -56,22 +60,20 @@ public class UserController {
             });
 
     User user = userService.create(userRequest, binaryContentCreateRequest);
-    System.out.println(user.getUsername() + " 생성까지는 성공");
+    log.info(user.getUsername() + " 생성까지는 성공");
 
     return ResponseEntity.ok(user);
   }
 
   // 유저 수정
-  @RequestMapping(
+  @PutMapping(
       value = "/update",
-      method = RequestMethod.GET,
       consumes = MediaType.MULTIPART_FORM_DATA_VALUE
-
   )
   public ResponseEntity<User> updateUser(
       @RequestParam String userName,
-      UserUpdateRequest userRequest,
-      @RequestParam(required = false) MultipartFile img
+      @RequestPart UserUpdateRequest userRequest,
+      @RequestPart(required = false) MultipartFile img
 
   ) throws IOException {
     Optional<BinaryContentCreateRequest> binaryContentCreateRequest =
@@ -88,35 +90,29 @@ public class UserController {
               }
             });
 
-    UserReqeust userReqeust = userService.findByUsername(userName);
+    UserResponse userResponse = userService.findByUsername(userName);
+    User test = userService.update(userResponse.id(), userRequest, binaryContentCreateRequest);
 
-    User test = userService.update(userReqeust.id(), userRequest, binaryContentCreateRequest);
-    System.out.println(userReqeust.username() + "에서 " + test.getUsername() + " 수정까지는 성공");
-
+    log.info(userResponse.username() + "에서 " + test.getUsername() + " 수정까지는 성공");
     return ResponseEntity.ok(test);
   }
 
   // 전체 조회
-  @RequestMapping(
-      value = "/findAll",
-      method = RequestMethod.GET
-
-  )
-  public ResponseEntity<List<UserReqeust>> finaAll() {
-    List<UserReqeust> userReqeust = userService.findAll();
+  @GetMapping("/findAll")
+  public ResponseEntity<List<UserResponse>> finaAll() {
+    List<UserResponse> userResponse = userService.findAll();
 
     System.out.println("전체 유저 불러오기");
-    userReqeust.forEach(System.out::println);
+    userResponse.forEach(System.out::println);
 
-    return ResponseEntity.ok(userReqeust);
+    return ResponseEntity.ok(userResponse);
   }
 
-
   // 유저 삭제
-  @RequestMapping(value = "/delete/{userName}", method = RequestMethod.GET)
+  @DeleteMapping("/delete/{userName}")
   public void deleteUser(@PathVariable String userName) {
-    UserReqeust userReqeust = userService.findByUsername(userName);
-    userService.delete(userReqeust.id());
-    System.out.println("삭제까지는 성공");
+    UserResponse userResponse = userService.findByUsername(userName);
+    userService.delete(userResponse.id());
+    log.info("삭제까지 성공");
   }
 }

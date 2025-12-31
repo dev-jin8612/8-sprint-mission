@@ -1,51 +1,45 @@
 package com.sprint.mission.discodeit.controller;
 
-import com.sprint.mission.discodeit.dto.data.ChannelReqeust;
-import com.sprint.mission.discodeit.dto.data.UserReqeust;
-import com.sprint.mission.discodeit.dto.user.BinaryContentCreateRequest;
 import com.sprint.mission.discodeit.dto.message.MessageCreateRequest;
 import com.sprint.mission.discodeit.dto.message.MessageUpdateRequest;
+import com.sprint.mission.discodeit.dto.user.BinaryContentCreateRequest;
 import com.sprint.mission.discodeit.entity.Message;
-import com.sprint.mission.discodeit.service.ChannelService;
 import com.sprint.mission.discodeit.service.MessageService;
-import com.sprint.mission.discodeit.service.UserService;
-import lombok.RequiredArgsConstructor;
-import org.springframework.http.MediaType;
-import org.springframework.http.ResponseEntity;
-import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.*;
-import org.springframework.web.multipart.MultipartFile;
-
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RequestPart;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.multipart.MultipartFile;
 
+@Slf4j
 @RestController
-@ResponseBody
 @RequestMapping("/message")
 @RequiredArgsConstructor
 public class MessageController {
 
   private final MessageService messageService;
 
-  @RequestMapping(
-      value = "/send",
-      method = RequestMethod.GET,
-      consumes = MediaType.MULTIPART_FORM_DATA_VALUE
-
-  )
+  @PostMapping("/send")
   public ResponseEntity<Message> createMessage(
-      @RequestParam String content,
-      @RequestParam UUID channelId,
-      @RequestParam UUID senderId,
-      @RequestParam(required = false) List<MultipartFile> img
-  ) throws IOException {
+      @RequestParam MessageCreateRequest request,
+      @RequestPart(required = false) List<MultipartFile> img
 
+  ) throws IOException {
     List<BinaryContentCreateRequest> binaryContentCreateRequest = new ArrayList<>();
-    MessageCreateRequest messageCreateRequest = new MessageCreateRequest(content, channelId,
-        senderId);
+    MessageCreateRequest messageCreateRequest = request;
 
     img.forEach(upload -> {
       try {
@@ -58,37 +52,32 @@ public class MessageController {
         throw new RuntimeException(e);
       }
     });
-
     Message message = messageService.create(messageCreateRequest, binaryContentCreateRequest);
-    System.out.println("메세지 보내기 성공");
 
+    log.info("메세지 보내기 성공");
     return ResponseEntity.ok(message);
   }
 
-  @RequestMapping(
-      value = "/update",
-      method = RequestMethod.GET
-
-  )
+  @PutMapping("/update")
   public ResponseEntity<Message> updateMessage(
       @RequestParam UUID messageId,
-      @RequestParam MessageUpdateRequest newContent
+      @RequestBody MessageUpdateRequest newContent
   ) {
     Message message = messageService.update(messageId, newContent);
-    System.out.println(message.getContent() + "로 메세지 수정 성공");
+    log.info(message.getContent() + "로 메세지 수정 성공");
     return ResponseEntity.ok(message);
   }
 
-  @RequestMapping(value = "/search/{channelId}")
+  @GetMapping("/search/{channelId}")
   public ResponseEntity<List<Message>> searchMessage(@PathVariable UUID channelId) {
     List<Message> message = messageService.findAllByChannelId(channelId);
     message.stream().forEach(message1 -> System.out.println(message1.getContent()));
     return ResponseEntity.ok(message);
   }
 
-  @RequestMapping(value = "/delete/{messageId}")
+  @DeleteMapping("/delete/{messageId}")
   public void deleteMessage(@PathVariable UUID messageId) {
     messageService.delete(messageId);
-    System.out.println("메세지 삭제 성공");
+    log.info("메세지 식제 성공");
   }
 }

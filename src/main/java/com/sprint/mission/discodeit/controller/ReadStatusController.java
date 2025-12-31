@@ -8,57 +8,50 @@ import java.time.Instant;
 import java.util.Optional;
 import java.util.UUID;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 
+@Slf4j
 @RestController
-@ResponseBody
 @RequestMapping("/readStatus")
 @RequiredArgsConstructor
 public class ReadStatusController {
 
   private final ReadStatusService readStatusService;
 
-  @RequestMapping(
-      value = "/create",
-      method = RequestMethod.GET
-
-  )
+  @PostMapping("/create")
   public ResponseEntity<ReadStatus> createReadStatus(
-      @RequestParam UUID userId,
-      @RequestParam UUID channelId
+      @RequestBody ReadStatusCreateRequest readStatusCreateRequest
   ) {
     // 생각해보니 방에 있는 유저인지 확인이랑 중복 생성 안되게 막아야 할거 같은데
     ReadStatus readStatus = readStatusService.create(
-        new ReadStatusCreateRequest(userId, channelId, Instant.now()));
+        new ReadStatusCreateRequest(
+            readStatusCreateRequest.userId(),
+            readStatusCreateRequest.channelId(),
+            Instant.now()));
 
-    System.out.println("유저의 수신상태 생성");
+    log.info("유저의 수신상태 생성");
     return ResponseEntity.ok(readStatus);
   }
 
-  @RequestMapping(
-      value = "/update",
-      method = RequestMethod.GET
-
-  )
+  @PutMapping("/update")
   public ResponseEntity<ReadStatus> updateReadStatus(@RequestParam UUID readStatusId) {
     ReadStatus readStatus = readStatusService.find(readStatusId);
     ReadStatusUpdateRequest request = new ReadStatusUpdateRequest(Instant.now());
     readStatusService.update(readStatusId, request);
 
-    System.out.println("유저의 수신상태 업데이트");
+    log.info("유저의 수신상태 업데이트");
     return ResponseEntity.ok(readStatus);
   }
 
-  @RequestMapping(
-      value = "/search",
-      method = RequestMethod.GET
-
-  )
+  @GetMapping("/search")
   public ResponseEntity<ReadStatus> searchReadStatus(
       @RequestParam UUID userId,
       @RequestParam UUID channelId
@@ -67,9 +60,9 @@ public class ReadStatusController {
         .filter(readStatus1 -> readStatus1.getChannelId().equals(channelId)).findFirst();
 
     if (readStatus.get().getLastReadAt().isAfter(readStatus.get().getUpdatedAt())) {
-      System.out.println(readStatus.get().getId() + "님은 메세지를 봤습니다.");
+      log.info(readStatus.get().getId() + "님은 메세지를 봤습니다.");
     } else {
-      System.out.println(readStatus.get().getId() + "님은 메세지를 안봤습니다.");
+      log.info(readStatus.get().getId() + "님은 메세지를 안봤습니다.");
     }
 
     return ResponseEntity.ok(readStatus.get());
