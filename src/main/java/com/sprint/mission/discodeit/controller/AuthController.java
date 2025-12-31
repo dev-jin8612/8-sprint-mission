@@ -22,7 +22,7 @@ public class AuthController {
 
   // 로그인
   @RequestMapping(method = RequestMethod.GET)
-  public ResponseEntity<User> auth(@RequestBody LoginRequest loginRequest) {
+  public ResponseEntity<UserResponse> auth(@RequestBody LoginRequest loginRequest) {
     User user = authService.login(loginRequest);
     UserResponse userResponse = new UserResponse(
         user.getId(), user.getCreatedAt(),
@@ -30,6 +30,6 @@ public class AuthController {
         user.getEmail(), user.getProfileId(), true);
 
     log.info("로그인 성공");
-    return ResponseEntity.ok(user);
+    return ResponseEntity.ok(userResponse);
   }
 }
