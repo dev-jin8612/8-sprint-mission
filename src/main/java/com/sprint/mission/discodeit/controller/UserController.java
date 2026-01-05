@@ -34,11 +34,8 @@ public class UserController {
   private final UserService userService;
 
   // 유저 생성
-  @PostMapping(
-      value = "/create",
-      consumes = MediaType.MULTIPART_FORM_DATA_VALUE
-  )
-  public ResponseEntity<User> createUser(
+  @PostMapping(consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+  public ResponseEntity<UserResponse> createUser(
       @RequestBody UserCreateRequest userRequest,
       /*@ReuestParam은 String으로 값을 받기 때문에
        * DTO 같은 객체를 읽을 때는 그냥 그대로 적어 넣기*/
@@ -60,17 +57,19 @@ public class UserController {
             });
 
     User user = userService.create(userRequest, binaryContentCreateRequest);
-    log.info(user.getUsername() + " 생성까지는 성공");
 
-    return ResponseEntity.ok(user);
+    UserResponse userResponse = new UserResponse(
+        user.getId(), user.getCreatedAt(), user.getUpdatedAt(),
+        user.getUsername(), user.getEmail(), user.getProfileId(),
+        false);
+
+    log.info(user.getUsername() + " 생성까지는 성공");
+    return ResponseEntity.ok(userResponse);
   }
 
   // 유저 수정
-  @PutMapping(
-      value = "/update",
-      consumes = MediaType.MULTIPART_FORM_DATA_VALUE
-  )
-  public ResponseEntity<User> updateUser(
+  @PutMapping(consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+  public ResponseEntity<UserResponse> updateUser(
       @RequestParam String userName,
       @RequestPart UserUpdateRequest userRequest,
       @RequestPart(required = false) MultipartFile img
@@ -94,11 +93,11 @@ public class UserController {
     User test = userService.update(userResponse.id(), userRequest, binaryContentCreateRequest);
 
     log.info(userResponse.username() + "에서 " + test.getUsername() + " 수정까지는 성공");
-    return ResponseEntity.ok(test);
+    return ResponseEntity.ok(userResponse);
   }
 
   // 전체 조회
-  @GetMapping("/findAll")
+  @GetMapping
   public ResponseEntity<List<UserResponse>> finaAll() {
     List<UserResponse> userResponse = userService.findAll();
 
@@ -109,7 +108,7 @@ public class UserController {
   }
 
   // 유저 삭제
-  @DeleteMapping("/delete/{userName}")
+  @DeleteMapping("/{userName}")
   public void deleteUser(@PathVariable String userName) {
     UserResponse userResponse = userService.findByUsername(userName);
     userService.delete(userResponse.id());

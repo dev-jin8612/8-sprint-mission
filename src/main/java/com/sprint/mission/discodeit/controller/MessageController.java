@@ -32,7 +32,7 @@ public class MessageController {
 
   private final MessageService messageService;
 
-  @PostMapping("/send")
+  @PostMapping
   public ResponseEntity<Message> createMessage(
       @RequestParam MessageCreateRequest request,
       @RequestPart(required = false) List<MultipartFile> img
@@ -58,9 +58,9 @@ public class MessageController {
     return ResponseEntity.ok(message);
   }
 
-  @PutMapping("/update")
+  @PutMapping("/{messageId}")
   public ResponseEntity<Message> updateMessage(
-      @RequestParam UUID messageId,
+      @PathVariable UUID messageId,
       @RequestBody MessageUpdateRequest newContent
   ) {
     Message message = messageService.update(messageId, newContent);
@@ -68,14 +68,14 @@ public class MessageController {
     return ResponseEntity.ok(message);
   }
 
-  @GetMapping("/search/{channelId}")
+  @GetMapping("/{channelId}")
   public ResponseEntity<List<Message>> searchMessage(@PathVariable UUID channelId) {
     List<Message> message = messageService.findAllByChannelId(channelId);
     message.stream().forEach(message1 -> System.out.println(message1.getContent()));
     return ResponseEntity.ok(message);
   }
 
-  @DeleteMapping("/delete/{messageId}")
+  @DeleteMapping("/{messageId}")
   public void deleteMessage(@PathVariable UUID messageId) {
     messageService.delete(messageId);
     log.info("메세지 식제 성공");

@@ -33,9 +33,9 @@ public class ChannelController {
   private final ChannelService channelService;
 
   // 공개 채널 생성
-  @PostMapping("/create/public")
+  @PostMapping("/public")
   public ResponseEntity<Channel> createPublicChannel(
-      PublicChannelCreateRequest channelCreateRequest) {
+      @RequestBody PublicChannelCreateRequest channelCreateRequest) {
     if (channelCreateRequest.name() == null) {
       throw new IllegalArgumentException("Channel name is null");
     }
@@ -46,7 +46,7 @@ public class ChannelController {
   }
 
   // 비공개 채널 생성
-  @PostMapping("/create/private")
+  @PostMapping("/private")
   public ResponseEntity<Channel> createPrivateChannel(
       @RequestBody PrivateChannelCreateRequest channelCreateRequest) {
     Channel channel = channelService.create(channelCreateRequest);
@@ -55,7 +55,7 @@ public class ChannelController {
   }
 
   // 채널 수정
-  @PutMapping("/update/{channelName}")
+  @PutMapping("/{channelName}")
   public ResponseEntity<ChannelResponse> updateChannel(
       @PathVariable String channelName,
       @RequestBody PublicChannelUpdateRequest request
@@ -68,15 +68,15 @@ public class ChannelController {
   }
 
   // 전체 조회
-  @GetMapping(path = "findAll")
+  @GetMapping
   public ResponseEntity<List<ChannelResponse>> findAll(@RequestParam("userId") UUID userId) {
     List<ChannelResponse> channels = channelService.findAllByUserId(userId);
     return ResponseEntity.ok(channels);
   }
 
   // 채널 삭제
-  @DeleteMapping("/delete")
-  public void deleteChannel(@RequestParam(required = false) UUID channelId) {
+  @DeleteMapping("/{channelId}")
+  public void deleteChannel(@PathVariable UUID channelId) {
     channelService.delete(channelId);
     log.info("삭제까지는 성공");
   }

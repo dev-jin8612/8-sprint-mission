@@ -9,8 +9,10 @@ import java.util.Optional;
 import java.util.UUID;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -26,7 +28,7 @@ public class ReadStatusController {
 
   private final ReadStatusService readStatusService;
 
-  @PostMapping("/create")
+  @PostMapping
   public ResponseEntity<ReadStatus> createReadStatus(
       @RequestBody ReadStatusCreateRequest readStatusCreateRequest
   ) {
@@ -38,11 +40,11 @@ public class ReadStatusController {
             Instant.now()));
 
     log.info("유저의 수신상태 생성");
-    return ResponseEntity.ok(readStatus);
+    return new ResponseEntity<>(readStatus, HttpStatus.CREATED);
   }
 
-  @PutMapping("/update")
-  public ResponseEntity<ReadStatus> updateReadStatus(@RequestParam UUID readStatusId) {
+  @PutMapping("/{readStatusId}")
+  public ResponseEntity<ReadStatus> updateReadStatus(@PathVariable UUID readStatusId) {
     ReadStatus readStatus = readStatusService.find(readStatusId);
     ReadStatusUpdateRequest request = new ReadStatusUpdateRequest(Instant.now());
     readStatusService.update(readStatusId, request);
@@ -51,7 +53,7 @@ public class ReadStatusController {
     return ResponseEntity.ok(readStatus);
   }
 
-  @GetMapping("/search")
+  @GetMapping
   public ResponseEntity<ReadStatus> searchReadStatus(
       @RequestParam UUID userId,
       @RequestParam UUID channelId

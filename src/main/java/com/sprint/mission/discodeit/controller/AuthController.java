@@ -21,15 +21,16 @@ public class AuthController {
   private final AuthService authService;
 
   // 로그인
-  @RequestMapping(method = RequestMethod.GET)
-  public ResponseEntity<User> auth(@RequestBody LoginRequest loginRequest) {
+  @RequestMapping
+  public ResponseEntity<UserResponse> auth(@RequestBody LoginRequest loginRequest) {
     User user = authService.login(loginRequest);
+
     UserResponse userResponse = new UserResponse(
         user.getId(), user.getCreatedAt(),
         user.getUpdatedAt(), user.getUsername(),
         user.getEmail(), user.getProfileId(), true);
 
     log.info("로그인 성공");
-    return ResponseEntity.ok(user);
+    return ResponseEntity.ok(userResponse);
   }
 }
