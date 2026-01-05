@@ -4,6 +4,9 @@ import com.sprint.mission.discodeit.dto.channel.ReadStatusCreateRequest;
 import com.sprint.mission.discodeit.dto.channel.ReadStatusUpdateRequest;
 import com.sprint.mission.discodeit.entity.ReadStatus;
 import com.sprint.mission.discodeit.service.ReadStatusService;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import java.time.Instant;
 import java.util.Optional;
 import java.util.UUID;
@@ -22,13 +25,21 @@ import org.springframework.web.bind.annotation.RestController;
 
 @Slf4j
 @RestController
-@RequestMapping("/readStatus")
 @RequiredArgsConstructor
+@RequestMapping("/readStatus")
+@Tag(name = "ReadStatus API", description = "ReadStatus 관련 API")
 public class ReadStatusController {
 
   private final ReadStatusService readStatusService;
 
   @PostMapping
+  @Operation(summary = "방문기록 생성", description = "유저의 채널 접속정보를 기록합니다.")
+  @Parameter(name = "userId", description = "조회할 유저ID를 입력합니다.", required = true)
+  @Parameter(name = "channelId",
+      description = "조회할 채널ID를 입력합니다.",
+      example = "/readStatus?userId=18ed1a91-982d-4f61-8440-0c7a508135e8&channelId=1b7812e2-7bc7-4ddc-a784-f5788f300aef",
+      required = true
+  )
   public ResponseEntity<ReadStatus> createReadStatus(
       @RequestBody ReadStatusCreateRequest readStatusCreateRequest
   ) {
@@ -44,6 +55,8 @@ public class ReadStatusController {
   }
 
   @PutMapping("/{readStatusId}")
+  @Operation(summary = "방문기록 수정", description = "유저의 채널 접속정보를 수정합니다.")
+  @Parameter(name = "readStatusId", description = "조회할 방문기록ID를 입력합니다.", required = true)
   public ResponseEntity<ReadStatus> updateReadStatus(@PathVariable UUID readStatusId) {
     ReadStatus readStatus = readStatusService.find(readStatusId);
     ReadStatusUpdateRequest request = new ReadStatusUpdateRequest(Instant.now());
@@ -54,6 +67,13 @@ public class ReadStatusController {
   }
 
   @GetMapping
+  @Operation(summary = "방문기록 조회", description = "유저의 채널 접속정보를 조회합니다.")
+  @Parameter(name = "userId", description = "조회할 유저ID를 입력합니다.", required = true)
+  @Parameter(name = "channelId",
+      description = "조회할 채널ID를 입력합니다.",
+      example = "/readStatus?userId=18ed1a91-982d-4f61-8440-0c7a508135e8&channelId=1b7812e2-7bc7-4ddc-a784-f5788f300aef",
+      required = true
+  )
   public ResponseEntity<ReadStatus> searchReadStatus(
       @RequestParam UUID userId,
       @RequestParam UUID channelId

@@ -5,6 +5,9 @@ import com.sprint.mission.discodeit.dto.message.MessageUpdateRequest;
 import com.sprint.mission.discodeit.dto.user.BinaryContentCreateRequest;
 import com.sprint.mission.discodeit.entity.Message;
 import com.sprint.mission.discodeit.service.MessageService;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
@@ -28,13 +31,26 @@ import org.springframework.web.multipart.MultipartFile;
 @RestController
 @RequestMapping("/message")
 @RequiredArgsConstructor
+@Tag(name = "Message API", description = "Message 관련 API")
 public class MessageController {
 
   private final MessageService messageService;
 
   @PostMapping
+  @Operation(summary = "Message 생성", description = "메세지를 생성합니다.")
+  @Parameter(name = "content", description = "메세지 내용입니다.", required = true)
+  @Parameter(name = "channelId", description = "보낼 채널ID 입니다.", required = true)
+  @Parameter(name = "authorId",
+      description = "메세지를 보낸 유저ID 입니다.",
+      example = "/channel?userId=18ed1a91-982d-4f61-8440-0c7a508135e8",
+      required = true
+  )
+  @Parameter(name = "img",
+      description = "첨부할 파일입니다.",
+      required = false
+  )
   public ResponseEntity<Message> createMessage(
-      @RequestParam MessageCreateRequest request,
+      @RequestPart MessageCreateRequest request,
       @RequestPart(required = false) List<MultipartFile> img
 
   ) throws IOException {
@@ -59,9 +75,17 @@ public class MessageController {
   }
 
   @PutMapping("/{messageId}")
+  @Operation(summary = "Message 수정", description = "메세지를 수정합니다.")
+  @Parameter(name = "messageId", description = "수정할 메세지 id입니다.", required = true)
+  @Parameter(
+      name = "newContent",
+      description = "수정할 메세지 내용 입니다.",
+      example = "/message/a30e4fd4-a50e-48aa-8c18-ef6315026911?newContent=메세지 수정1",
+      required = true
+  )
   public ResponseEntity<Message> updateMessage(
       @PathVariable UUID messageId,
-      @RequestBody MessageUpdateRequest newContent
+      @RequestParam MessageUpdateRequest newContent
   ) {
     Message message = messageService.update(messageId, newContent);
     log.info(message.getContent() + "로 메세지 수정 성공");
@@ -69,6 +93,13 @@ public class MessageController {
   }
 
   @GetMapping("/{channelId}")
+  @Operation(summary = "Message 탐색", description = "채널 안의 메세지를 전부 찾습니다.")
+  @Parameter(
+      name = "channelId",
+      description = "찾을 채널의 ID입니다.",
+      example = "/message/a30e4fd4-a50e-48aa-8c18-ef6315026911",
+      required = true
+  )
   public ResponseEntity<List<Message>> searchMessage(@PathVariable UUID channelId) {
     List<Message> message = messageService.findAllByChannelId(channelId);
     message.stream().forEach(message1 -> System.out.println(message1.getContent()));
@@ -76,6 +107,13 @@ public class MessageController {
   }
 
   @DeleteMapping("/{messageId}")
+  @Operation(summary = "Message 삭제", description = "메세지를 삭제합니다.")
+  @Parameter(
+      name = "messageId",
+      description = "삭제할 메세지의 ID입니다.",
+      example = "/message/a30e4fd4-a50e-48aa-8c18-ef6315026911",
+      required = true
+  )
   public void deleteMessage(@PathVariable UUID messageId) {
     messageService.delete(messageId);
     log.info("메세지 식제 성공");

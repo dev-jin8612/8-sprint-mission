@@ -2,6 +2,9 @@ package com.sprint.mission.discodeit.controller;
 
 import com.sprint.mission.discodeit.entity.BinaryContent;
 import com.sprint.mission.discodeit.service.BinaryContentService;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import java.util.List;
 import java.util.UUID;
 import lombok.RequiredArgsConstructor;
@@ -15,15 +18,23 @@ import org.springframework.web.bind.annotation.RestController;
 
 @Slf4j
 @RestController
-@RequestMapping("/binaryContents")
 @RequiredArgsConstructor
+@RequestMapping("/binaryContents")
+@Tag(name = "Binary API", description = "Binary 관련 API")
 public class BinaryContentController {
 
   private final BinaryContentService binaryContentService;
 
-  //  @GetMapping("/find")
   @GetMapping("/{binaryContentId}")
-  public ResponseEntity<BinaryContent> find(@PathVariable UUID binaryContentId) {
+  @Operation(summary = "Binary 단건 조회", description = "Binary 하나를 조회합니다.")
+  public ResponseEntity<BinaryContent> find(
+      @Parameter(
+          name = "binaryContentId",
+          description = "조회할 Binary의 UUID입니다.",
+          example = "/binaryContents/550e8400-e29b-41d4-a716-446655440000",
+          required = true
+      )
+      @PathVariable UUID binaryContentId) {
     BinaryContent binaryContent = binaryContentService.find(binaryContentId);
 
     log.info(binaryContent.getFileName() + " 검색까지는 성공");
@@ -31,7 +42,14 @@ public class BinaryContentController {
   }
 
   @GetMapping
+  @Operation(summary = "Binary 다건 조회", description = "Binary를 여러개 조회합니다.")
   public ResponseEntity<List<BinaryContent>> binaryMulitSerach(
+      @Parameter(
+          name = "List<UUID> binaryContentIds",
+          description = "조회할 BinaryId를 연속으로 입력합니다. ,로 구분 합니다.",
+          example = "/550e8400-e29b-41d4-a716-446655440000, 550e8400-e29b-41d4-a716-446655440000",
+          required = true
+      )
       @RequestParam("binaryContentIds") List<UUID> binaryContentIds) {
 
     List<BinaryContent> binaryContent = binaryContentService.findAllByIdIn(binaryContentIds);
