@@ -11,6 +11,7 @@ import java.util.UUID;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -26,7 +27,7 @@ public class UserStatusController {
   private final UserStatusService userStatusService;
 
   // 유저 상태 수정
-  @PutMapping("/{userId}")
+  @PatchMapping("/{userId}")
   @Operation(summary = "유저 접속상태 변경", description = "유저의 접속정보를 변경합니다.")
   @Parameter(name = "userId",
       description = "변경할 유저ID를 입력합니다.",

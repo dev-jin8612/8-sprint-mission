@@ -8,6 +8,7 @@ import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import java.time.Instant;
+import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 import lombok.RequiredArgsConstructor;
@@ -26,7 +27,7 @@ import org.springframework.web.bind.annotation.RestController;
 @Slf4j
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("/readStatus")
+@RequestMapping("/readStatuses")
 @Tag(name = "ReadStatus API", description = "ReadStatus 관련 API")
 public class ReadStatusController {
 
@@ -64,6 +65,14 @@ public class ReadStatusController {
 
     log.info("유저의 수신상태 업데이트");
     return ResponseEntity.ok(readStatus);
+  }
+
+  @GetMapping(value = "/user")
+  public ResponseEntity<List<ReadStatus>> findAllByUserId(@RequestParam UUID userId) {
+    List<ReadStatus> readStatuses = readStatusService.findAllByUserId(userId);
+    return ResponseEntity
+        .status(HttpStatus.OK)
+        .body(readStatuses);
   }
 
   @GetMapping

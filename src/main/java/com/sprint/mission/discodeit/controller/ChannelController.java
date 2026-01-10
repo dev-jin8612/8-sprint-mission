@@ -30,7 +30,7 @@ import org.springframework.web.bind.annotation.RestController;
 @Slf4j
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("/channel")
+@RequestMapping("/channels")
 @Tag(name = "Channel API", description = "Channel 관련 API")
 public class ChannelController {
 

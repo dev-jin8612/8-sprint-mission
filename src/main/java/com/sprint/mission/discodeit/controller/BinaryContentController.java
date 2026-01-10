@@ -25,7 +25,7 @@ public class BinaryContentController {
 
   private final BinaryContentService binaryContentService;
 
-  @GetMapping("/{binaryContentId}")
+  @GetMapping("/find/{binaryContentId}")
   @Operation(summary = "Binary 단건 조회", description = "Binary 하나를 조회합니다.")
   public ResponseEntity<BinaryContent> find(
       @Parameter(

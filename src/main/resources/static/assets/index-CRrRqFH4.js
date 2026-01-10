@@ -11745,17 +11745,17 @@ he.formToJSON = r => Tp(_.isHTMLForm(r) ? new FormData(r) : r);
 he.getAdapter = Bp.getAdapter;
 he.HttpStatusCode = Mu;
 he.default = he;
-const Xe = {apiBaseUrl: "/api"}, Dt = bn(r => ({
+const Xe = {apiBaseUrl: "http://localhost:8080"}, Dt = bn(r => ({
   users: [], fetchUsers: async () => {
     try {
-      const i = await he.get(`${Xe.apiBaseUrl}/users`);
+      const i = await he.get(`${Xe.apiBaseUrl}/users/findAll`);
       r({users: i.data})
     } catch (i) {
       console.error("사용자 목록 조회 실패:", i)
     }
   }, updateUserStatus: async i => {
     try {
-      await he.patch(`${Xe.apiBaseUrl}/users/${i}/userStatus`,
+      await he.patch(`${Xe.apiBaseUrl}/userStatus/${i}`,
           {newLastActiveAt: new Date().toISOString()})
     } catch (s) {
       console.error("사용자 상태 업데이트 실패:", s)
@@ -11764,7 +11764,7 @@ const Xe = {apiBaseUrl: "/api"}, Dt = bn(r => ({
 })), Wt = bn(r => ({
   profileImages: {}, fetchProfileImage: async i => {
     try {
-      const s = await he.get(`${Xe.apiBaseUrl}/binaryContents/${i}`),
+      const s = await he.get(`${Xe.apiBaseUrl}/binaryContents/find/${i}`),
           u = s.data.bytes, d = `data:${s.data.contentType};base64,${u}`;
       return r(p => ({profileImages: {...p.profileImages, [i]: d}})), d
     } catch (s) {
@@ -12521,7 +12521,7 @@ const yo = bn((r, i) => ({
       if (!s) {
         return;
       }
-      const c = (await he.get(`${Xe.apiBaseUrl}/readStatuses`,
+      const c = (await he.get(`${Xe.apiBaseUrl}/readStatuses/user`,
           {params: {userId: s}})).data.reduce(
           (d, p) => (d[p.channelId] = {id: p.id, lastReadAt: p.lastReadAt}, d),
           {});
@@ -12988,7 +12988,7 @@ const Qd = N.div`
       return i().attachments[s];
     }
     try {
-      const u = await he.get(`${Xe.apiBaseUrl}/binaryContents/${s}`), {
+      const u = await he.get(`${Xe.apiBaseUrl}/binaryContents/find/${s}`), {
         bytes: c,
         contentType: d,
         fileName: p,
@@ -13031,7 +13031,7 @@ function m1({channel: r}) {
   }, [i, m, v]);
   const x = async (P, I) => {
         try {
-          const R = await he.get(`${Xe.apiBaseUrl}/binaryContents/${P}`,
+          const R = await he.get(`${Xe.apiBaseUrl}/binaryContents/find/${P}`,
                   {responseType: "blob"}),
               L = new Blob([R.data], {type: R.headers["content-type"]}),
               V = window.URL.createObjectURL(L), F = document.createElement("a");
@@ -13386,7 +13386,7 @@ function j1({isOpen: r, onClose: i}) {
           F.append("userCreateRequest",
               new Blob([JSON.stringify({email: s, username: c, password: p})],
                   {type: "application/json"})), v && F.append("profile", v);
-          const W = await he.post(`${Xe.apiBaseUrl}/users`, F);
+          const W = await he.post(`${Xe.apiBaseUrl}/users/create`, F);
           I(W.data), i()
         } catch {
           P("회원가입에 실패했습니다.")
