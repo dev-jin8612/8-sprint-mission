@@ -11745,7 +11745,8 @@ he.formToJSON = r => Tp(_.isHTMLForm(r) ? new FormData(r) : r);
 he.getAdapter = Bp.getAdapter;
 he.HttpStatusCode = Mu;
 he.default = he;
-const Xe = {apiBaseUrl: "http://localhost:8080"}, Dt = bn(r => ({
+// const Xe = {apiBaseUrl: "http://localhost:8080"}, Dt = bn(r => ({
+const Xe = {apiBaseUrl: ""}, Dt = bn(r => ({
   users: [], fetchUsers: async () => {
     try {
       const i = await he.get(`${Xe.apiBaseUrl}/users/findAll`);
