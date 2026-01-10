@@ -47,12 +47,7 @@ public class AuthController {
       )
   })
   public ResponseEntity<User> auth(
-      @Parameter(
-          name = "password",
-          description = "로그인할 계정의 비밀번호입니다.",
-          example = "/auth?username=황&password=1234",
-          required = true
-      )
+      @Parameter(description = "로그인할 계정의 아이디와 비밀번호 입니다.")
       @RequestBody LoginRequest loginRequest) {
     User user = authService.login(loginRequest);
 
