@@ -16,6 +16,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
@@ -33,15 +34,10 @@ public class ReadStatusController {
 
   private final ReadStatusService readStatusService;
 
-  @PostMapping
   @Operation(summary = "방문기록 생성", description = "유저의 채널 접속정보를 기록합니다.")
-  @Parameter(name = "userId", description = "조회할 유저ID를 입력합니다.", required = true)
-  @Parameter(name = "channelId",
-      description = "조회할 채널ID를 입력합니다.",
-      example = "/readStatus?userId=18ed1a91-982d-4f61-8440-0c7a508135e8&channelId=1b7812e2-7bc7-4ddc-a784-f5788f300aef",
-      required = true
-  )
+  @PostMapping
   public ResponseEntity<ReadStatus> createReadStatus(
+      @Parameter(description = "조회할 유저ID를 입력합니다.")
       @RequestBody ReadStatusCreateRequest readStatusCreateRequest
   ) {
     // 생각해보니 방에 있는 유저인지 확인이랑 중복 생성 안되게 막아야 할거 같은데
@@ -55,10 +51,12 @@ public class ReadStatusController {
     return new ResponseEntity<>(readStatus, HttpStatus.CREATED);
   }
 
-  @PutMapping("/{readStatusId}")
+  @PatchMapping("/{readStatusId}")
   @Operation(summary = "방문기록 수정", description = "유저의 채널 접속정보를 수정합니다.")
-  @Parameter(name = "readStatusId", description = "조회할 방문기록ID를 입력합니다.", required = true)
-  public ResponseEntity<ReadStatus> updateReadStatus(@PathVariable UUID readStatusId) {
+  public ResponseEntity<ReadStatus> updateReadStatus(
+      @Parameter(description = "조회할 방문기록ID를 입력합니다.")
+      @PathVariable UUID readStatusId
+  ) {
     ReadStatus readStatus = readStatusService.find(readStatusId);
     ReadStatusUpdateRequest request = new ReadStatusUpdateRequest(Instant.now());
     readStatusService.update(readStatusId, request);
@@ -68,7 +66,10 @@ public class ReadStatusController {
   }
 
   @GetMapping(value = "/user")
-  public ResponseEntity<List<ReadStatus>> findAllByUserId(@RequestParam UUID userId) {
+  public ResponseEntity<List<ReadStatus>> findAllByUserId(
+      @Parameter(description = "읽음 상태를 조회할 유저ID를 입력합니다.")
+      @RequestParam UUID userId
+  ) {
     List<ReadStatus> readStatuses = readStatusService.findAllByUserId(userId);
     return ResponseEntity
         .status(HttpStatus.OK)
@@ -77,14 +78,10 @@ public class ReadStatusController {
 
   @GetMapping
   @Operation(summary = "방문기록 조회", description = "유저의 채널 접속정보를 조회합니다.")
-  @Parameter(name = "userId", description = "조회할 유저ID를 입력합니다.", required = true)
-  @Parameter(name = "channelId",
-      description = "조회할 채널ID를 입력합니다.",
-      example = "/readStatus?userId=18ed1a91-982d-4f61-8440-0c7a508135e8&channelId=1b7812e2-7bc7-4ddc-a784-f5788f300aef",
-      required = true
-  )
   public ResponseEntity<ReadStatus> searchReadStatus(
+      @Parameter(description = "방문 기록을 조회할 유저ID를 입력합니다.")
       @RequestParam UUID userId,
+      @Parameter(description = "방문을 확인할 채널ID를 입력합니다.")
       @RequestParam UUID channelId
   ) {
     Optional<ReadStatus> readStatus = readStatusService.findAllByUserId(userId).stream()

@@ -29,12 +29,10 @@ public class UserStatusController {
   // 유저 상태 수정
   @PatchMapping("/{userId}")
   @Operation(summary = "유저 접속상태 변경", description = "유저의 접속정보를 변경합니다.")
-  @Parameter(name = "userId",
-      description = "변경할 유저ID를 입력합니다.",
-      example = "/userStatus/18ed1a91-982d-4f61-8440-0c7a508135e8",
-      required = true
-  )
-  public ResponseEntity<UserStatus> userStatusUpdate(@PathVariable UUID userId) {
+  public ResponseEntity<UserStatus> userStatusUpdate(
+      @Parameter(description = "접속 상태를 변경할 유저 ID입니다.")
+      @PathVariable UUID userId
+  ) {
     UserStatusUpdateRequest userStatusUpdateRequest = new UserStatusUpdateRequest(Instant.now());
     UserStatus userStatus = userStatusService.updateByUserId(userId, userStatusUpdateRequest);
 

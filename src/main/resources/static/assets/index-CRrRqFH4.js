@@ -11752,6 +11752,7 @@ const Xe = {apiBaseUrl: "http://localhost:8080"}, Dt = bn(r => ({
       r({users: i.data})
     } catch (i) {
       console.error("사용자 목록 조회 실패:", i)
+
     }
   }, updateUserStatus: async i => {
     try {
@@ -13098,7 +13099,10 @@ function m1({channel: r}) {
           })
         }, I) : null
       }) : null, j = P => new Date(P).toLocaleTimeString(),
-      O = [...i].sort((P, I) => P.createdAt.localeCompare(I.createdAt));
+      // O = [...i].sort((P, I) => P.createdAt.localeCompare(I.createdAt));
+      O = [...i].sort((P, I) => new Date(P.createdAt).getTime() - new Date(
+          I.createdAt).getTime());
+
   return g.jsx(Qv, {
     children: g.jsx(qv, {
       children: O.map(P => {

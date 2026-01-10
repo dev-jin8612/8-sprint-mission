@@ -10,6 +10,7 @@ import com.sprint.mission.discodeit.service.UserService;
 import com.sprint.mission.discodeit.service.UserStatusService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.Parameters;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import java.io.IOException;
 import java.util.List;
@@ -43,21 +44,15 @@ public class UserController {
   private final UserStatusService userStatusService;
 
   // 유저 생성
-  @PostMapping(value = "/create", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
   @Operation(summary = "User 생성", description = "유저을 생성합니다.")
-  @Parameter(name = "username", description = "생성할 유저 이름(닉네임)을 입력합니다.", required = true)
-  @Parameter(name = "email", description = "생성할 유저의 이메일을 입력합니다.", required = true)
-  @Parameter(name = "password",
-      description = "생성할 유저의 비밀번호를 입력합니다.",
-      example = "/user?username=황&email=test@gmail.com&password=1234",//body로 수정
-      required = true
-  )
-  @Parameter(name = "img", description = "생성할 유저의 프로필을 입력합니다.", required = false)
+  @PostMapping(value = "/create", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
   public ResponseEntity<UserResponse> createUser(
-      UserCreateRequest userRequest,
-      /*@ReuestParam은 String으로 값을 받기 때문에
-       * DTO 같은 객체를 읽을 때는 그냥 그대로 적어 넣기*/
-      @RequestPart(required = false) MultipartFile img
+
+      @Parameter(description = "생성할 유저의 정보입니다.")
+      @RequestPart("userCreateRequest") UserCreateRequest userRequest,
+
+      @Parameter(description = "생성할 유저의 프로필입니다.")
+      @RequestPart(name = "profile") MultipartFile img
 
   ) throws IOException {
     Optional<BinaryContentCreateRequest> binaryContentCreateRequest =
@@ -86,22 +81,17 @@ public class UserController {
   }
 
   // 유저 수정
-  @PatchMapping(value = "/{userId}",
-      consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
   @Operation(summary = "User 수정", description = "유저을 수정합니다.")
-  @Parameter(name = "username", description = "수정할 유저 이름(닉네임)을 입력합니다.", required = true)
-  @Parameter(name = "newUsername", description = "유저의 새이름(새닉네임)을 입력합니다.", required = true)
-  @Parameter(name = "newEmail", description = "유저의 새이메일을 입력합니다.", required = true)
-  @Parameter(name = "newPassword",
-      description = "유저의 새비밀번호를 입력합니다.",
-      example = "/user?channelId=18ed1a91-982d-4f61-8440-0c7a508135e8",// 여기 body인데 어케 수정?
-      required = true
-  )
-  @Parameter(name = "img", description = "유저의 새프로필을 입력합니다.", required = false)
+  @PatchMapping(value = "/{userId}", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
   public ResponseEntity<UserResponse> updateUser(
+      @Parameter(description = "수정할 유저 UUID입니다..")
       @PathVariable UUID userId,
-      UserUpdateRequest userRequest,
-      @RequestPart(required = false) MultipartFile img
+
+      @Parameter(description = "유저가 변경할 정보입니다.")
+      @RequestPart("userUpdateRequest") UserUpdateRequest userUpdateRequest,
+
+      @Parameter(description = "변경할 프로필 이미지 입니다.")
+      @RequestPart(name = "profile", required = false) MultipartFile img
 
   ) throws IOException {
     Optional<BinaryContentCreateRequest> binaryContentCreateRequest =
@@ -119,7 +109,8 @@ public class UserController {
             });
 
     UserResponse userResponse = userService.find(userId);
-    User test = userService.update(userResponse.id(), userRequest, binaryContentCreateRequest);
+    User test = userService.update(userResponse.id(), userUpdateRequest,
+        binaryContentCreateRequest);
 
     log.info(userResponse.username() + "에서 " + test.getUsername() + " 수정까지는 성공");
     return ResponseEntity.ok(userResponse);
@@ -129,13 +120,6 @@ public class UserController {
   @GetMapping(value = "/findAll")
   @Operation(summary = "유저 전체 조회", description = "모든 유저의 정보를 가져옵니다.")
   public ResponseEntity<List<UserResponse>> finaAll() {
-//    List<UserResponse> userResponse = userService.findAll();
-//
-//    System.out.println("전체 유저 불러오기");
-//    userResponse.forEach(System.out::println);
-//
-//    return ResponseEntity.ok(userResponse);
-
     try {
       List<UserResponse> userResponse = userService.findAll();
       return ResponseEntity.ok(userResponse);
@@ -148,12 +132,10 @@ public class UserController {
   // 유저 삭제
   @DeleteMapping("/{userName}")
   @Operation(summary = "User 삭제", description = "유저을 삭제합니다.")
-  @Parameter(name = "userId",
-      description = "삭제할 유저의 id를 입력합니다.",
-      example = "/user/18ed1a91-982d-4f61-8440-0c7a508135e8",
-      required = true
-  )
-  public void deleteUser(@PathVariable UUID userId) {
+  public void deleteUser(
+      @Parameter(description = "삭제할 유저의 id를 입력합니다.")
+      @PathVariable UUID userId
+  ) {
     UserResponse userResponse = userService.find(userId);
     userService.delete(userResponse.id());
     log.info("삭제까지 성공");
