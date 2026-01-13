@@ -48,3 +48,8 @@ sourceSets {
         }
     }
 }
+
+// 배포용
+bootJar {
+    enabled = true
+}

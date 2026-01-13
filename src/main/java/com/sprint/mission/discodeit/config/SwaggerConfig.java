@@ -7,9 +7,10 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.web.servlet.config.annotation.EnableWebMvc;
 
 @Configuration
-@EnableWebMvc
 public class SwaggerConfig {
 
+  /* http://localhost:8080/swagger-ui/index.html 확인 경로 */
+  /* http://localhost:8080/v3/api-docs json형식 확인 경로 */
   @Bean
   public OpenAPI openAPI() {
     return new OpenAPI()
