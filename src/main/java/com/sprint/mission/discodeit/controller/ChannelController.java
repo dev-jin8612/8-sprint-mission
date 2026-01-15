@@ -3,7 +3,7 @@ package com.sprint.mission.discodeit.controller;
 import com.sprint.mission.discodeit.dto.channel.PrivateChannelCreateRequest;
 import com.sprint.mission.discodeit.dto.channel.PublicChannelCreateRequest;
 import com.sprint.mission.discodeit.dto.channel.PublicChannelUpdateRequest;
-import com.sprint.mission.discodeit.dto.data.ChannelResponse;
+import com.sprint.mission.discodeit.dto.data.ChannelDTO;
 import com.sprint.mission.discodeit.entity.Channel;
 import com.sprint.mission.discodeit.service.ChannelService;
 import io.swagger.v3.oas.annotations.Operation;
@@ -65,13 +65,13 @@ public class ChannelController {
   // 채널 수정
   @PutMapping("/{channelName}")
   @Operation(summary = "Public Channel 수정", description = "공개 채널을 이름/설명을 수정합니다.")
-  public ResponseEntity<ChannelResponse> updateChannel(
+  public ResponseEntity<ChannelDTO> updateChannel(
       @Parameter(description = "찾을려는 공개 채널 이름")
       @PathVariable String channelName,
       @Parameter(description = "공개 채널의 새이름과 새로운 설명이 들어 있습니다.")
       @RequestBody PublicChannelUpdateRequest request
   ) {
-    ChannelResponse channel = channelService.findByName(channelName);
+    ChannelDTO channel = channelService.findByName(channelName);
     channelService.update(channel.id(), request);
 
     log.info(channel.name() + "에서 " + request.newName() + " 수정까지는 성공");
@@ -81,11 +81,11 @@ public class ChannelController {
   // 전체 조회
   @GetMapping
   @Operation(summary = "Public Channel 전체 조회", description = "유저의 모든 공개 채널을 조회합니다.")
-  public ResponseEntity<List<ChannelResponse>> findAll(
+  public ResponseEntity<List<ChannelDTO>> findAll(
       @Parameter(description = "조회할 유저ID를 입력합니다.")
       @RequestParam("userId") UUID userId
   ) {
-    List<ChannelResponse> channels = channelService.findAllByUserId(userId);
+    List<ChannelDTO> channels = channelService.findAllByUserId(userId);
     return ResponseEntity.ok(channels);
   }
 

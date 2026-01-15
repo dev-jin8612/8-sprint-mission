@@ -3,7 +3,7 @@ package com.sprint.mission.discodeit.service.basic;
 import com.sprint.mission.discodeit.dto.channel.PrivateChannelCreateRequest;
 import com.sprint.mission.discodeit.dto.channel.PublicChannelCreateRequest;
 import com.sprint.mission.discodeit.dto.channel.PublicChannelUpdateRequest;
-import com.sprint.mission.discodeit.dto.data.ChannelResponse;
+import com.sprint.mission.discodeit.dto.data.ChannelDTO;
 import com.sprint.mission.discodeit.entity.Channel;
 import com.sprint.mission.discodeit.entity.ChannelType;
 import com.sprint.mission.discodeit.entity.Message;
@@ -52,7 +52,7 @@ public class BasicChannelService implements ChannelService {
   }
 
   @Override
-  public ChannelResponse find(UUID channelId) {
+  public ChannelDTO find(UUID channelId) {
     return channelRepository.findById(channelId)
         .map(this::toDto)
         .orElseThrow(
@@ -60,7 +60,7 @@ public class BasicChannelService implements ChannelService {
   }
 
   @Override
-  public List<ChannelResponse> findAllByUserId(UUID userId) {
+  public List<ChannelDTO> findAllByUserId(UUID userId) {
     List<UUID> mySubscribedChannelIds =
         readStatusRepository.findAllByUserId(userId).stream()
             .map(ReadStatus::getChannelId)
@@ -76,10 +76,10 @@ public class BasicChannelService implements ChannelService {
   }
 
   @Override
-  public ChannelResponse findByName(String channelName) {
+  public ChannelDTO findByName(String channelName) {
     // 나중에는 방 개설자인지도 확인하는게 필요할것 같다.
 
-    ChannelResponse channelResponse =
+    ChannelDTO channelDTO =
         channelRepository.findAll().stream()
             .filter(channel ->
                 // private 채널을 이름이 없으니 없으면 넘어가게 만들기
@@ -89,7 +89,7 @@ public class BasicChannelService implements ChannelService {
             )
             .map(this::toDto).findFirst().orElse(null);
 
-    return channelResponse;
+    return channelDTO;
   }
 
   @Override
@@ -121,7 +121,7 @@ public class BasicChannelService implements ChannelService {
     channelRepository.deleteById(channelId);
   }
 
-  private ChannelResponse toDto(Channel channel) {
+  private ChannelDTO toDto(Channel channel) {
     LocalDateTime lastMessageAt = messageRepository.findAllByChannelId(channel.getId())
         .stream()
         .sorted(Comparator.comparing(Message::getCreatedAt).reversed())
@@ -138,7 +138,7 @@ public class BasicChannelService implements ChannelService {
           .forEach(participantIds::add);
     }
 
-    return new ChannelResponse(
+    return new ChannelDTO(
         channel.getId(),
         channel.getType(),
         channel.getName(),

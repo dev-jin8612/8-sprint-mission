@@ -1,17 +1,15 @@
 package com.sprint.mission.discodeit.dto.data;
 
-import java.time.Instant;
 import java.time.LocalDateTime;
 import java.util.UUID;
 
-public record UserResponse(
+public record MessageDTO(
     UUID id,
     LocalDateTime createdAt,
     LocalDateTime updatedAt,
-    String username,
-    String email,
-    UUID profileId,
-    Boolean online
+    String content,
+    UUID channelId,
+    UUID authorId
 ) {
 
 }

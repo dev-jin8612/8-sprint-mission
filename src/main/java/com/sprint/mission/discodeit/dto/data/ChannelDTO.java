@@ -5,7 +5,7 @@ import java.time.LocalDateTime;
 import java.util.List;
 import java.util.UUID;
 
-public record ChannelResponse(
+public record ChannelDTO(
     UUID id,
     ChannelType type,
     String name,
