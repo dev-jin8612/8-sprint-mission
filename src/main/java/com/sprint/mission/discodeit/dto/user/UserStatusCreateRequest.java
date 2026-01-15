@@ -1,10 +1,11 @@
 package com.sprint.mission.discodeit.dto.user;
 
 import java.time.Instant;
+import java.time.LocalDateTime;
 import java.util.UUID;
 
 public record UserStatusCreateRequest(
         UUID userId,
-        Instant lastActiveAt
+        LocalDateTime lastActiveAt
 ) {
 }

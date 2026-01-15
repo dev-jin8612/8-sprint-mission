@@ -10,8 +10,7 @@ CREATE USER discodeit_user PASSWORD 'discodeit1234' CREATEDB;
 CREATE DATABASE discodeit
     WITH
     OWNER = discodeit_user
-    ENCODING = 'UTF8'
-    TEMPLATE template0;
+    ENCODING = 'UTF8';
 
 -- 3. 스키마 생성 (discodeit_user 계정으로 진행)
 -- 접속 유저: 일반 계정인 discodeit_user로 진행

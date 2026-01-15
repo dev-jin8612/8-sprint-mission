@@ -1,40 +1,46 @@
 package com.sprint.mission.discodeit.entity;
 
-import lombok.Getter;
-
-
-import java.time.Instant;
+import jakarta.persistence.Entity;
+import jakarta.persistence.Id;
+import jakarta.persistence.Table;
+import java.time.LocalDateTime;
 import java.util.UUID;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
 
 @Getter
+@Entity
+@Table(name = "read_statuses", schema = "discodeit")
+@NoArgsConstructor
 public class ReadStatus {
 
-    private UUID id;
-    private LocalDateTime createdAt;
-    private LocalDateTime updatedAt;
+  @Id
+  private UUID id;
+  private LocalDateTime createdAt;
+  private LocalDateTime updatedAt;
+  //
+  private UUID userId;
+  private UUID channelId;
+  private LocalDateTime lastReadAt;
+
+  public ReadStatus(UUID userId, UUID channelId, LocalDateTime lastReadAt) {
+    this.id = UUID.randomUUID();
+    this.createdAt = LocalDateTime.now();
     //
-    private UUID userId;
-    private UUID channelId;
-    private LocalDateTime lastReadAt;
+    this.userId = userId;
+    this.channelId = channelId;
+    this.lastReadAt = lastReadAt;
+  }
 
-    public ReadStatus(UUID userId, UUID channelId, LocalDateTime lastReadAt) {
-        this.id = UUID.randomUUID();
-        this.createdAt = Instant.now();
-        //
-        this.userId = userId;
-        this.channelId = channelId;
-        this.lastReadAt = lastReadAt;
+  public void update(LocalDateTime newLastReadAt) {
+    boolean anyValueUpdated = false;
+    if (newLastReadAt != null && !newLastReadAt.equals(this.lastReadAt)) {
+      this.lastReadAt = newLastReadAt;
+      anyValueUpdated = true;
     }
 
-    public void update(Instant newLastReadAt) {
-        boolean anyValueUpdated = false;
-        if (newLastReadAt != null && !newLastReadAt.equals(this.lastReadAt)) {
-            this.lastReadAt = newLastReadAt;
-            anyValueUpdated = true;
-        }
-
-        if (anyValueUpdated) {
-            this.updatedAt = Instant.now();
-        }
+    if (anyValueUpdated) {
+      this.updatedAt = LocalDateTime.now();
     }
+  }
 }

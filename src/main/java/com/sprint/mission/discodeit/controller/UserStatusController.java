@@ -33,7 +33,7 @@ public class UserStatusController {
       @Parameter(description = "접속 상태를 변경할 유저 ID입니다.")
       @PathVariable UUID userId
   ) {
-    UserStatusUpdateRequest userStatusUpdateRequest = new UserStatusUpdateRequest(Instant.now());
+    UserStatusUpdateRequest userStatusUpdateRequest = new UserStatusUpdateRequest(LocalDateTime.now());
     UserStatus userStatus = userStatusService.updateByUserId(userId, userStatusUpdateRequest);
 
     log.info(userStatus.getUpdatedAt() + " 상태 수정까지는 성공");

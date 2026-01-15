@@ -45,7 +45,7 @@ public class ReadStatusController {
         new ReadStatusCreateRequest(
             readStatusCreateRequest.userId(),
             readStatusCreateRequest.channelId(),
-            Instant.now()));
+            LocalDateTime.now()));
 
     log.info("유저의 수신상태 생성");
     return new ResponseEntity<>(readStatus, HttpStatus.CREATED);
@@ -58,7 +58,7 @@ public class ReadStatusController {
       @PathVariable UUID readStatusId
   ) {
     ReadStatus readStatus = readStatusService.find(readStatusId);
-    ReadStatusUpdateRequest request = new ReadStatusUpdateRequest(Instant.now());
+    ReadStatusUpdateRequest request = new ReadStatusUpdateRequest(LocalDateTime.now());
     readStatusService.update(readStatusId, request);
 
     log.info("유저의 수신상태 업데이트");

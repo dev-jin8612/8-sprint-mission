@@ -7,13 +7,12 @@ import com.sprint.mission.discodeit.repository.ChannelRepository;
 import com.sprint.mission.discodeit.repository.ReadStatusRepository;
 import com.sprint.mission.discodeit.repository.UserRepository;
 import com.sprint.mission.discodeit.service.ReadStatusService;
-import lombok.RequiredArgsConstructor;
-import org.springframework.stereotype.Service;
-
-import java.time.Instant;
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.NoSuchElementException;
 import java.util.UUID;
+import lombok.RequiredArgsConstructor;
+import org.springframework.stereotype.Service;
 
 @RequiredArgsConstructor
 @Service
@@ -40,7 +39,7 @@ public class BasicReadStatusService implements ReadStatusService {
           "ReadStatus with userId " + userId + " and channelId " + channelId + " already exists");
     }
 
-    Instant lastReadAt = request.lastReadAt();
+    LocalDateTime lastReadAt = request.lastReadAt();
     ReadStatus readStatus = new ReadStatus(userId, channelId, lastReadAt);
     return readStatusRepository.save(readStatus);
   }
@@ -60,7 +59,7 @@ public class BasicReadStatusService implements ReadStatusService {
 
   @Override
   public ReadStatus update(UUID readStatusId, ReadStatusUpdateRequest request) {
-    Instant newLastReadAt = request.newLastReadAt();
+    LocalDateTime newLastReadAt = request.newLastReadAt();
     ReadStatus readStatus = readStatusRepository.findById(readStatusId)
         .orElseThrow(
             () -> new NoSuchElementException("ReadStatus with id " + readStatusId + " not found"));
