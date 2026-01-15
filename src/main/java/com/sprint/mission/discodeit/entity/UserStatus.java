@@ -2,22 +2,22 @@ package com.sprint.mission.discodeit.entity;
 
 import lombok.Getter;
 
-import java.io.Serializable;
+
 import java.time.Duration;
 import java.time.Instant;
 import java.util.UUID;
 
 @Getter
-public class UserStatus implements Serializable {
-    private static final long serialVersionUID = 1L;
+public class UserStatus {
+
     private UUID id;
-    private Instant createdAt;
-    private Instant updatedAt;
+    private LocalDateTime createdAt;
+    private LocalDateTime updatedAt;
     //
     private UUID userId;
-    private Instant lastActiveAt;
+    private LocalDateTime lastActiveAt;
 
-    public UserStatus(UUID userId, Instant lastActiveAt) {
+    public UserStatus(UUID userId, LocalDateTime lastActiveAt) {
         this.id = UUID.randomUUID();
         this.createdAt = Instant.now();
         //
@@ -38,7 +38,7 @@ public class UserStatus implements Serializable {
     }
 
     public Boolean isOnline() {
-        Instant instantFiveMinutesAgo = Instant.now().minus(Duration.ofMinutes(5));
+        LocalDateTime instantFiveMinutesAgo = Instant.now().minus(Duration.ofMinutes(5));
 
         return lastActiveAt.isAfter(instantFiveMinutesAgo);
     }

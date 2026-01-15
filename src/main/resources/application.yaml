@@ -7,6 +7,31 @@ spring:
       max-file-size: 10MB         # 업로드 가능한 개별 파일 최대 크기
       max-request-size: 20MB      # 전체 요청의 최대 크기
       location: /tmp
+  # DB 접속 정보
+  datasource:
+#    url: jdbc:postgresql://localhost:5432/menudb?currentSchema=menudb
+    url: jdbc:postgresql://localhost:5432/menudb
+    username: ohgiraffers
+    password: ohgiraffers
+    driver-class-name: org.postgresql.Driver
+  # JPA 설정
+  jpa:
+    hibernate:
+      ddl-auto: none
+    show-sql: true
+    properties:
+      hibernate:
+        format_sql: true
+        highlight_sql: true
+        use_sql_comments: true
+        dialect: org.hibernate.dialect.PostgreSQLDialect
+
+logging:
+  level:
+    # 실행되는 SQL 출력
+    org.hibernate.SQL: debug
+    # 바인딩되는 파라미터 출력
+    org.hibernate.orm.jdbc.bind: trace
 
 discodeit:
   repository:

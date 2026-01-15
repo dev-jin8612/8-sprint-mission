@@ -2,19 +2,19 @@ package com.sprint.mission.discodeit.entity;
 
 import lombok.Getter;
 
-import java.io.Serializable;
+
 import java.time.Instant;
 import java.util.List;
 import java.util.UUID;
 
 @Getter
-public class Message implements Serializable {
+public class Message {
 
-  private static final long serialVersionUID = 1L;
+
 
   private UUID id;
-  private Instant createdAt;
-  private Instant updatedAt;
+  private LocalDateTime createdAt;
+  private LocalDateTime updatedAt;
   //
   private String content;
   //
