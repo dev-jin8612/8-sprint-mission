@@ -1,7 +1,7 @@
 package com.sprint.mission.discodeit.entity;
 
+import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
-import jakarta.persistence.Id;
 import jakarta.persistence.Table;
 import java.time.LocalDateTime;
 import java.util.UUID;
@@ -12,21 +12,22 @@ import lombok.NoArgsConstructor;
 @Entity
 @Table(name = "binary_contents", schema = "discodeit")
 @NoArgsConstructor
-public class BinaryContent {
+public class BinaryContent extends BaseEntity {
 
-  @Id
-  private UUID id;
-
-  private LocalDateTime createdAt;
+  @Column(name = "file_name")
   private String fileName;
+
+  @Column(name = "size")
   private Long size;
+
+  @Column(name = "content_type")
   private String contentType;
+
+  @Column(name = "bytes")
   private byte[] bytes;
 
   public BinaryContent(String fileName, Long size, String contentType, byte[] bytes) {
-    this.id = UUID.randomUUID();
-    this.createdAt = LocalDateTime.now();
-    //
+
     this.fileName = fileName;
     this.size = size;
     this.contentType = contentType;

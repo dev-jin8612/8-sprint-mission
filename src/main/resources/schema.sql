@@ -1,35 +1,52 @@
--- --------------------------------------------------------
--- db 생성 및 유저 권한 할당 (필요하면 실행)
--- --------------------------------------------------------
--- 1. 유저 생성: 이미 생성했다면 SKIP
--- 접속 유저: root 계정인 postgres로 진행
--- 접속 대상: postgres 데이터베이스의 public 스키마
-CREATE USER discodeit_user PASSWORD 'discodeit1234' CREATEDB;
+-- -- --------------------------------------------------------
+-- -- db 생성 및 유저 권한 할당 (필요하면 실행)
+-- -- --------------------------------------------------------
+-- -- 1. 유저 생성: 이미 생성했다면 SKIP
+-- -- 접속 유저: root 계정인 postgres로 진행
+-- -- 접속 대상: postgres 데이터베이스의 public 스키마
+-- CREATE USER discodeit_user PASSWORD 'discodeit1234' CREATEDB;
+--
+-- -- 2. 데이터베이스 생성
+-- CREATE DATABASE discodeit
+--     WITH
+--     OWNER = discodeit_user
+--     ENCODING = 'UTF8';
+--
+-- -- 3. 스키마 생성 (discodeit_user 계정으로 진행)
+-- -- 접속 유저: 일반 계정인 discodeit_user로 진행
+-- -- 접속 대상: discodeit 데이터베이스의 public 스키마
+-- CREATE SCHEMA IF NOT EXISTS discodeit;
+-- -- DROP SCHEMA discodeit;
+--
+-- -- 4. 권한 할당 / 안돼면 root 계정으로
+-- GRANT ALL PRIVILEGES ON SCHEMA discodeit TO ohgiraffers;
+-- GRANT ALL PRIVILEGES ON ALL TABLES IN SCHEMA discodeit TO discodeit_user;
+--
+-- -- 5. 검색 경로 설정
+-- ALTER ROLE discodeit_user SET search_path TO discodeit;
+-- SHOW search_path;
+--
+-- -- 6. 최종 접속 설정
+-- -- 접속 유저: 일반 계정인 discodeit_user로 진행
+-- -- 접속 대상: discodeit 데이터베이스의 discodeit 스키마
+-- -- _______________________________________________________________--
 
--- 2. 데이터베이스 생성
-CREATE DATABASE discodeit
-    WITH
-    OWNER = discodeit_user
-    ENCODING = 'UTF8';
+CREATE TABLE binary_contents
+(
+    id           uuid primary key,
+    created_at   timestamptz  not null,
+    file_name    varchar(255) not null,
+    size         BIGINT       not null,
+    content_type varchar(100) not null,
+    bytes        BYTEA        not null
+);
 
--- 3. 스키마 생성 (discodeit_user 계정으로 진행)
--- 접속 유저: 일반 계정인 discodeit_user로 진행
--- 접속 대상: discodeit 데이터베이스의 public 스키마
-CREATE SCHEMA IF NOT EXISTS discodeit;
--- DROP SCHEMA discodeit;
-
--- 4. 권한 할당 / 안돼면 root 계정으로
-GRANT ALL PRIVILEGES ON SCHEMA discodeit TO ohgiraffers;
-GRANT ALL PRIVILEGES ON ALL TABLES IN SCHEMA discodeit TO discodeit_user;
-
--- 5. 검색 경로 설정
-ALTER ROLE discodeit_user SET search_path TO discodeit;
-SHOW search_path;
-
--- 6. 최종 접속 설정
--- 접속 유저: 일반 계정인 discodeit_user로 진행
--- 접속 대상: discodeit 데이터베이스의 discodeit 스키마
--- _______________________________________________________________--
+-- INSERT INTO binary_contents
+-- VALUES (
+--         random(),time.now(),
+--         "프로필이미지",100,
+--         "img","13223"
+--        );
 
 CREATE TABLE users
 (
@@ -57,22 +74,6 @@ CREATE TABLE users
 -- UPDATE users
 -- SET updated_at = time.now();
 
-CREATE TABLE binary_contents
-(
-    id           uuid primary key,
-    created_at   timestamptz  not null,
-    file_name    varchar(255) not null,
-    size         BIGINT       not null,
-    content_type varchar(100) not null,
-    bytes        BYTEA        not null
-);
-
--- INSERT INTO binary_contents
--- VALUES (
---         random(),time.now(),
---         "프로필이미지",100,
---         "img","13223"
---        );
 
 CREATE TABLE user_statuses
 (

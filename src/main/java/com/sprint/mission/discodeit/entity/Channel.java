@@ -1,7 +1,8 @@
 package com.sprint.mission.discodeit.entity;
 
+import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
-import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
 import jakarta.persistence.Table;
 import java.time.LocalDateTime;
 import java.util.UUID;
@@ -10,41 +11,32 @@ import lombok.NoArgsConstructor;
 
 @Getter
 @Entity
-@Table(name = "channels", schema = "discodeit")
 @NoArgsConstructor
-public class Channel {
+@Table(name = "channels", schema = "discodeit")
+public class Channel extends BaseUpdatetableEntity {
 
-  @Id
-  private UUID id;
-  private LocalDateTime createdAt;
-  private LocalDateTime updatedAt;
-  //
+  @Column(name = "type")
   private ChannelType type;
+
+  @Column(name = "name")
   private String name;
+
+  @Column(name = "description")
   private String description;
 
   public Channel(ChannelType type, String name, String description) {
-    this.id = UUID.randomUUID();
-    this.createdAt = LocalDateTime.now();
-    //
+
     this.type = type;
     this.name = name;
     this.description = description;
   }
 
   public void update(String newName, String newDescription) {
-    boolean anyValueUpdated = false;
     if (newName != null && !newName.equals(this.name)) {
       this.name = newName;
-      anyValueUpdated = true;
     }
     if (newDescription != null && !newDescription.equals(this.description)) {
       this.description = newDescription;
-      anyValueUpdated = true;
-    }
-
-    if (anyValueUpdated) {
-      this.updatedAt = LocalDateTime.now();
     }
   }
 }

@@ -8,9 +8,11 @@ import com.sprint.mission.discodeit.entity.Channel;
 import com.sprint.mission.discodeit.entity.ChannelType;
 import com.sprint.mission.discodeit.entity.Message;
 import com.sprint.mission.discodeit.entity.ReadStatus;
+import com.sprint.mission.discodeit.entity.User;
 import com.sprint.mission.discodeit.repository.ChannelRepository;
 import com.sprint.mission.discodeit.repository.MessageRepository;
 import com.sprint.mission.discodeit.repository.ReadStatusRepository;
+import com.sprint.mission.discodeit.repository.UserRepository;
 import com.sprint.mission.discodeit.service.ChannelService;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
@@ -26,7 +28,7 @@ import org.springframework.stereotype.Service;
 public class BasicChannelService implements ChannelService {
 
   private final ChannelRepository channelRepository;
-  //
+  private  final UserRepository userRepository;
   private final ReadStatusRepository readStatusRepository;
   private final MessageRepository messageRepository;
 
@@ -41,11 +43,17 @@ public class BasicChannelService implements ChannelService {
 
   @Override
   public Channel create(PrivateChannelCreateRequest request) {
-    Channel channel = new Channel(ChannelType.PRIVATE, null, null);
-    Channel createdChannel = channelRepository.save(channel);
+    Channel createdChannel = channelRepository.save(
+        new Channel(ChannelType.PRIVATE, null, null)
+    );
+
+//    User user = userRepository.
 
     request.participantIds().stream()
-        .map(userId -> new ReadStatus(userId, createdChannel.getId(), channel.getCreatedAt()))
+        .map(userId -> {
+          User user = userRepository.findById(userId).orElseThrow(NoSuchElementException::new);
+          return new ReadStatus(user, createdChannel, createdChannel.getCreatedAt());
+        })
         .forEach(readStatusRepository::save);
 
     return createdChannel;
@@ -63,7 +71,7 @@ public class BasicChannelService implements ChannelService {
   public List<ChannelDTO> findAllByUserId(UUID userId) {
     List<UUID> mySubscribedChannelIds =
         readStatusRepository.findAllByUserId(userId).stream()
-            .map(ReadStatus::getChannelId)
+            .map(readStatus ->  readStatus.getChannel().getId())
             .toList();
 
     return channelRepository.findAll().stream()
@@ -122,8 +130,7 @@ public class BasicChannelService implements ChannelService {
   }
 
   private ChannelDTO toDto(Channel channel) {
-    LocalDateTime lastMessageAt = messageRepository.findAllByChannelId(channel.getId())
-        .stream()
+    LocalDateTime lastMessageAt = messageRepository.findAllByChannelId(channel.getId()).stream()
         .sorted(Comparator.comparing(Message::getCreatedAt).reversed())
         .map(Message::getCreatedAt)
         .limit(1)
@@ -132,9 +139,8 @@ public class BasicChannelService implements ChannelService {
 
     List<UUID> participantIds = new ArrayList<>();
     if (channel.getType().equals(ChannelType.PRIVATE)) {
-      readStatusRepository.findAllByChannelId(channel.getId())
-          .stream()
-          .map(ReadStatus::getUserId)
+      readStatusRepository.findAllByChannelId(channel.getId()).stream()
+          .map(readStatus ->   readStatus.getChannel().getId())
           .forEach(participantIds::add);
     }
 

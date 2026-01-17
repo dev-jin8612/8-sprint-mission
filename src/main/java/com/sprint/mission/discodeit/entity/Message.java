@@ -1,54 +1,56 @@
 package com.sprint.mission.discodeit.entity;
 
+import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
-import jakarta.persistence.Id;
+import jakarta.persistence.FetchType;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.JoinTable;
+import jakarta.persistence.ManyToMany;
+import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
-import jakarta.persistence.Transient;
-import java.time.LocalDateTime;
 import java.util.List;
-import java.util.UUID;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 @Getter
 @Entity
-@Table(name = "messages", schema = "discodeit")
 @NoArgsConstructor
-public class Message {
+@Table(name = "messages", schema = "discodeit")
+public class Message extends BaseUpdatetableEntity {
 
-  @Id
-  private UUID id;
-  private LocalDateTime createdAt;
-  private LocalDateTime updatedAt;
+  @Column(name = "content")
   private String content;
-  private UUID channelId;
-  private UUID authorId;
 
-  @Transient // DB에는 저장 안되게, 이거 중간 테이블 쓰면 필요 없기는 할텐데
-  private List<UUID> attachmentIds;
+  @ManyToOne(fetch = FetchType.LAZY)
+  @JoinColumn(name = "channel_id", nullable = false)
+  private Channel channel;
 
-  public Message(String content, UUID channelId, UUID authorId, List<UUID> attachmentIds) {
-    this.id = UUID.randomUUID();
-    this.createdAt = LocalDateTime.now();
-    this.updatedAt = this.createdAt;
-    //
+  @ManyToOne(fetch = FetchType.LAZY)
+  @JoinColumn(name = "author_id", nullable = true)
+  private User author;
+
+  @ManyToMany(fetch = FetchType.LAZY)
+  @JoinTable(
+      name = "message_attachments",
+      schema = "discodeit",
+      joinColumns = @JoinColumn(name = "message_id"),
+      inverseJoinColumns = @JoinColumn(name = "attachment_id")
+  )
+  private List<BinaryContent> attachmentIds;
+
+  public Message(String content, Channel channel, User author, List<BinaryContent> attachmentIds) {
+
     this.content = content;
-    this.channelId = channelId;
-    this.authorId = authorId;
+    this.channel = channel;
+    this.author = author;
 
-    // 여기도 삭제 해야할거 같은데
+    // 수정해야됨
     this.attachmentIds = attachmentIds;
   }
 
   public void update(String newContent) {
-    boolean anyValueUpdated = false;
     if (newContent != null && !newContent.equals(this.content)) {
       this.content = newContent;
-      anyValueUpdated = true;
-    }
-
-    if (anyValueUpdated) {
-      this.updatedAt = LocalDateTime.now();
     }
   }
 }

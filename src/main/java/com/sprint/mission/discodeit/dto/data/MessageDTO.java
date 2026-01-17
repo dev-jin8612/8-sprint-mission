@@ -1,6 +1,7 @@
 package com.sprint.mission.discodeit.dto.data;
 
 import java.time.LocalDateTime;
+import java.util.List;
 import java.util.UUID;
 
 public record MessageDTO(
@@ -9,7 +10,8 @@ public record MessageDTO(
     LocalDateTime updatedAt,
     String content,
     UUID channelId,
-    UUID authorId
+    UUID authorId,
+    List<BinaryContentDTO> attachments
 ) {
 
 }

@@ -5,8 +5,6 @@ import java.util.UUID;
 
 public record UserStatusDTO(
     UUID id,
-    LocalDateTime createdAt,
-    LocalDateTime updatedAt,
     UUID userId,
     LocalDateTime lastActiveAt
 ) {

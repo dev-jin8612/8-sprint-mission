@@ -2,6 +2,7 @@ package com.sprint.mission.discodeit.service.basic;
 
 import com.sprint.mission.discodeit.dto.user.UserStatusCreateRequest;
 import com.sprint.mission.discodeit.dto.user.UserStatusUpdateRequest;
+import com.sprint.mission.discodeit.entity.User;
 import com.sprint.mission.discodeit.entity.UserStatus;
 import com.sprint.mission.discodeit.repository.UserRepository;
 import com.sprint.mission.discodeit.repository.UserStatusRepository;
@@ -22,17 +23,17 @@ public class BasicUserStatusService implements UserStatusService {
 
   @Override
   public UserStatus create(UserStatusCreateRequest request) {
-    UUID userId = request.userId();
+    User user = userRepository.findById(request.userId()).orElseThrow(NoSuchElementException::new);
 
-    if (!userRepository.existsById(userId)) {
-      throw new NoSuchElementException("User with id " + userId + " does not exist");
+    if (!userRepository.existsById(user.getId())) {
+      throw new NoSuchElementException("User with id " + user.getId() + " does not exist");
     }
-    if (userStatusRepository.findByUserId(userId).isPresent()) {
-      throw new IllegalArgumentException("UserStatus with id " + userId + " already exists");
+    if (userStatusRepository.findByUserId(user.getId()).isPresent()) {
+      throw new IllegalArgumentException("UserStatus with id " + user.getId() + " already exists");
     }
 
     LocalDateTime lastActiveAt = request.lastActiveAt();
-    UserStatus userStatus = new UserStatus(userId, lastActiveAt);
+    UserStatus userStatus = new UserStatus(user, lastActiveAt);
     return userStatusRepository.save(userStatus);
   }
 

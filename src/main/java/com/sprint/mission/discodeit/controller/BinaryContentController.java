@@ -55,4 +55,19 @@ public class BinaryContentController {
     List<BinaryContent> binaryContent = binaryContentService.findAllByIdIn(binaryContentIds);
     return ResponseEntity.ok(binaryContent);
   }
+
+  @GetMapping
+  @Operation(summary = "Binary 다건 조회", description = "Binary를 여러개 조회합니다.")
+  public ResponseEntity<List<BinaryContent>> binaryMulitSerach(
+      @Parameter(
+          name = "List<UUID> binaryContentIds",
+          description = "조회할 BinaryId를 연속으로 입력합니다. ,로 구분 합니다.",
+          example = "/550e8400-e29b-41d4-a716-446655440000, 550e8400-e29b-41d4-a716-446655440000",
+          required = true
+      )
+      @RequestParam("binaryContentIds") List<UUID> binaryContentIds) {
+
+    List<BinaryContent> binaryContent = binaryContentService.findAllByIdIn(binaryContentIds);
+    return ResponseEntity.ok(binaryContent);
+  }
 }

@@ -5,10 +5,9 @@ import java.util.UUID;
 
 public record ReadStatusDTO(
     UUID id,
-    LocalDateTime createdAt,
-    LocalDateTime updatedAt,
     UUID userId,
-    UUID channelId
+    UUID channelId,
+    LocalDateTime lastReadAt
 ) {
 
 }
