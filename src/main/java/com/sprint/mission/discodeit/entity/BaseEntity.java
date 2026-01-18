@@ -4,9 +4,7 @@ import jakarta.persistence.Column;
 import jakarta.persistence.EntityListeners;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.Id;
-import jakarta.persistence.JoinColumn;
 import jakarta.persistence.MappedSuperclass;
-import jakarta.persistence.OneToMany;
 import java.time.LocalDateTime;
 import java.util.UUID;
 import lombok.Getter;
@@ -19,6 +17,7 @@ import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 @MappedSuperclass
 @EntityListeners(AuditingEntityListener.class)
 public abstract class BaseEntity {
+
   @Id
   @GeneratedValue
   @Column(name = "id", updatable = false, nullable = false)

@@ -3,14 +3,14 @@ package com.sprint.mission.discodeit.entity;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.Table;
-import java.time.LocalDateTime;
-import java.util.UUID;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.Setter;
 
+@Setter
 @Getter
 @Entity
-@Table(name = "binary_contents", schema = "discodeit")
+@Table(name = "binary_contents")
 @NoArgsConstructor
 public class BinaryContent extends BaseEntity {
 
@@ -23,14 +23,10 @@ public class BinaryContent extends BaseEntity {
   @Column(name = "content_type")
   private String contentType;
 
-  @Column(name = "bytes")
-  private byte[] bytes;
-
-  public BinaryContent(String fileName, Long size, String contentType, byte[] bytes) {
+  public BinaryContent(String fileName, Long size, String contentType) {
 
     this.fileName = fileName;
     this.size = size;
     this.contentType = contentType;
-    this.bytes = bytes;
   }
 }

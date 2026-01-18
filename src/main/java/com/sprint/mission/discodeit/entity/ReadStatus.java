@@ -7,14 +7,15 @@ import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
 import java.time.LocalDateTime;
-import java.util.UUID;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.Setter;
 
+@Setter
 @Getter
 @Entity
 @NoArgsConstructor
-@Table(name = "read_statuses", schema = "discodeit")
+@Table(name = "read_statuses")
 public class ReadStatus extends BaseUpdatetableEntity {
 
   @ManyToOne(fetch = FetchType.LAZY)

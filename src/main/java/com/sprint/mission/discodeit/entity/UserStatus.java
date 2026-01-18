@@ -10,11 +10,13 @@ import java.time.Duration;
 import java.time.LocalDateTime;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.Setter;
 
+@Setter
 @Getter
 @Entity
 @NoArgsConstructor
-@Table(name = "user_statuses", schema = "discodeit")
+@Table(name = "user_statuses")
 public class UserStatus extends BaseUpdatetableEntity {
 
   @OneToOne(fetch = FetchType.LAZY)

@@ -22,15 +22,14 @@ import org.springframework.stereotype.Service;
 @RequiredArgsConstructor
 @Service
 public class BasicUserService implements UserService {
-
   private final UserRepository userRepository;
-
   private final BinaryContentRepository binaryContentRepository;
   private final UserStatusRepository userStatusRepository;
 
   @Override
   public User create(UserCreateRequest userCreateRequest,
-      Optional<BinaryContentCreateRequest> optionalProfileCreateRequest) {
+      Optional<BinaryContentCreateRequest> optionalProfileCreateRequest
+  ) {
     String username = userCreateRequest.username();
     String email = userCreateRequest.email();
 
@@ -44,10 +43,11 @@ public class BasicUserService implements UserService {
     BinaryContent nullableProfileId = optionalProfileCreateRequest.map(profileRequest -> {
       String fileName = profileRequest.fileName();
       String contentType = profileRequest.contentType();
+
       byte[] bytes = profileRequest.bytes();
-      BinaryContent binaryContent = new BinaryContent(fileName, (long) bytes.length, contentType,
-          bytes);
+      BinaryContent binaryContent = new BinaryContent(fileName, (long) bytes.length, contentType);
       return binaryContentRepository.save(binaryContent);
+
     }).orElse(null);
     String password = userCreateRequest.password();
 
@@ -95,14 +95,15 @@ public class BasicUserService implements UserService {
     }
 
     BinaryContent nullableProfile = optionalProfileCreateRequest.map(profileRequest -> {
-      Optional.ofNullable(user.getProfileId().getId())
+      Optional.ofNullable(user.getProfile().getId())
           .ifPresent(binaryContentRepository::deleteById);
 
       String fileName = profileRequest.fileName();
       String contentType = profileRequest.contentType();
+
       byte[] bytes = profileRequest.bytes();
-      BinaryContent binaryContent = new BinaryContent(fileName, (long) bytes.length, contentType,
-          bytes);
+      BinaryContent binaryContent = new BinaryContent(fileName, (long) bytes.length, contentType);
+
       return binaryContentRepository.save(binaryContent);
     }).orElse(null);
 
@@ -117,7 +118,7 @@ public class BasicUserService implements UserService {
     User user = userRepository.findById(userId)
         .orElseThrow(() -> new NoSuchElementException("User with id " + userId + " not found"));
 
-    Optional.ofNullable(user.getProfileId().getId()).ifPresent(binaryContentRepository::deleteById);
+    Optional.ofNullable(user.getProfile().getId()).ifPresent(binaryContentRepository::deleteById);
     userStatusRepository.deleteByUserId(userId);
 
     userRepository.deleteById(userId);
@@ -127,7 +128,7 @@ public class BasicUserService implements UserService {
     Boolean online = userStatusRepository.findByUserId(user.getId()).map(UserStatus::isOnline)
         .orElse(null);
 
-    return new UserDTO(user.getId(), user.getCreatedAt(), user.getUpdatedAt(), user.getUsername(),
-        user.getEmail(), user.getProfileId().getId(), online);
+    return new UserDTO(user.getId(), user.getUsername(),
+        user.getEmail(), user.getProfile().getId(), online);
   }
 }

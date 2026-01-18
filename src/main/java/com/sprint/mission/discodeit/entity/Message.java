@@ -11,11 +11,13 @@ import jakarta.persistence.Table;
 import java.util.List;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.Setter;
 
+@Setter
 @Getter
 @Entity
 @NoArgsConstructor
-@Table(name = "messages", schema = "discodeit")
+@Table(name = "messages")
 public class Message extends BaseUpdatetableEntity {
 
   @Column(name = "content")

@@ -5,17 +5,16 @@ import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
-import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
-import java.time.LocalDateTime;
-import java.util.UUID;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.Setter;
 
+@Setter
 @Getter
 @Entity
 @NoArgsConstructor
-@Table(name = "users", schema = "discodeit")
+@Table(name = "users")
 public class User extends BaseUpdatetableEntity {
 
   @Column(name = "username")
@@ -27,19 +26,19 @@ public class User extends BaseUpdatetableEntity {
   @Column(name = "password")
   private String password;
 
-  @ManyToOne(fetch = FetchType.LAZY,optional = true)
-  @JoinColumn(name = "profile_id",nullable = true)
-  private BinaryContent profileId;
+  @ManyToOne(fetch = FetchType.LAZY, optional = true)
+  @JoinColumn(name = "profile_id", nullable = true)
+  private BinaryContent profile;
 
-  public User(String username, String email, String password, BinaryContent profileId) {
-
+  public User(String username, String email, String password, BinaryContent profile) {
     this.username = username;
     this.email = email;
     this.password = password;
-    this.profileId = profileId;
+    this.profile = profile;
   }
 
-  public void update(String newUsername, String newEmail, String newPassword, BinaryContent newProfileId) {
+  public void update(String newUsername, String newEmail, String newPassword,
+      BinaryContent newprofile) {
     if (newUsername != null && !newUsername.equals(this.username)) {
       this.username = newUsername;
     }
@@ -49,8 +48,8 @@ public class User extends BaseUpdatetableEntity {
     if (newPassword != null && !newPassword.equals(this.password)) {
       this.password = newPassword;
     }
-    if (newProfileId != null && !newProfileId.equals(this.profileId)) {
-      this.profileId = newProfileId;
+    if (newprofile != null && !newprofile.equals(this.profile)) {
+      this.profile = newprofile;
     }
   }
 }

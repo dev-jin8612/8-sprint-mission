@@ -38,7 +38,8 @@ public class BasicMessageService implements MessageService {
       throw new NoSuchElementException("Channel with id " + channel.getId() + " does not exist");
     }
     if (!userRepository.existsById(messageCreateRequest.authorId())) {
-      throw new NoSuchElementException("Author with id " + messageCreateRequest.authorId() + " does not exist");
+      throw new NoSuchElementException(
+          "Author with id " + messageCreateRequest.authorId() + " does not exist");
     }
 
     List<BinaryContent> attachmentIds = binaryContentCreateRequests.stream()
@@ -47,8 +48,12 @@ public class BasicMessageService implements MessageService {
           String contentType = attachmentRequest.contentType();
           byte[] bytes = attachmentRequest.bytes();
 
-          BinaryContent binaryContent = new BinaryContent(fileName, (long) bytes.length,
-              contentType, bytes);
+          BinaryContent binaryContent =
+              new BinaryContent(
+                  fileName,
+                  (long) bytes.length,
+                  contentType
+              );
           BinaryContent createdBinaryContent = binaryContentRepository.save(binaryContent);
           return createdBinaryContent;
         })

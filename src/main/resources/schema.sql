@@ -23,8 +23,8 @@
 -- GRANT ALL PRIVILEGES ON ALL TABLES IN SCHEMA discodeit TO discodeit_user;
 --
 -- -- 5. 검색 경로 설정
--- ALTER ROLE discodeit_user SET search_path TO discodeit;
--- SHOW search_path;
+ALTER ROLE discodeit_user SET search_path TO discodeit;
+SHOW search_path;
 --
 -- -- 6. 최종 접속 설정
 -- -- 접속 유저: 일반 계정인 discodeit_user로 진행
@@ -37,8 +37,7 @@ CREATE TABLE binary_contents
     created_at   timestamptz  not null,
     file_name    varchar(255) not null,
     size         BIGINT       not null,
-    content_type varchar(100) not null,
-    bytes        BYTEA        not null
+    content_type varchar(100) not null
 );
 
 -- INSERT INTO binary_contents
@@ -73,6 +72,13 @@ CREATE TABLE users
 
 -- UPDATE users
 -- SET updated_at = time.now();
+
+select *
+from users;
+
+SELECT table_schema, table_name
+FROM information_schema.tables
+WHERE table_name = 'users';
 
 
 CREATE TABLE user_statuses

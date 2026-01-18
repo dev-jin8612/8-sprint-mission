@@ -2,17 +2,16 @@ package com.sprint.mission.discodeit.entity;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
-import jakarta.persistence.JoinColumn;
 import jakarta.persistence.Table;
-import java.time.LocalDateTime;
-import java.util.UUID;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.Setter;
 
+@Setter
 @Getter
 @Entity
 @NoArgsConstructor
-@Table(name = "channels", schema = "discodeit")
+@Table(name = "channels")
 public class Channel extends BaseUpdatetableEntity {
 
   @Column(name = "type")

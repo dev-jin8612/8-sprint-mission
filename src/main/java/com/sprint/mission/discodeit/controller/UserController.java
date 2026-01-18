@@ -5,12 +5,10 @@ import com.sprint.mission.discodeit.dto.user.BinaryContentCreateRequest;
 import com.sprint.mission.discodeit.dto.user.UserCreateRequest;
 import com.sprint.mission.discodeit.dto.user.UserUpdateRequest;
 import com.sprint.mission.discodeit.entity.User;
-import com.sprint.mission.discodeit.entity.UserStatus;
 import com.sprint.mission.discodeit.service.UserService;
 import com.sprint.mission.discodeit.service.UserStatusService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
-import io.swagger.v3.oas.annotations.Parameters;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import java.io.IOException;
 import java.util.List;
@@ -25,10 +23,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.PutMapping;
-import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RequestPart;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
@@ -72,8 +67,10 @@ public class UserController {
     User user = userService.create(userRequest, binaryContentCreateRequest);
 
     UserDTO userDTO = new UserDTO(
-        user.getId(), user.getCreatedAt(), user.getUpdatedAt(),
-        user.getUsername(), user.getEmail(), user.getProfileId(),
+        user.getId(),
+        user.getUsername(),
+        user.getEmail(),
+        user.getProfile().getId(),
         false);
 
     log.info(user.getUsername() + " 생성까지는 성공");

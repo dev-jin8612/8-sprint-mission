@@ -8,6 +8,7 @@ import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import java.time.Instant;
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
@@ -85,7 +86,7 @@ public class ReadStatusController {
       @RequestParam UUID channelId
   ) {
     Optional<ReadStatus> readStatus = readStatusService.findAllByUserId(userId).stream()
-        .filter(readStatus1 -> readStatus1.getChannelId().equals(channelId)).findFirst();
+        .filter(readStatus1 -> readStatus1.getChannel().getId().equals(channelId)).findFirst();
 
     if (readStatus.get().getLastReadAt().isAfter(readStatus.get().getUpdatedAt())) {
       log.info(readStatus.get().getId() + "님은 메세지를 봤습니다.");
