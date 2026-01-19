@@ -8,8 +8,7 @@ public class LocalStorageCondition implements Condition {
 
   @Override
   public boolean matches(ConditionContext context, AnnotatedTypeMetadata metadata) {
-    String type = context.getEnvironment()
-        .getProperty("discodeit.storage.type");
+    String type = context.getEnvironment().getProperty("discodeit.storage.type");
     return "local".equalsIgnoreCase(type);
   }
 }

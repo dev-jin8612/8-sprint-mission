@@ -46,7 +46,7 @@ public class ChannelController {
     if (channelCreateRequest.name() == null) {
       throw new IllegalArgumentException("Channel name is null");
     }
-    Channel channel = channelService.create(channelCreateRequest);
+    Channel channel = channelService.createPublic(channelCreateRequest);
     log.info(channel.getName() + "채널 생성까지는 성공");
     return ResponseEntity.ok(channel);
   }
@@ -57,7 +57,7 @@ public class ChannelController {
   public ResponseEntity<Channel> createPrivateChannel(
       @Parameter(description = "초대할 사람들의 UUID가 들어가 있습니다.")
       @RequestBody PrivateChannelCreateRequest channelCreateRequest) {
-    Channel channel = channelService.create(channelCreateRequest);
+    Channel channel = channelService.createPrivate(channelCreateRequest);
     log.info("비공개 채널 생성까지는 성공");
     return ResponseEntity.ok(channel);
   }

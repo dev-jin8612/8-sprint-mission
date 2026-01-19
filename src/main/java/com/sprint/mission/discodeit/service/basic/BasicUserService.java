@@ -11,6 +11,7 @@ import com.sprint.mission.discodeit.repository.BinaryContentRepository;
 import com.sprint.mission.discodeit.repository.UserRepository;
 import com.sprint.mission.discodeit.repository.UserStatusRepository;
 import com.sprint.mission.discodeit.service.UserService;
+import com.sprint.mission.discodeit.storage.BinaryContentStorage;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.NoSuchElementException;
@@ -22,12 +23,15 @@ import org.springframework.stereotype.Service;
 @RequiredArgsConstructor
 @Service
 public class BasicUserService implements UserService {
+
   private final UserRepository userRepository;
   private final BinaryContentRepository binaryContentRepository;
   private final UserStatusRepository userStatusRepository;
+  private final BinaryContentStorage storage;
 
   @Override
-  public User create(UserCreateRequest userCreateRequest,
+  public User create(
+      UserCreateRequest userCreateRequest,
       Optional<BinaryContentCreateRequest> optionalProfileCreateRequest
   ) {
     String username = userCreateRequest.username();
@@ -40,23 +44,24 @@ public class BasicUserService implements UserService {
       throw new IllegalArgumentException("User with username " + username + " already exists");
     }
 
-    BinaryContent nullableProfileId = optionalProfileCreateRequest.map(profileRequest -> {
-      String fileName = profileRequest.fileName();
-      String contentType = profileRequest.contentType();
+    BinaryContent nullableProfileId = optionalProfileCreateRequest.map(
+        profileRequest -> {
+          String fileName = profileRequest.fileName();
+          String contentType = profileRequest.contentType();
+          byte[] bytes = profileRequest.bytes();
 
-      byte[] bytes = profileRequest.bytes();
-      BinaryContent binaryContent = new BinaryContent(fileName, (long) bytes.length, contentType);
-      return binaryContentRepository.save(binaryContent);
+          BinaryContent binaryContent = binaryContentRepository.save(
+              new BinaryContent(fileName, (long) bytes.length, contentType));
 
-    }).orElse(null);
+          storage.put(binaryContent.getId(), bytes);
+          return binaryContent;
+
+        }).orElse(null);
+
     String password = userCreateRequest.password();
-
-    User user = new User(username, email, password, nullableProfileId);
-    User createdUser = userRepository.save(user);
-
+    User createdUser = userRepository.save(new User(username, email, password, nullableProfileId));
     LocalDateTime now = LocalDateTime.now();
-    UserStatus userStatus = new UserStatus(createdUser, now);
-    userStatusRepository.save(userStatus);
+    userStatusRepository.save(new UserStatus(createdUser, now));
 
     return createdUser;
   }
@@ -102,9 +107,13 @@ public class BasicUserService implements UserService {
       String contentType = profileRequest.contentType();
 
       byte[] bytes = profileRequest.bytes();
-      BinaryContent binaryContent = new BinaryContent(fileName, (long) bytes.length, contentType);
+      BinaryContent binaryContent =
+          binaryContentRepository.save(new BinaryContent(
+              fileName, (long) bytes.length, contentType
+          ));
 
-      return binaryContentRepository.save(binaryContent);
+      storage.put(binaryContent.getId(), bytes);
+      return binaryContent;
     }).orElse(null);
 
     String newPassword = userUpdateRequest.newPassword();

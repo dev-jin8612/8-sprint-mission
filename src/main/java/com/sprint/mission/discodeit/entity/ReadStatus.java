@@ -15,7 +15,7 @@ import lombok.Setter;
 @Getter
 @Entity
 @NoArgsConstructor
-@Table(name = "read_statuses")
+@Table(name = "read_statuses", schema = "discodeit")
 public class ReadStatus extends BaseUpdatetableEntity {
 
   @ManyToOne(fetch = FetchType.LAZY)

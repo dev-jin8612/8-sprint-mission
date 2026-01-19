@@ -14,7 +14,7 @@ import lombok.Setter;
 @Getter
 @Entity
 @NoArgsConstructor
-@Table(name = "users")
+@Table(name = "users", schema = "discodeit")
 public class User extends BaseUpdatetableEntity {
 
   @Column(name = "username")
@@ -31,6 +31,7 @@ public class User extends BaseUpdatetableEntity {
   private BinaryContent profile;
 
   public User(String username, String email, String password, BinaryContent profile) {
+
     this.username = username;
     this.email = email;
     this.password = password;

@@ -16,7 +16,7 @@ import lombok.Setter;
 @Getter
 @Entity
 @NoArgsConstructor
-@Table(name = "user_statuses")
+@Table(name = "user_statuses", schema = "discodeit")
 public class UserStatus extends BaseUpdatetableEntity {
 
   @OneToOne(fetch = FetchType.LAZY)

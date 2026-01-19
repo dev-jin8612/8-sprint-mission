@@ -9,10 +9,12 @@ import java.util.List;
 import java.util.NoSuchElementException;
 import java.util.UUID;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
-@RequiredArgsConstructor
+@Slf4j
 @Service
+@RequiredArgsConstructor
 public class BasicBinaryContentService implements BinaryContentService {
 
   private final BinaryContentRepository binaryContentRepository;
@@ -20,14 +22,15 @@ public class BasicBinaryContentService implements BinaryContentService {
 
   @Override
   public BinaryContent create(BinaryContentCreateRequest request) {
-    BinaryContent binaryContent = new BinaryContent(
-        request.fileName(),
-        (long) request.bytes().length,
-        request.contentType()
-    );
+    BinaryContent binaryContent =
+        binaryContentRepository.save(new BinaryContent(
+            request.fileName(),
+            (long) request.bytes().length,
+            request.contentType()
+        ));
 
+    log.info("test"+binaryContent.getId());
     storage.put(binaryContent.getId(), request.bytes());
-    binaryContentRepository.save(binaryContent);
     return binaryContent;
   }
 

@@ -33,11 +33,12 @@ SHOW search_path;
 
 CREATE TABLE binary_contents
 (
-    id           uuid primary key,
-    created_at   timestamptz  not null,
-    file_name    varchar(255) not null,
-    size         BIGINT       not null,
-    content_type varchar(100) not null
+    id           uuid primary key
+    ,created_at   timestamptz  not null
+    ,file_name    varchar(255) not null
+    ,size         BIGINT       not null
+    ,content_type varchar(100) not null
+--     ,bytes BYTEA NOT NULL
 );
 
 -- INSERT INTO binary_contents
@@ -72,6 +73,12 @@ CREATE TABLE users
 
 -- UPDATE users
 -- SET updated_at = time.now();
+
+select *
+from binary_contents;
+
+-- DELETE FROM binary_contents;
+-- DELETE FROM users;
 
 select *
 from users;

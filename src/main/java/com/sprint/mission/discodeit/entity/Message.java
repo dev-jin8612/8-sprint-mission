@@ -17,7 +17,7 @@ import lombok.Setter;
 @Getter
 @Entity
 @NoArgsConstructor
-@Table(name = "messages")
+@Table(name = "messages", schema = "discodeit")
 public class Message extends BaseUpdatetableEntity {
 
   @Column(name = "content")

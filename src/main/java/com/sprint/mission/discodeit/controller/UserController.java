@@ -6,7 +6,6 @@ import com.sprint.mission.discodeit.dto.user.UserCreateRequest;
 import com.sprint.mission.discodeit.dto.user.UserUpdateRequest;
 import com.sprint.mission.discodeit.entity.User;
 import com.sprint.mission.discodeit.service.UserService;
-import com.sprint.mission.discodeit.service.UserStatusService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -34,9 +33,7 @@ import org.springframework.web.multipart.MultipartFile;
 @RequestMapping("/users")
 @Tag(name = "User API", description = "User 관련 API")
 public class UserController {
-
   private final UserService userService;
-  private final UserStatusService userStatusService;
 
   // 유저 생성
   @Operation(summary = "User 생성", description = "유저을 생성합니다.")

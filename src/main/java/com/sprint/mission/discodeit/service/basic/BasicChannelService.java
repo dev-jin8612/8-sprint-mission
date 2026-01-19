@@ -33,7 +33,7 @@ public class BasicChannelService implements ChannelService {
   private final MessageRepository messageRepository;
 
   @Override
-  public Channel create(PublicChannelCreateRequest request) {
+  public Channel createPublic(PublicChannelCreateRequest request) {
     String name = request.name();
     String description = request.description();
     Channel channel = new Channel(ChannelType.PUBLIC, name, description);
@@ -42,7 +42,7 @@ public class BasicChannelService implements ChannelService {
   }
 
   @Override
-  public Channel create(PrivateChannelCreateRequest request) {
+  public Channel createPrivate(PrivateChannelCreateRequest request) {
     Channel createdChannel = channelRepository.save(
         new Channel(ChannelType.PRIVATE, null, null)
     );

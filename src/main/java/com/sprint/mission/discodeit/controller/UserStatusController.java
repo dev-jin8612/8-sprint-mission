@@ -6,7 +6,6 @@ import com.sprint.mission.discodeit.service.UserStatusService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.tags.Tag;
-import java.time.Instant;
 import java.time.LocalDateTime;
 import java.util.UUID;
 import lombok.RequiredArgsConstructor;
@@ -14,7 +13,6 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -34,8 +32,9 @@ public class UserStatusController {
       @Parameter(description = "접속 상태를 변경할 유저 ID입니다.")
       @PathVariable UUID userId
   ) {
-    UserStatusUpdateRequest userStatusUpdateRequest = new UserStatusUpdateRequest(LocalDateTime.now());
-    UserStatus userStatus = userStatusService.updateByUserId(userId, userStatusUpdateRequest);
+    UserStatus userStatus = userStatusService.updateByUserId(
+        userId, new UserStatusUpdateRequest(LocalDateTime.now()
+        ));
 
     log.info(userStatus.getUpdatedAt() + " 상태 수정까지는 성공");
     return ResponseEntity.ok(userStatus);

@@ -12,6 +12,7 @@ import com.sprint.mission.discodeit.repository.ChannelRepository;
 import com.sprint.mission.discodeit.repository.MessageRepository;
 import com.sprint.mission.discodeit.repository.UserRepository;
 import com.sprint.mission.discodeit.service.MessageService;
+import com.sprint.mission.discodeit.storage.BinaryContentStorage;
 import java.util.List;
 import java.util.NoSuchElementException;
 import java.util.UUID;
@@ -26,6 +27,8 @@ public class BasicMessageService implements MessageService {
   private final ChannelRepository channelRepository;
   private final UserRepository userRepository;
   private final BinaryContentRepository binaryContentRepository;
+  private final BinaryContentStorage storage;
+
 
   @Override
   public Message create(MessageCreateRequest messageCreateRequest,
@@ -49,13 +52,14 @@ public class BasicMessageService implements MessageService {
           byte[] bytes = attachmentRequest.bytes();
 
           BinaryContent binaryContent =
-              new BinaryContent(
-                  fileName,
-                  (long) bytes.length,
-                  contentType
-              );
-          BinaryContent createdBinaryContent = binaryContentRepository.save(binaryContent);
-          return createdBinaryContent;
+              binaryContentRepository.save(new BinaryContent(
+                  attachmentRequest.fileName(),
+                  (long) attachmentRequest.bytes().length,
+                  attachmentRequest.contentType()
+              ));
+
+          storage.put(binaryContent.getId(), bytes);
+          return binaryContent;
         })
         .toList();
 

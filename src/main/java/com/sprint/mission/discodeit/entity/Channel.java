@@ -3,6 +3,7 @@ package com.sprint.mission.discodeit.entity;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.Table;
+import java.util.UUID;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -11,7 +12,7 @@ import lombok.Setter;
 @Getter
 @Entity
 @NoArgsConstructor
-@Table(name = "channels")
+@Table(name = "channels", schema = "discodeit")
 public class Channel extends BaseUpdatetableEntity {
 
   @Column(name = "type")
@@ -24,7 +25,6 @@ public class Channel extends BaseUpdatetableEntity {
   private String description;
 
   public Channel(ChannelType type, String name, String description) {
-
     this.type = type;
     this.name = name;
     this.description = description;

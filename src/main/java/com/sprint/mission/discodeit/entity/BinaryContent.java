@@ -10,7 +10,7 @@ import lombok.Setter;
 @Setter
 @Getter
 @Entity
-@Table(name = "binary_contents")
+@Table(name = "binary_contents", schema = "discodeit")
 @NoArgsConstructor
 public class BinaryContent extends BaseEntity {
 

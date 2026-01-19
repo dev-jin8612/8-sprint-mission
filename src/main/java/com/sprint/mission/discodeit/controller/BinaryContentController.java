@@ -11,6 +11,7 @@ import java.util.List;
 import java.util.UUID;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.core.io.Resource;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -49,7 +50,7 @@ public class BinaryContentController {
 
   @GetMapping("/{binaryContentId}/download")
   @Operation(summary = "Binary 다운로드", description = "메세지에 있는 이미지를 다운로드하게 해줍니다.")
-  public ResponseEntity<?> download(@PathVariable UUID binaryContentId) {
+  public ResponseEntity<Resource> download(@PathVariable UUID binaryContentId) {
     BinaryContent binaryContent = binaryContentService.find(binaryContentId);
 
     return binaryContentStorage.download(
