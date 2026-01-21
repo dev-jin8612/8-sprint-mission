@@ -34,9 +34,11 @@ public class BasicChannelService implements ChannelService {
 
   @Override
   public Channel createPublic(PublicChannelCreateRequest request) {
-    String name = request.name();
-    String description = request.description();
-    Channel channel = new Channel(ChannelType.PUBLIC, name, description);
+    Channel channel = new Channel(
+        ChannelType.PUBLIC,
+        request.name(),
+        request.description()
+    );
 
     return channelRepository.save(channel);
   }

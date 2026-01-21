@@ -31,9 +31,10 @@ public class BasicMessageService implements MessageService {
 
 
   @Override
-  public Message create(MessageCreateRequest messageCreateRequest,
-      List<BinaryContentCreateRequest> binaryContentCreateRequests) {
-
+  public Message create(
+      MessageCreateRequest messageCreateRequest,
+      List<BinaryContentCreateRequest> binaryContentCreateRequests
+  ) {
     Channel channel = channelRepository.findById(messageCreateRequest.channelId()).orElse(null);
     User user = userRepository.findById(messageCreateRequest.authorId()).orElse(null);
 
@@ -47,37 +48,29 @@ public class BasicMessageService implements MessageService {
 
     List<BinaryContent> attachmentIds = binaryContentCreateRequests.stream()
         .map(attachmentRequest -> {
-          String fileName = attachmentRequest.fileName();
-          String contentType = attachmentRequest.contentType();
           byte[] bytes = attachmentRequest.bytes();
 
           BinaryContent binaryContent =
               binaryContentRepository.save(new BinaryContent(
                   attachmentRequest.fileName(),
-                  (long) attachmentRequest.bytes().length,
+                  (long) bytes.length,
                   attachmentRequest.contentType()
               ));
 
           storage.put(binaryContent.getId(), bytes);
           return binaryContent;
-        })
-        .toList();
+        }).toList();
 
-    String content = messageCreateRequest.content();
-    Message message = new Message(
-        content,
-        channel,
-        user,
-        attachmentIds
-    );
-    return messageRepository.save(message);
+    return messageRepository.save(new Message(
+        messageCreateRequest.content(),
+        channel, user, attachmentIds
+    ));
   }
 
   @Override
   public Message find(UUID messageId) {
-    return messageRepository.findById(messageId)
-        .orElseThrow(
-            () -> new NoSuchElementException("Message with id " + messageId + " not found"));
+    return messageRepository.findById(messageId).orElseThrow(
+        () -> new NoSuchElementException("Message with id " + messageId + " not found"));
   }
 
   @Override
@@ -88,21 +81,22 @@ public class BasicMessageService implements MessageService {
   @Override
   public Message update(UUID messageId, MessageUpdateRequest request) {
     String newContent = request.newContent();
-    Message message = messageRepository.findById(messageId)
-        .orElseThrow(
-            () -> new NoSuchElementException("Message with id " + messageId + " not found"));
+    Message message = messageRepository.findById(messageId).orElseThrow(
+        () -> new NoSuchElementException("Message with id " + messageId + " not found"));
     message.update(newContent);
     return messageRepository.save(message);
   }
 
   @Override
   public void delete(UUID messageId) {
-    Message message = messageRepository.findById(messageId)
-        .orElseThrow(
-            () -> new NoSuchElementException("Message with id " + messageId + " not found"));
+    Message message = messageRepository.findById(messageId).orElseThrow(
+        () -> new NoSuchElementException("Message with id " + messageId + " not found"));
 
     message.getAttachmentIds()
         .forEach(binaryContent -> binaryContentRepository.delete(binaryContent));
+
+//    messageRepository.findById(messageId).get().getAttachmentIds()
+//        .forEach(binaryContent -> binaryContentRepository.delete(binaryContent));
 
     messageRepository.deleteById(messageId);
   }

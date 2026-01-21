@@ -13,6 +13,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -30,11 +31,11 @@ public class UserStatusController {
   @Operation(summary = "유저 접속상태 변경", description = "유저의 접속정보를 변경합니다.")
   public ResponseEntity<UserStatus> userStatusUpdate(
       @Parameter(description = "접속 상태를 변경할 유저 ID입니다.")
-      @PathVariable UUID userId
+      @PathVariable UUID userId,
+      @Parameter(description = "접속 시간을 나타냅니다.")
+      @RequestBody UserStatusUpdateRequest userStatusUpdateRequest
   ) {
-    UserStatus userStatus = userStatusService.updateByUserId(
-        userId, new UserStatusUpdateRequest(LocalDateTime.now()
-        ));
+    UserStatus userStatus = userStatusService.updateByUserId(userId, userStatusUpdateRequest);
 
     log.info(userStatus.getUpdatedAt() + " 상태 수정까지는 성공");
     return ResponseEntity.ok(userStatus);

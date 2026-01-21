@@ -1,11 +1,17 @@
 package com.sprint.mission.discodeit.entity;
 
+import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
+import jakarta.persistence.ForeignKey;
 import jakarta.persistence.JoinColumn;
-import jakarta.persistence.ManyToOne;
+import jakarta.persistence.OneToMany;
+import jakarta.persistence.OneToOne;
 import jakarta.persistence.Table;
+import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -16,41 +22,47 @@ import lombok.Setter;
 @NoArgsConstructor
 @Table(name = "users", schema = "discodeit")
 public class User extends BaseUpdatetableEntity {
+//  전체 참고
 
-  @Column(name = "username")
+  @Column(name = "username", nullable = false, unique = true, length = 50)
   private String username;
 
-  @Column(name = "email")
-  private String email;
-
-  @Column(name = "password")
+  @Column(name = "password", nullable = false, length = 60)
   private String password;
 
-  @ManyToOne(fetch = FetchType.LAZY, optional = true)
-  @JoinColumn(name = "profile_id", nullable = true)
+  @Column(name = "email", nullable = false, unique = true, length = 100)
+  private String email;
+
+  @OneToOne(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
+  private UserStatus userStatus;
+
+  @OneToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true)
+  @JoinColumn(name = "profile_id", referencedColumnName = "id", foreignKey = @ForeignKey(name = "fk_users_binary_content"))
   private BinaryContent profile;
 
-  public User(String username, String email, String password, BinaryContent profile) {
+  @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
+  private List<ReadStatus> readStatuses = new ArrayList<>();
 
+  public User(String username, String password, String email, BinaryContent profile) {
     this.username = username;
-    this.email = email;
     this.password = password;
+    this.email = email;
     this.profile = profile;
+    this.userStatus = new UserStatus(this, LocalDateTime.now());
   }
 
-  public void update(String newUsername, String newEmail, String newPassword,
-      BinaryContent newprofile) {
-    if (newUsername != null && !newUsername.equals(this.username)) {
-      this.username = newUsername;
+  public void update(String username, String password, String email, BinaryContent profile) {
+    if (username != null) {
+      this.username = username;
     }
-    if (newEmail != null && !newEmail.equals(this.email)) {
-      this.email = newEmail;
+    if (email != null) {
+      this.email = email;
     }
-    if (newPassword != null && !newPassword.equals(this.password)) {
-      this.password = newPassword;
+    if (password != null) {
+      this.password = password;
     }
-    if (newprofile != null && !newprofile.equals(this.profile)) {
-      this.profile = newprofile;
+    if (profile != null) {
+      this.profile = profile;
     }
   }
 }

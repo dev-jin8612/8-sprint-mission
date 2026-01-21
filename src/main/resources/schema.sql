@@ -77,11 +77,11 @@ CREATE TABLE users
 select *
 from binary_contents;
 
--- DELETE FROM binary_contents;
--- DELETE FROM users;
-
 select *
 from users;
+
+-- DELETE FROM binary_contents;
+-- DELETE FROM users;
 
 SELECT table_schema, table_name
 FROM information_schema.tables

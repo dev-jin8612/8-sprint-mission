@@ -111,7 +111,7 @@ public class UserController {
   }
 
   // 전체 조회
-  @GetMapping(value = "/findAll")
+  @GetMapping
   @Operation(summary = "유저 전체 조회", description = "모든 유저의 정보를 가져옵니다.")
   public ResponseEntity<List<UserDTO>> finaAll() {
     try {

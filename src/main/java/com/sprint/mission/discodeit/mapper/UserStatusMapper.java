@@ -1,16 +1,14 @@
 package com.sprint.mission.discodeit.mapper;
 
 import com.sprint.mission.discodeit.dto.data.UserStatusDTO;
-import com.sprint.mission.discodeit.entity.BinaryContent;
 import com.sprint.mission.discodeit.entity.UserStatus;
-import java.util.UUID;
 import org.mapstruct.Mapper;
-import org.mapstruct.factory.Mappers;
+import org.mapstruct.Mapping;
 
-@Mapper
+@Mapper(componentModel = "spring")
 public interface UserStatusMapper {
-  UserStatusMapper INSTANCE = Mappers.getMapper(UserStatusMapper.class);
-  UserStatusDTO toDTO(UserStatus userStatus);
-  UserStatus toEntity(UserStatusDTO userStatusDTO);
+
+  @Mapping(target = "userId", expression = "java(userStatus.getUser().getId())")
+  UserStatusDTO toDto(UserStatus userStatus);
 
 }
