@@ -1,9 +1,9 @@
 package com.sprint.mission.discodeit.dto.user;
 
 import java.time.Instant;
-import java.time.LocalDateTime;
+import java.time.Instant;
 
 public record UserStatusUpdateRequest(
-        LocalDateTime newLastActiveAt
+        Instant newLastActiveAt
 ) {
 }

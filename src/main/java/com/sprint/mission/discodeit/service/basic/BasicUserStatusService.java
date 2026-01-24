@@ -7,14 +7,16 @@ import com.sprint.mission.discodeit.entity.UserStatus;
 import com.sprint.mission.discodeit.repository.UserRepository;
 import com.sprint.mission.discodeit.repository.UserStatusRepository;
 import com.sprint.mission.discodeit.service.UserStatusService;
-import java.time.LocalDateTime;
+import java.time.Instant;
 import java.util.List;
 import java.util.NoSuchElementException;
 import java.util.UUID;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 @RequiredArgsConstructor
+@Transactional
 @Service
 public class BasicUserStatusService implements UserStatusService {
 
@@ -32,7 +34,7 @@ public class BasicUserStatusService implements UserStatusService {
       throw new IllegalArgumentException("UserStatus with id " + user.getId() + " already exists");
     }
 
-    LocalDateTime lastActiveAt = request.lastActiveAt();
+    Instant lastActiveAt = request.lastActiveAt();
     UserStatus userStatus = new UserStatus(user, lastActiveAt);
     return userStatusRepository.save(userStatus);
   }
@@ -52,7 +54,7 @@ public class BasicUserStatusService implements UserStatusService {
 
   @Override
   public UserStatus update(UUID userStatusId, UserStatusUpdateRequest request) {
-    LocalDateTime newLastActiveAt = request.newLastActiveAt();
+    Instant newLastActiveAt = request.newLastActiveAt();
 
     UserStatus userStatus = userStatusRepository.findById(userStatusId)
         .orElseThrow(
@@ -64,7 +66,7 @@ public class BasicUserStatusService implements UserStatusService {
 
   @Override
   public UserStatus updateByUserId(UUID userId, UserStatusUpdateRequest request) {
-    LocalDateTime newLastActiveAt = request.newLastActiveAt();
+    Instant newLastActiveAt = request.newLastActiveAt();
 
     UserStatus userStatus = userStatusRepository.findByUserId(userId)
         .orElseThrow(() -> new NoSuchElementException("UserStatus with userId " + userId + " not found"));

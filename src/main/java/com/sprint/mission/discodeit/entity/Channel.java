@@ -35,10 +35,10 @@ public class Channel extends BaseUpdatetableEntity {
 
 
 // 내가 못넣었던거
-  @OneToMany(mappedBy = "channel", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
+  @OneToMany(mappedBy = "channel", orphanRemoval = true, fetch = FetchType.LAZY)
   private List<Message> messages =  new ArrayList<>();
 
-  @OneToMany(mappedBy = "channel", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
+  @OneToMany(mappedBy = "channel", orphanRemoval = true, fetch = FetchType.LAZY)
   private List<ReadStatus> readStatuses = new ArrayList<>();
 
   public Channel(ChannelType type, String name, String description) {

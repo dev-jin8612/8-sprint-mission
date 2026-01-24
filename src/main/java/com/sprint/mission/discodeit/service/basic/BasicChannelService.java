@@ -14,21 +14,25 @@ import com.sprint.mission.discodeit.repository.MessageRepository;
 import com.sprint.mission.discodeit.repository.ReadStatusRepository;
 import com.sprint.mission.discodeit.repository.UserRepository;
 import com.sprint.mission.discodeit.service.ChannelService;
-import java.time.LocalDateTime;
+import jakarta.transaction.Transactional;
+import java.time.Instant;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
+import java.util.Map;
 import java.util.NoSuchElementException;
 import java.util.UUID;
+import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 @RequiredArgsConstructor
+@Transactional
 @Service
 public class BasicChannelService implements ChannelService {
 
   private final ChannelRepository channelRepository;
-  private  final UserRepository userRepository;
+  private final UserRepository userRepository;
   private final ReadStatusRepository readStatusRepository;
   private final MessageRepository messageRepository;
 
@@ -71,19 +75,26 @@ public class BasicChannelService implements ChannelService {
 
   @Override
   public List<ChannelDTO> findAllByUserId(UUID userId) {
-    List<UUID> mySubscribedChannelIds =
-        readStatusRepository.findAllByUserId(userId).stream()
-            .map(readStatus ->  readStatus.getChannel().getId())
+
+    List<ReadStatus> myReadStatuses =
+        readStatusRepository.findAllByUserIdWithChannel(userId);
+
+    List<UUID> subscribedChannelIds =
+        myReadStatuses.stream()
+            .map(rs -> rs.getChannel().getId())
             .toList();
 
-    return channelRepository.findAll().stream()
-        .filter(channel ->
-            channel.getType().equals(ChannelType.PUBLIC)
-                || mySubscribedChannelIds.contains(channel.getId())
-        )
-        .map(this::toDto)
-        .toList();
+    List<Channel> channels =
+        channelRepository.findAll().stream()
+            .filter(c ->
+                c.getType() == ChannelType.PUBLIC ||
+                    subscribedChannelIds.contains(c.getId())
+            )
+            .toList();
+
+    return toDto(channels);
   }
+
 
   @Override
   public ChannelDTO findByName(String channelName) {
@@ -131,18 +142,50 @@ public class BasicChannelService implements ChannelService {
     channelRepository.deleteById(channelId);
   }
 
+  private List<ChannelDTO> toDto(List<Channel> channels) {
+
+    List<UUID> channelIds = channels.stream()
+        .map(Channel::getId)
+        .toList();
+
+    Map<UUID, Instant> lastMessageMap =
+        messageRepository.findLastMessageTimes(channelIds).stream()
+            .collect(Collectors.toMap(
+                row -> (UUID) row[0],
+                row -> (Instant) row[1]
+            ));
+
+    Map<UUID, List<UUID>> participantsMap =
+        readStatusRepository.findAllByChannelIds(channelIds).stream()
+            .collect(Collectors.groupingBy(
+                rs -> rs.getChannel().getId(),
+                Collectors.mapping(rs -> rs.getUser().getId(), Collectors.toList())
+            ));
+
+    return channels.stream()
+        .map(channel -> new ChannelDTO(
+            channel.getId(),
+            channel.getType(),
+            channel.getName(),
+            channel.getDescription(),
+            participantsMap.getOrDefault(channel.getId(), List.of()),
+            lastMessageMap.getOrDefault(channel.getId(), Instant.MIN)
+        ))
+        .toList();
+  }
+
   private ChannelDTO toDto(Channel channel) {
-    LocalDateTime lastMessageAt = messageRepository.findAllByChannelId(channel.getId()).stream()
+    Instant lastMessageAt = messageRepository.findAllByChannelId(channel.getId()).stream()
         .sorted(Comparator.comparing(Message::getCreatedAt).reversed())
         .map(Message::getCreatedAt)
         .limit(1)
         .findFirst()
-        .orElse(LocalDateTime.MIN);
+        .orElse(Instant.MIN);
 
     List<UUID> participantIds = new ArrayList<>();
     if (channel.getType().equals(ChannelType.PRIVATE)) {
       readStatusRepository.findAllByChannelId(channel.getId()).stream()
-          .map(readStatus ->   readStatus.getChannel().getId())
+          .map(readStatus -> readStatus.getChannel().getId())
           .forEach(participantIds::add);
     }
 
@@ -155,4 +198,5 @@ public class BasicChannelService implements ChannelService {
         lastMessageAt
     );
   }
+
 }

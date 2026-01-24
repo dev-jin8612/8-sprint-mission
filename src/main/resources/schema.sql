@@ -30,6 +30,15 @@ SHOW search_path;
 -- -- 접속 유저: 일반 계정인 discodeit_user로 진행
 -- -- 접속 대상: discodeit 데이터베이스의 discodeit 스키마
 -- -- _______________________________________________________________--
+DROP TABLE IF EXISTS message_attachments;
+DROP TABLE IF EXISTS read_statuses;
+DROP TABLE IF EXISTS messages;
+DROP TABLE IF EXISTS user_statuses;
+DROP TABLE IF EXISTS users;
+DROP TABLE IF EXISTS channels;
+DROP TABLE IF EXISTS binary_contents;
+
+
 
 CREATE TABLE binary_contents
 (
@@ -74,18 +83,6 @@ CREATE TABLE users
 -- UPDATE users
 -- SET updated_at = time.now();
 
-select *
-from binary_contents;
-
-select *
-from users;
-
--- DELETE FROM binary_contents;
--- DELETE FROM users;
-
-SELECT table_schema, table_name
-FROM information_schema.tables
-WHERE table_name = 'users';
 
 
 CREATE TABLE user_statuses
@@ -226,18 +223,32 @@ CREATE TABLE message_attachments
 --         random(),message.id,
 --         binary_contents.id
 --        )
-
-SELECT *
-FROM message_attachments ma
-         JOIN messages m ON m.id = ma.message_id
-         JOIN binary_contents bc ON ma.attachment_id = bc.id;
+--
+-- SELECT *
+-- FROM message_attachments ma
+--          JOIN messages m ON m.id = ma.message_id
+--          JOIN binary_contents bc ON ma.attachment_id = bc.id;
 
 
 -- __________________________________________________________________-
--- DROP TABLE IF EXISTS message_attachments;
--- DROP TABLE IF EXISTS read_statuses;
--- DROP TABLE IF EXISTS messages;
--- DROP TABLE IF EXISTS user_statuses;
--- DROP TABLE IF EXISTS users;
--- DROP TABLE IF EXISTS channels;
--- DROP TABLE IF EXISTS binary_contents;
+
+
+-- select *
+-- from binary_contents;
+
+select *
+from users;
+--
+-- select *
+-- from messages;
+
+-- select *
+-- from read_statuses
+-- where read_statuses.user_id = '1b1becaf-f9a4-469a-b8ac-3bf9ac03e377';
+
+-- SELECT table_schema, table_name
+-- FROM information_schema.tables
+-- WHERE table_name = 'users';
+
+-- DELETE FROM binary_contents;
+-- DELETE FROM users;

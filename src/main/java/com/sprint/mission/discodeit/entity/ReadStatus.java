@@ -8,7 +8,8 @@ import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
 import jakarta.persistence.UniqueConstraint;
-import java.time.LocalDateTime;
+import java.time.Instant;
+import java.time.Instant;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -35,16 +36,16 @@ public class ReadStatus extends BaseUpdatetableEntity {
   private Channel channel;
 
   @Column(name = "last_read_at")
-  private LocalDateTime lastReadAt;
+  private Instant lastReadAt;
 
-  public ReadStatus(User user, Channel channel, LocalDateTime lastReadAt) {
+  public ReadStatus(User user, Channel channel, Instant lastReadAt) {
 
     this.user = user;
     this.channel = channel;
     this.lastReadAt = lastReadAt;
   }
 
-  public void update(LocalDateTime newLastReadAt) {
+  public void update(Instant newLastReadAt) {
     if (newLastReadAt != null && !newLastReadAt.equals(this.lastReadAt)) {
       this.lastReadAt = newLastReadAt;
     }

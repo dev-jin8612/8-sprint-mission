@@ -1,5 +1,6 @@
 package com.sprint.mission.discodeit.service.basic;
 
+import com.sprint.mission.discodeit.dto.data.MessageDTO;
 import com.sprint.mission.discodeit.dto.message.MessageCreateRequest;
 import com.sprint.mission.discodeit.dto.message.MessageUpdateRequest;
 import com.sprint.mission.discodeit.dto.user.BinaryContentCreateRequest;
@@ -7,6 +8,7 @@ import com.sprint.mission.discodeit.entity.BinaryContent;
 import com.sprint.mission.discodeit.entity.Channel;
 import com.sprint.mission.discodeit.entity.Message;
 import com.sprint.mission.discodeit.entity.User;
+import com.sprint.mission.discodeit.mapper.MessageMapper;
 import com.sprint.mission.discodeit.repository.BinaryContentRepository;
 import com.sprint.mission.discodeit.repository.ChannelRepository;
 import com.sprint.mission.discodeit.repository.MessageRepository;
@@ -18,8 +20,10 @@ import java.util.NoSuchElementException;
 import java.util.UUID;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 @RequiredArgsConstructor
+@Transactional
 @Service
 public class BasicMessageService implements MessageService {
 
@@ -28,6 +32,7 @@ public class BasicMessageService implements MessageService {
   private final UserRepository userRepository;
   private final BinaryContentRepository binaryContentRepository;
   private final BinaryContentStorage storage;
+  private final MessageMapper  messageMapper;
 
 
   @Override
@@ -68,9 +73,11 @@ public class BasicMessageService implements MessageService {
   }
 
   @Override
-  public Message find(UUID messageId) {
-    return messageRepository.findById(messageId).orElseThrow(
+  @Transactional(readOnly = true)
+  public MessageDTO find(UUID messageId) {
+    Message message= messageRepository.findById(messageId).orElseThrow(
         () -> new NoSuchElementException("Message with id " + messageId + " not found"));
+    return messageMapper.toDto(message);
   }
 
   @Override
@@ -94,9 +101,6 @@ public class BasicMessageService implements MessageService {
 
     message.getAttachmentIds()
         .forEach(binaryContent -> binaryContentRepository.delete(binaryContent));
-
-//    messageRepository.findById(messageId).get().getAttachmentIds()
-//        .forEach(binaryContent -> binaryContentRepository.delete(binaryContent));
 
     messageRepository.deleteById(messageId);
   }

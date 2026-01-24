@@ -12,14 +12,16 @@ import com.sprint.mission.discodeit.repository.UserRepository;
 import com.sprint.mission.discodeit.repository.UserStatusRepository;
 import com.sprint.mission.discodeit.service.UserService;
 import com.sprint.mission.discodeit.storage.BinaryContentStorage;
-import java.time.LocalDateTime;
+import java.time.Instant;
 import java.util.List;
 import java.util.NoSuchElementException;
 import java.util.Optional;
 import java.util.UUID;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
+@Transactional
 @RequiredArgsConstructor
 @Service
 public class BasicUserService implements UserService {
@@ -59,9 +61,17 @@ public class BasicUserService implements UserService {
         }).orElse(null);
 
     String password = userCreateRequest.password();
-    User createdUser = userRepository.save(new User(username, email, password, nullableProfileId));
-    LocalDateTime now = LocalDateTime.now();
-    userStatusRepository.save(new UserStatus(createdUser, now));
+    Instant now = Instant.now();
+
+//    User createdUser = userRepository.save(new User(username, email, password, nullableProfileId));
+//    userStatusRepository.save(new UserStatus(createdUser, now));
+
+    User createdUser = new User(username, email, password, nullableProfileId);
+    UserStatus status = new UserStatus(createdUser, now);
+    createdUser.setUserStatus(status);   // ★ 이 줄이 핵심
+
+    userRepository.save(createdUser);     // cascade로 함께 저장
+
 
     return createdUser;
   }

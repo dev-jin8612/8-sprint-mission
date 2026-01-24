@@ -8,7 +8,7 @@ import com.sprint.mission.discodeit.entity.Message;
 import com.sprint.mission.discodeit.entity.ReadStatus;
 import com.sprint.mission.discodeit.entity.User;
 import java.time.Instant;
-import java.time.LocalDateTime;
+import java.time.Instant;
 import java.util.Collections;
 import java.util.List;
 import java.util.UUID;
@@ -22,25 +22,20 @@ public interface ChannelMapper {
   @Mapping(target = "lastMessageAt", expression = "java(getLastMessageAt(channel))")
   ChannelDTO toDto(Channel channel);
 
-  @Mapping(target = "online", expression = "java(user.getUserStatus() != null && user.getUserStatus().isOnline())")
-  UserDTO mapUser(User user);
-
   default List<UUID> getParticipantIds(Channel channel) {
     if (channel.getType() == ChannelType.PUBLIC) {
       return Collections.emptyList();
     }
 
     return channel.getReadStatuses().stream()
-        .map(ReadStatus::getUser)
-        .map(this::mapUser)
-        .map(userDTO -> userDTO.id())
+        .map(readStatus->readStatus.getId())
         .toList();
   }
 
-  default LocalDateTime getLastMessageAt(Channel channel) {
+  default Instant getLastMessageAt(Channel channel) {
     return channel.getMessages().stream()
         .map(Message::getCreatedAt)
-        .max(LocalDateTime::compareTo)
+        .max(Instant::compareTo)
         .orElse(null);
   }
 }

@@ -5,6 +5,7 @@ import com.sprint.mission.discodeit.dto.user.BinaryContentCreateRequest;
 import com.sprint.mission.discodeit.dto.user.UserCreateRequest;
 import com.sprint.mission.discodeit.dto.user.UserUpdateRequest;
 import com.sprint.mission.discodeit.entity.User;
+import com.sprint.mission.discodeit.mapper.UserMapper;
 import com.sprint.mission.discodeit.service.UserService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
@@ -34,6 +35,7 @@ import org.springframework.web.multipart.MultipartFile;
 @Tag(name = "User API", description = "User 관련 API")
 public class UserController {
   private final UserService userService;
+  private final UserMapper userMapper;
 
   // 유저 생성
   @Operation(summary = "User 생성", description = "유저을 생성합니다.")
@@ -41,14 +43,14 @@ public class UserController {
   public ResponseEntity<UserDTO> createUser(
 
       @Parameter(description = "생성할 유저의 정보입니다.")
-      @RequestPart("userCreateRequest") UserCreateRequest userRequest,
+      @RequestPart("userCreateRequest") UserCreateRequest userCreateRequest,
 
       @Parameter(description = "생성할 유저의 프로필입니다.")
-      @RequestPart(name = "profile") MultipartFile img
+      @RequestPart(name = "profile") MultipartFile imgLIst
 
   ) throws IOException {
     Optional<BinaryContentCreateRequest> binaryContentCreateRequest =
-        Optional.ofNullable(img)
+        Optional.ofNullable(imgLIst)
             .map(file -> {
               try {
                 return new BinaryContentCreateRequest(
@@ -61,17 +63,9 @@ public class UserController {
               }
             });
 
-    User user = userService.create(userRequest, binaryContentCreateRequest);
-
-    UserDTO userDTO = new UserDTO(
-        user.getId(),
-        user.getUsername(),
-        user.getEmail(),
-        user.getProfile().getId(),
-        false);
-
+    User user = userService.create(userCreateRequest, binaryContentCreateRequest);
     log.info(user.getUsername() + " 생성까지는 성공");
-    return ResponseEntity.ok(userDTO);
+    return ResponseEntity.ok(userMapper.toDto(user));
   }
 
   // 유저 수정
@@ -85,11 +79,11 @@ public class UserController {
       @RequestPart("userUpdateRequest") UserUpdateRequest userUpdateRequest,
 
       @Parameter(description = "변경할 프로필 이미지 입니다.")
-      @RequestPart(name = "profile", required = false) MultipartFile img
+      @RequestPart(name = "profile", required = false) MultipartFile imgLIst
 
   ) throws IOException {
     Optional<BinaryContentCreateRequest> binaryContentCreateRequest =
-        Optional.ofNullable(img)
+        Optional.ofNullable(imgLIst)
             .map(file -> {
               try {
                 return new BinaryContentCreateRequest(
@@ -107,7 +101,7 @@ public class UserController {
         binaryContentCreateRequest);
 
     log.info(userDTO.username() + "에서 " + test.getUsername() + " 수정까지는 성공");
-    return ResponseEntity.ok(userDTO);
+    return ResponseEntity.ok(userMapper.toDto(test));
   }
 
   // 전체 조회
@@ -118,13 +112,13 @@ public class UserController {
       List<UserDTO> userDTO = userService.findAll();
       return ResponseEntity.ok(userDTO);
     } catch (Exception e) {
-      e.printStackTrace();
+      log.error("유저 전체 조회 예외 발생", e);
       throw e;
     }
   }
 
   // 유저 삭제
-  @DeleteMapping("/{userName}")
+  @DeleteMapping("/{userId}")
   @Operation(summary = "User 삭제", description = "유저을 삭제합니다.")
   public void deleteUser(
       @Parameter(description = "삭제할 유저의 id를 입력합니다.")
