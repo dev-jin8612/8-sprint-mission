@@ -1,47 +1,57 @@
 package com.sprint.mission.discodeit.entity;
 
-import lombok.Getter;
-
-import java.io.Serializable;
-import java.time.Instant;
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.FetchType;
+import jakarta.persistence.ForeignKey;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.JoinTable;
+import jakarta.persistence.ManyToMany;
+import jakarta.persistence.ManyToOne;
+import jakarta.persistence.Table;
+import java.util.ArrayList;
 import java.util.List;
-import java.util.UUID;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 
+@Setter
 @Getter
-public class Message implements Serializable {
-
-  private static final long serialVersionUID = 1L;
-
-  private UUID id;
-  private Instant createdAt;
-  private Instant updatedAt;
-  //
+@Entity
+@NoArgsConstructor
+@Table(name = "messages", schema = "discodeit")
+public class Message extends BaseUpdatetableEntity {
+// 여기는 전체적으로 참고함
+  @Column(name = "content", nullable = false, columnDefinition = "TEXT")
   private String content;
-  //
-  private UUID channelId;
-  private UUID authorId;
-  private List<UUID> attachmentIds;
 
-  public Message(String content, UUID channelId, UUID authorId, List<UUID> attachmentIds) {
-    this.id = UUID.randomUUID();
-    this.createdAt = Instant.now();
-    this.updatedAt = this.createdAt;
-    //
+  @ManyToOne(fetch = FetchType.LAZY, optional = false)
+  @JoinColumn(name = "channel_id", nullable = false, foreignKey = @ForeignKey(name = "fk_messages_channel"))
+  private Channel channel;
+
+  @ManyToOne(fetch = FetchType.LAZY)
+  @JoinColumn(name = "author_id", foreignKey = @ForeignKey(name = "fk_messages_author"))
+  private User author;
+
+  @ManyToMany(fetch = FetchType.LAZY)
+  @JoinTable(
+      name = "message_attachments",
+//      schema = "discodeit",
+      joinColumns = @JoinColumn(name = "message_id"),
+      inverseJoinColumns = @JoinColumn(name = "attachment_id")
+  )
+  private List<BinaryContent> attachmentIds = new ArrayList<>();
+
+  public Message(String content, Channel channel, User author, List<BinaryContent> attachmentIds) {
     this.content = content;
-    this.channelId = channelId;
-    this.authorId = authorId;
+    this.channel = channel;
+    this.author = author;
     this.attachmentIds = attachmentIds;
   }
 
   public void update(String newContent) {
-    boolean anyValueUpdated = false;
-    if (newContent != null && !newContent.equals(this.content)) {
+    if (newContent != null) {
       this.content = newContent;
-      anyValueUpdated = true;
-    }
-
-    if (anyValueUpdated) {
-      this.updatedAt = Instant.now();
     }
   }
 }

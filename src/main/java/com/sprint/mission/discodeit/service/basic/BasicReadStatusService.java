@@ -2,20 +2,23 @@ package com.sprint.mission.discodeit.service.basic;
 
 import com.sprint.mission.discodeit.dto.channel.ReadStatusCreateRequest;
 import com.sprint.mission.discodeit.dto.channel.ReadStatusUpdateRequest;
+import com.sprint.mission.discodeit.entity.Channel;
 import com.sprint.mission.discodeit.entity.ReadStatus;
+import com.sprint.mission.discodeit.entity.User;
 import com.sprint.mission.discodeit.repository.ChannelRepository;
 import com.sprint.mission.discodeit.repository.ReadStatusRepository;
 import com.sprint.mission.discodeit.repository.UserRepository;
 import com.sprint.mission.discodeit.service.ReadStatusService;
-import lombok.RequiredArgsConstructor;
-import org.springframework.stereotype.Service;
-
 import java.time.Instant;
 import java.util.List;
 import java.util.NoSuchElementException;
 import java.util.UUID;
+import lombok.RequiredArgsConstructor;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 @RequiredArgsConstructor
+@Transactional
 @Service
 public class BasicReadStatusService implements ReadStatusService {
 
@@ -25,23 +28,23 @@ public class BasicReadStatusService implements ReadStatusService {
 
   @Override
   public ReadStatus create(ReadStatusCreateRequest request) {
-    UUID userId = request.userId();
-    UUID channelId = request.channelId();
+    User user = userRepository.findById(request.userId()).orElseThrow(NoSuchElementException::new);
+    Channel channel = channelRepository.findById(request.channelId()).orElseThrow(NoSuchElementException::new);
 
-    if (!userRepository.existsById(userId)) {
-      throw new NoSuchElementException("User with id " + userId + " does not exist");
+    if (!userRepository.existsById(user.getId())) {
+      throw new NoSuchElementException("User with id " + user.getId() + " does not exist");
     }
-    if (!channelRepository.existsById(channelId)) {
-      throw new NoSuchElementException("Channel with id " + channelId + " does not exist");
+    if (!channelRepository.existsById(channel.getId())) {
+      throw new NoSuchElementException("Channel with id " + channel.getId() + " does not exist");
     }
-    if (readStatusRepository.findAllByUserId(userId).stream()
-        .anyMatch(readStatus -> readStatus.getChannelId().equals(channelId))) {
+    if (readStatusRepository.findAllByUserId(user.getId()).stream()
+        .anyMatch(readStatus -> readStatus.getChannel().getId().equals(channel.getId()))) {
       throw new IllegalArgumentException(
-          "ReadStatus with userId " + userId + " and channelId " + channelId + " already exists");
+          "ReadStatus with userId " + user.getId() + " and channelId " + channel.getId() + " already exists");
     }
 
     Instant lastReadAt = request.lastReadAt();
-    ReadStatus readStatus = new ReadStatus(userId, channelId, lastReadAt);
+    ReadStatus readStatus = new ReadStatus(user, channel, lastReadAt);
     return readStatusRepository.save(readStatus);
   }
 

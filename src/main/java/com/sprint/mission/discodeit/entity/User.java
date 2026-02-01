@@ -1,55 +1,76 @@
 package com.sprint.mission.discodeit.entity;
 
-import lombok.Getter;
-
-import java.io.Serializable;
+import jakarta.persistence.CascadeType;
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.FetchType;
+import jakarta.persistence.ForeignKey;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.OneToMany;
+import jakarta.persistence.OneToOne;
+import jakarta.persistence.Table;
 import java.time.Instant;
-import java.util.UUID;
+import java.util.ArrayList;
+import java.util.List;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 
+@Setter
 @Getter
-public class User implements Serializable {
-    private static final long serialVersionUID = 1L;
+@Entity
+@NoArgsConstructor
+@Table(name = "users", schema = "discodeit")
+public class User extends BaseUpdatetableEntity {
+//  전체 참고
 
-    private UUID id;
-    private Instant createdAt;
-    private Instant updatedAt;
-    //
-    private String username;
-    private String email;
-    private String password;
-    private UUID profileId;     // BinaryContent
+  @Column(name = "username", nullable = false, unique = true, length = 50)
+  private String username;
 
-    public User(String username, String email, String password, UUID profileId) {
-        this.id = UUID.randomUUID();
-        this.createdAt = Instant.now();
-        //
-        this.username = username;
-        this.email = email;
-        this.password = password;
-        this.profileId = profileId;
+  @Column(name = "password", nullable = false, length = 60)
+  private String password;
+
+  @Column(name = "email", nullable = false, unique = true, length = 100)
+  private String email;
+
+  @OneToOne(mappedBy = "user",
+      cascade = CascadeType.ALL, orphanRemoval = true)
+  private UserStatus userStatus;
+
+  @OneToOne(fetch = FetchType.LAZY, orphanRemoval = true)
+  @JoinColumn(name = "profile_id", referencedColumnName = "id", foreignKey = @ForeignKey(name = "fk_users_binary_content"))
+  private BinaryContent profile;
+
+  @OneToMany(mappedBy = "user", orphanRemoval = true)
+  private List<ReadStatus> readStatuses = new ArrayList<>();
+
+  public User(String username, String password, String email, BinaryContent profile) {
+    this.username = username;
+    this.password = password;
+    this.email = email;
+    this.profile = profile;
+  }
+
+  public void update(String username, String password, String email, BinaryContent profile) {
+    if (username != null) {
+      this.username = username;
     }
-
-    public void update(String newUsername, String newEmail, String newPassword, UUID newProfileId) {
-        boolean anyValueUpdated = false;
-        if (newUsername != null && !newUsername.equals(this.username)) {
-            this.username = newUsername;
-            anyValueUpdated = true;
-        }
-        if (newEmail != null && !newEmail.equals(this.email)) {
-            this.email = newEmail;
-            anyValueUpdated = true;
-        }
-        if (newPassword != null && !newPassword.equals(this.password)) {
-            this.password = newPassword;
-            anyValueUpdated = true;
-        }
-        if (newProfileId != null && !newProfileId.equals(this.profileId)) {
-            this.profileId = newProfileId;
-            anyValueUpdated = true;
-        }
-
-        if (anyValueUpdated) {
-            this.updatedAt = Instant.now();
-        }
+    if (email != null) {
+      this.email = email;
     }
+    if (password != null) {
+      this.password = password;
+    }
+    if (profile != null) {
+      this.profile = profile;
+    }
+  }
+
+  public void setUserStatus(UserStatus userStatus) {
+    this.userStatus = userStatus;
+    if (userStatus.getUser() != this) {
+      userStatus.setUser(this);
+    }
+  }
+
 }
