@@ -1,21 +1,20 @@
 package com.sprint.mission.discodeit.controller;
 
-import com.sprint.mission.discodeit.dto.data.UserDTO;
-import com.sprint.mission.discodeit.dto.user.BinaryContentCreateRequest;
-import com.sprint.mission.discodeit.dto.user.UserCreateRequest;
-import com.sprint.mission.discodeit.dto.user.UserUpdateRequest;
-import com.sprint.mission.discodeit.entity.User;
-import com.sprint.mission.discodeit.mapper.UserMapper;
+import com.sprint.mission.discodeit.controller.api.UserApi;
+import com.sprint.mission.discodeit.dto.data.UserDto;
+import com.sprint.mission.discodeit.dto.data.UserStatusDto;
+import com.sprint.mission.discodeit.dto.request.BinaryContentCreateRequest;
+import com.sprint.mission.discodeit.dto.request.UserCreateRequest;
+import com.sprint.mission.discodeit.dto.request.UserStatusUpdateRequest;
+import com.sprint.mission.discodeit.dto.request.UserUpdateRequest;
 import com.sprint.mission.discodeit.service.UserService;
-import io.swagger.v3.oas.annotations.Operation;
-import io.swagger.v3.oas.annotations.Parameter;
-import io.swagger.v3.oas.annotations.tags.Tag;
+import com.sprint.mission.discodeit.service.UserStatusService;
 import java.io.IOException;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -23,109 +22,94 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestPart;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 
-@Slf4j
-@RestController
 @RequiredArgsConstructor
-@RequestMapping("/users")
-@Tag(name = "User API", description = "User 관련 API")
-public class UserController {
+@RestController
+@RequestMapping("/api/users")
+public class UserController implements UserApi {
+
   private final UserService userService;
-  private final UserMapper userMapper;
+  private final UserStatusService userStatusService;
 
-  // 유저 생성
-  @Operation(summary = "User 생성", description = "유저을 생성합니다.")
-  @PostMapping(value = "/create", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
-  public ResponseEntity<UserDTO> createUser(
-
-      @Parameter(description = "생성할 유저의 정보입니다.")
+  @PostMapping(consumes = {MediaType.MULTIPART_FORM_DATA_VALUE})
+  @Override
+  public ResponseEntity<UserDto> create(
       @RequestPart("userCreateRequest") UserCreateRequest userCreateRequest,
-
-      @Parameter(description = "생성할 유저의 프로필입니다.")
-      @RequestPart(name = "profile") MultipartFile imgLIst
-
-  ) throws IOException {
-    Optional<BinaryContentCreateRequest> binaryContentCreateRequest =
-        Optional.ofNullable(imgLIst)
-            .map(file -> {
-              try {
-                return new BinaryContentCreateRequest(
-                    file.getOriginalFilename(),
-                    file.getContentType(),
-                    file.getBytes()
-                );
-              } catch (IOException e) {
-                throw new RuntimeException(e);
-              }
-            });
-
-    User user = userService.create(userCreateRequest, binaryContentCreateRequest);
-    log.info(user.getUsername() + " 생성까지는 성공");
-    return ResponseEntity.ok(userMapper.toDto(user));
-  }
-
-  // 유저 수정
-  @Operation(summary = "User 수정", description = "유저을 수정합니다.")
-  @PatchMapping(value = "/{userId}", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
-  public ResponseEntity<UserDTO> updateUser(
-      @Parameter(description = "수정할 유저 UUID입니다..")
-      @PathVariable UUID userId,
-
-      @Parameter(description = "유저가 변경할 정보입니다.")
-      @RequestPart("userUpdateRequest") UserUpdateRequest userUpdateRequest,
-
-      @Parameter(description = "변경할 프로필 이미지 입니다.")
-      @RequestPart(name = "profile", required = false) MultipartFile imgLIst
-
-  ) throws IOException {
-    Optional<BinaryContentCreateRequest> binaryContentCreateRequest =
-        Optional.ofNullable(imgLIst)
-            .map(file -> {
-              try {
-                return new BinaryContentCreateRequest(
-                    file.getOriginalFilename(),
-                    file.getContentType(),
-                    file.getBytes()
-                );
-              } catch (IOException e) {
-                throw new RuntimeException(e);
-              }
-            });
-
-    UserDTO userDTO = userService.find(userId);
-    User test = userService.update(userDTO.id(), userUpdateRequest,
-        binaryContentCreateRequest);
-
-    log.info(userDTO.username() + "에서 " + test.getUsername() + " 수정까지는 성공");
-    return ResponseEntity.ok(userMapper.toDto(test));
-  }
-
-  // 전체 조회
-  @GetMapping
-  @Operation(summary = "유저 전체 조회", description = "모든 유저의 정보를 가져옵니다.")
-  public ResponseEntity<List<UserDTO>> finaAll() {
-    try {
-      List<UserDTO> userDTO = userService.findAll();
-      return ResponseEntity.ok(userDTO);
-    } catch (Exception e) {
-      log.error("유저 전체 조회 예외 발생", e);
-      throw e;
-    }
-  }
-
-  // 유저 삭제
-  @DeleteMapping("/{userId}")
-  @Operation(summary = "User 삭제", description = "유저을 삭제합니다.")
-  public void deleteUser(
-      @Parameter(description = "삭제할 유저의 id를 입력합니다.")
-      @PathVariable UUID userId
+      @RequestPart(value = "profile", required = false) MultipartFile profile
   ) {
-    UserDTO userDTO = userService.find(userId);
-    userService.delete(userDTO.id());
-    log.info("삭제까지 성공");
+    Optional<BinaryContentCreateRequest> profileRequest = Optional.ofNullable(profile)
+        .flatMap(this::resolveProfileRequest);
+    UserDto createdUser = userService.create(userCreateRequest, profileRequest);
+    return ResponseEntity
+        .status(HttpStatus.CREATED)
+        .body(createdUser);
+  }
+
+  @PatchMapping(
+      path = "{userId}",
+      consumes = {MediaType.MULTIPART_FORM_DATA_VALUE}
+  )
+  @Override
+  public ResponseEntity<UserDto> update(
+      @PathVariable("userId") UUID userId,
+      @RequestPart("userUpdateRequest") UserUpdateRequest userUpdateRequest,
+      @RequestPart(value = "profile", required = false) MultipartFile profile
+  ) {
+    Optional<BinaryContentCreateRequest> profileRequest = Optional.ofNullable(profile)
+        .flatMap(this::resolveProfileRequest);
+    UserDto updatedUser = userService.update(userId, userUpdateRequest, profileRequest);
+    return ResponseEntity
+        .status(HttpStatus.OK)
+        .body(updatedUser);
+  }
+
+  @DeleteMapping(path = "{userId}")
+  @Override
+  public ResponseEntity<Void> delete(@PathVariable("userId") UUID userId) {
+    userService.delete(userId);
+    return ResponseEntity
+        .status(HttpStatus.NO_CONTENT)
+        .build();
+  }
+
+  @GetMapping
+  @Override
+  public ResponseEntity<List<UserDto>> findAll() {
+    List<UserDto> users = userService.findAll();
+    return ResponseEntity
+        .status(HttpStatus.OK)
+        .body(users);
+  }
+
+  @PatchMapping(path = "{userId}/userStatus")
+  @Override
+  public ResponseEntity<UserStatusDto> updateUserStatusByUserId(@PathVariable("userId") UUID userId,
+      @RequestBody UserStatusUpdateRequest request) {
+    UserStatusDto updatedUserStatus = userStatusService.updateByUserId(userId, request);
+    return ResponseEntity
+        .status(HttpStatus.OK)
+        .body(updatedUserStatus);
+  }
+
+  private Optional<BinaryContentCreateRequest> resolveProfileRequest(MultipartFile profileFile) {
+    if (profileFile.isEmpty()) {
+      return Optional.empty();
+    } else {
+      try {
+        BinaryContentCreateRequest binaryContentCreateRequest = new BinaryContentCreateRequest(
+            profileFile.getOriginalFilename(),
+            profileFile.getContentType(),
+            profileFile.getBytes()
+        );
+        return Optional.of(binaryContentCreateRequest);
+      } catch (IOException e) {
+        throw new RuntimeException(e);
+      }
+    }
   }
 }

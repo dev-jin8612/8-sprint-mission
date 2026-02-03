@@ -1,74 +1,53 @@
 package com.sprint.mission.discodeit.controller;
 
 import com.sprint.mission.discodeit.controller.api.ReadStatusApi;
-import com.sprint.mission.discodeit.dto.channel.ReadStatusCreateRequest;
-import com.sprint.mission.discodeit.dto.channel.ReadStatusUpdateRequest;
-import com.sprint.mission.discodeit.dto.data.ReadStatusDTO;
-import com.sprint.mission.discodeit.entity.ReadStatus;
-import com.sprint.mission.discodeit.mapper.ReadStatusMapper;
+import com.sprint.mission.discodeit.dto.data.ReadStatusDto;
+import com.sprint.mission.discodeit.dto.request.ReadStatusCreateRequest;
+import com.sprint.mission.discodeit.dto.request.ReadStatusUpdateRequest;
 import com.sprint.mission.discodeit.service.ReadStatusService;
-import java.time.Instant;
 import java.util.List;
 import java.util.UUID;
 import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PatchMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RestController;
 
-@Slf4j
-@RestController
 @RequiredArgsConstructor
-@RequestMapping("/readStatuses")
+@RestController
+@RequestMapping("/api/readStatuses")
 public class ReadStatusController implements ReadStatusApi {
 
   private final ReadStatusService readStatusService;
-  private final ReadStatusMapper readStatusMapper;
 
-  @Override
   @PostMapping
-  public ResponseEntity<ReadStatusDTO> createReadStatus(
-      @RequestBody ReadStatusCreateRequest readStatusCreateRequest
-  ) {
-    ReadStatus readStatus = readStatusService.create(
-        new ReadStatusCreateRequest(
-            readStatusCreateRequest.userId(),
-            readStatusCreateRequest.channelId(),
-            Instant.now()
-        )
-    );
-
-    log.info("유저의 수신상태 생성");
-    return ResponseEntity.status(HttpStatus.CREATED)
-        .body(readStatusMapper.toDto(readStatus));
+  public ResponseEntity<ReadStatusDto> create(@RequestBody ReadStatusCreateRequest request) {
+    ReadStatusDto createdReadStatus = readStatusService.create(request);
+    return ResponseEntity
+        .status(HttpStatus.CREATED)
+        .body(createdReadStatus);
   }
 
-  @Override
-  @PatchMapping("/{readStatusId}")
-  public ResponseEntity<ReadStatusDTO> updateReadStatus(
-      @PathVariable UUID readStatusId
-  ) {
-    ReadStatusUpdateRequest request =
-        new ReadStatusUpdateRequest(Instant.now());
-
-    readStatusService.update(readStatusId, request);
-    ReadStatus readStatus = readStatusService.find(readStatusId);
-
-    log.info("유저의 수신상태 업데이트");
-    return ResponseEntity.ok(readStatusMapper.toDto(readStatus));
+  @PatchMapping(path = "{readStatusId}")
+  public ResponseEntity<ReadStatusDto> update(@PathVariable("readStatusId") UUID readStatusId,
+      @RequestBody ReadStatusUpdateRequest request) {
+    ReadStatusDto updatedReadStatus = readStatusService.update(readStatusId, request);
+    return ResponseEntity
+        .status(HttpStatus.OK)
+        .body(updatedReadStatus);
   }
 
-  @Override
   @GetMapping
-  public ResponseEntity<List<ReadStatusDTO>> findAllByUserId(
-      @RequestParam UUID userId
-  ) {
-    List<ReadStatus> readStatuses = readStatusService.findAllByUserId(userId);
-
-    for (ReadStatus readStatus : readStatuses) {
-    log.info(readStatus.toString());
-
-    }
-    return ResponseEntity.ok(readStatusMapper.toDtoList(readStatuses));
+  public ResponseEntity<List<ReadStatusDto>> findAllByUserId(@RequestParam("userId") UUID userId) {
+    List<ReadStatusDto> readStatuses = readStatusService.findAllByUserId(userId);
+    return ResponseEntity
+        .status(HttpStatus.OK)
+        .body(readStatuses);
   }
 }

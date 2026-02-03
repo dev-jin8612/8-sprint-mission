@@ -1,29 +1,26 @@
 package com.sprint.mission.discodeit.config;
 
-import io.swagger.v3.oas.models.Components;
 import io.swagger.v3.oas.models.OpenAPI;
+import io.swagger.v3.oas.models.info.Info;
+import io.swagger.v3.oas.models.servers.Server;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.data.jpa.repository.config.EnableJpaAuditing;
-import org.springframework.web.servlet.config.annotation.EnableWebMvc;
+
+import java.util.List;
 
 @Configuration
-@EnableJpaAuditing  // 이거 있어야 @CreateDate 된다는데 여기가 맞나?
 public class SwaggerConfig {
 
-  /* http://localhost:8080/swagger-ui/index.html 확인 경로 */
-  /* http://localhost:8080/v3/api-docs json형식 확인 경로 */
   @Bean
-  public OpenAPI openAPI() {
+  public OpenAPI customOpenAPI() {
     return new OpenAPI()
-        .components(new Components())
-        .info(apiInfo());
-  }
-
-  private io.swagger.v3.oas.models.info.Info apiInfo() {
-    return new io.swagger.v3.oas.models.info.Info().title("REST API Lecture API 명세서")
-        .description("REST API 수업용 프로젝트의 API 명세서 입니다.")
-//     .version("v.1");        // 숫자가 아닌 문자열 파라미터라서 입력하는 대로 출력됨
-        .version("1.0.0");
+        .info(new Info()
+            .title("Discodeit API 문서")
+            .description("Discodeit 프로젝트의 Swagger API 문서입니다.")
+            .version("1.2")
+        )
+        .servers(List.of(
+            new Server().url("http://localhost:8080").description("로컬 서버")
+        ));
   }
 }
