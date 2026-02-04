@@ -1,10 +1,10 @@
--- 테이블
+-- 테이블, h2에 맞게 수정해본 버전
 -- User
 CREATE TABLE users
 (
     id         uuid PRIMARY KEY,
-    created_at timestamptz         NOT NULL,
-    updated_at timestamptz,
+    created_at TIMESTAMP         NOT NULL,
+    updated_at TIMESTAMP,
     username   varchar(50) UNIQUE  NOT NULL,
     email      varchar(100) UNIQUE NOT NULL,
     password   varchar(60)         NOT NULL,
@@ -15,7 +15,7 @@ CREATE TABLE users
 CREATE TABLE binary_contents
 (
     id           uuid PRIMARY KEY,
-    created_at   timestamptz  NOT NULL,
+    created_at   TIMESTAMP  NOT NULL,
     file_name    varchar(255) NOT NULL,
     size         bigint       NOT NULL,
     content_type varchar(100) NOT NULL
@@ -26,18 +26,18 @@ CREATE TABLE binary_contents
 CREATE TABLE user_statuses
 (
     id             uuid PRIMARY KEY,
-    created_at     timestamptz NOT NULL,
-    updated_at     timestamptz,
+    created_at     TIMESTAMP NOT NULL,
+    updated_at     TIMESTAMP,
     user_id        uuid UNIQUE NOT NULL,
-    last_active_at timestamptz NOT NULL
+    last_active_at TIMESTAMP NOT NULL
 );
 
 -- Channel
 CREATE TABLE channels
 (
     id          uuid PRIMARY KEY,
-    created_at  timestamptz NOT NULL,
-    updated_at  timestamptz,
+    created_at  TIMESTAMP NOT NULL,
+    updated_at  TIMESTAMP,
     name        varchar(100),
     description varchar(500),
     type        varchar(10) NOT NULL
@@ -47,8 +47,8 @@ CREATE TABLE channels
 CREATE TABLE messages
 (
     id         uuid PRIMARY KEY,
-    created_at timestamptz NOT NULL,
-    updated_at timestamptz,
+    created_at TIMESTAMP NOT NULL,
+    updated_at TIMESTAMP,
     content    text,
     channel_id uuid        NOT NULL,
     author_id  uuid
@@ -66,11 +66,11 @@ CREATE TABLE message_attachments
 CREATE TABLE read_statuses
 (
     id           uuid PRIMARY KEY,
-    created_at   timestamptz NOT NULL,
-    updated_at   timestamptz,
+    created_at   TIMESTAMP NOT NULL,
+    updated_at   TIMESTAMP,
     user_id      uuid        NOT NULL,
     channel_id   uuid        NOT NULL,
-    last_read_at timestamptz NOT NULL,
+    last_read_at TIMESTAMP NOT NULL,
     UNIQUE (user_id, channel_id)
 );
 

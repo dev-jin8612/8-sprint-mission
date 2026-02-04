@@ -12,6 +12,7 @@ import com.sprint.mission.discodeit.repository.ReadStatusRepository;
 import com.sprint.mission.discodeit.repository.UserRepository;
 import com.sprint.mission.discodeit.service.ReadStatusService;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
 import java.time.Instant;
@@ -22,6 +23,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 @RequiredArgsConstructor
 @Service
+@Slf4j
 public class BasicReadStatusService implements ReadStatusService {
 
   private final ReadStatusRepository readStatusRepository;
@@ -49,6 +51,7 @@ public class BasicReadStatusService implements ReadStatusService {
           return readStatusRepository.save(new ReadStatus(user, channel, lastReadAt));
         });
 
+    log.info("[BasicReadStatusService] 성공, 읽음 상태 생성 - 상태: {}", readStatus.getId());
     return readStatusMapper.toDto(readStatus);
   }
 
@@ -56,8 +59,7 @@ public class BasicReadStatusService implements ReadStatusService {
   public ReadStatusDto find(UUID readStatusId) {
     return readStatusRepository.findById(readStatusId)
         .map(readStatusMapper::toDto)
-        .orElseThrow(
-            () -> new NoSuchElementException("ReadStatus with id " + readStatusId + " not found"));
+        .orElseThrow(() -> new NoSuchElementException("ReadStatus with id " + readStatusId + " not found"));
   }
 
   @Override
@@ -72,9 +74,10 @@ public class BasicReadStatusService implements ReadStatusService {
   public ReadStatusDto update(UUID readStatusId, ReadStatusUpdateRequest request) {
     Instant newLastReadAt = request.newLastReadAt();
     ReadStatus readStatus = readStatusRepository.findById(readStatusId)
-        .orElseThrow(
-            () -> new NoSuchElementException("ReadStatus with id " + readStatusId + " not found"));
+        .orElseThrow(() -> new NoSuchElementException("ReadStatus with id " + readStatusId + " not found"));
+
     readStatus.update(newLastReadAt);
+    log.info("[BasicReadStatusService] 성공, 읽음 상태 수정 - 상태: {}", readStatus);
     return readStatusMapper.toDto(readStatus);
   }
 
@@ -84,6 +87,8 @@ public class BasicReadStatusService implements ReadStatusService {
     if (!readStatusRepository.existsById(readStatusId)) {
       throw new NoSuchElementException("ReadStatus with id " + readStatusId + " not found");
     }
+
+    log.info("[BasicReadStatusService] 성공, 읽음 상태 삭제 - 상태ID: {}", readStatusId);
     readStatusRepository.deleteById(readStatusId);
   }
 }

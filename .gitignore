@@ -49,3 +49,6 @@ bin/
 
 # local file storage
 storage/
+
+#logs
+logs

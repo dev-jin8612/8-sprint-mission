@@ -14,6 +14,7 @@ import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -28,6 +29,7 @@ import org.springframework.web.bind.annotation.RequestPart;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 
+@Slf4j
 @RequiredArgsConstructor
 @RestController
 @RequestMapping("/api/users")
@@ -42,9 +44,12 @@ public class UserController implements UserApi {
       @RequestPart("userCreateRequest") UserCreateRequest userCreateRequest,
       @RequestPart(value = "profile", required = false) MultipartFile profile
   ) {
-    Optional<BinaryContentCreateRequest> profileRequest = Optional.ofNullable(profile)
-        .flatMap(this::resolveProfileRequest);
+    log.info("[UserController] 요청, 유저 생성 - 유저 이름: {}", userCreateRequest.username());
+
+    Optional<BinaryContentCreateRequest> profileRequest =
+        Optional.ofNullable(profile).flatMap(this::resolveProfileRequest);
     UserDto createdUser = userService.create(userCreateRequest, profileRequest);
+
     return ResponseEntity
         .status(HttpStatus.CREATED)
         .body(createdUser);
@@ -60,9 +65,12 @@ public class UserController implements UserApi {
       @RequestPart("userUpdateRequest") UserUpdateRequest userUpdateRequest,
       @RequestPart(value = "profile", required = false) MultipartFile profile
   ) {
+    log.info("[UserController] 요청, 유저 수정 - 대상 유저: {}", userId);
+
     Optional<BinaryContentCreateRequest> profileRequest = Optional.ofNullable(profile)
         .flatMap(this::resolveProfileRequest);
     UserDto updatedUser = userService.update(userId, userUpdateRequest, profileRequest);
+
     return ResponseEntity
         .status(HttpStatus.OK)
         .body(updatedUser);
@@ -71,6 +79,7 @@ public class UserController implements UserApi {
   @DeleteMapping(path = "{userId}")
   @Override
   public ResponseEntity<Void> delete(@PathVariable("userId") UUID userId) {
+    log.info("[UserController] 요청, 유저 삭제 - 대상 유저: {}", userId);
     userService.delete(userId);
     return ResponseEntity
         .status(HttpStatus.NO_CONTENT)
@@ -80,6 +89,7 @@ public class UserController implements UserApi {
   @GetMapping
   @Override
   public ResponseEntity<List<UserDto>> findAll() {
+    log.info("[UserController] 요청, 유저 전체" );
     List<UserDto> users = userService.findAll();
     return ResponseEntity
         .status(HttpStatus.OK)
@@ -88,9 +98,12 @@ public class UserController implements UserApi {
 
   @PatchMapping(path = "{userId}/userStatus")
   @Override
-  public ResponseEntity<UserStatusDto> updateUserStatusByUserId(@PathVariable("userId") UUID userId,
-      @RequestBody UserStatusUpdateRequest request) {
+  public ResponseEntity<UserStatusDto> updateUserStatusByUserId(
+      @PathVariable("userId") UUID userId,
+      @RequestBody UserStatusUpdateRequest request
+  ) {
     UserStatusDto updatedUserStatus = userStatusService.updateByUserId(userId, request);
+
     return ResponseEntity
         .status(HttpStatus.OK)
         .body(updatedUserStatus);

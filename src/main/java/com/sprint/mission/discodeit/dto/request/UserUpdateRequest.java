@@ -6,4 +6,11 @@ public record UserUpdateRequest(
     String newPassword
 ) {
 
+  public static record UserCreateRequest(
+      String email,
+      String username,
+      String password
+  ) {
+
+  }
 }

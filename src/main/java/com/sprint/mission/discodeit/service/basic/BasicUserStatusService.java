@@ -15,11 +15,13 @@ import java.util.NoSuchElementException;
 import java.util.Optional;
 import java.util.UUID;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 @RequiredArgsConstructor
 @Service
+@Slf4j
 public class BasicUserStatusService implements UserStatusService {
 
   private final UserStatusRepository userStatusRepository;
@@ -40,7 +42,8 @@ public class BasicUserStatusService implements UserStatusService {
 
     Instant lastActiveAt = request.lastActiveAt();
     UserStatus userStatus = new UserStatus(user, lastActiveAt);
-    userStatusRepository.save(userStatus);
+
+    log.info("[BasicUserStatusService] 성공, 유저 상태 생성 - 상태: {}", userStatusRepository.save(userStatus));
     return userStatusMapper.toDto(userStatus);
   }
 
@@ -62,26 +65,22 @@ public class BasicUserStatusService implements UserStatusService {
   @Transactional
   @Override
   public UserStatusDto update(UUID userStatusId, UserStatusUpdateRequest request) {
-    Instant newLastActiveAt = request.newLastActiveAt();
-
     UserStatus userStatus = userStatusRepository.findById(userStatusId)
-        .orElseThrow(
-            () -> new NoSuchElementException("UserStatus with id " + userStatusId + " not found"));
-    userStatus.update(newLastActiveAt);
+        .orElseThrow(() -> new NoSuchElementException("UserStatus with id " + userStatusId + " not found"));
+    userStatus.update(request.newLastActiveAt());
 
+    log.info("[BasicUserStatusService] 성공, 유저 상태 수정 - 상태: {}", userStatus);
     return userStatusMapper.toDto(userStatus);
   }
 
   @Transactional
   @Override
   public UserStatusDto updateByUserId(UUID userId, UserStatusUpdateRequest request) {
-    Instant newLastActiveAt = request.newLastActiveAt();
-
     UserStatus userStatus = userStatusRepository.findByUserId(userId)
-        .orElseThrow(
-            () -> new NoSuchElementException("UserStatus with userId " + userId + " not found"));
-    userStatus.update(newLastActiveAt);
+        .orElseThrow(() -> new NoSuchElementException("UserStatus with userId " + userId + " not found"));
+    userStatus.update(request.newLastActiveAt());
 
+    log.info("[BasicUserStatusService] 성공, 유저 상태 수정 - 상태: {}", userStatus);
     return userStatusMapper.toDto(userStatus);
   }
 
@@ -91,6 +90,7 @@ public class BasicUserStatusService implements UserStatusService {
     if (!userStatusRepository.existsById(userStatusId)) {
       throw new NoSuchElementException("UserStatus with id " + userStatusId + " not found");
     }
+    log.info("[BasicUserStatusService] 성공, 유저 상태 삭제 - 상태ID: {}", userStatusId);
     userStatusRepository.deleteById(userStatusId);
   }
 }
