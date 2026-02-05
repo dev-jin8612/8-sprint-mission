@@ -7,6 +7,8 @@ import com.sprint.mission.discodeit.dto.request.PublicChannelUpdateRequest;
 import com.sprint.mission.discodeit.entity.Channel;
 import com.sprint.mission.discodeit.entity.ChannelType;
 import com.sprint.mission.discodeit.entity.ReadStatus;
+import com.sprint.mission.discodeit.exception.Channel.ChannelNotFoundException;
+import com.sprint.mission.discodeit.exception.Channel.PrivateChannelUpdateException;
 import com.sprint.mission.discodeit.mapper.ChannelMapper;
 import com.sprint.mission.discodeit.repository.ChannelRepository;
 import com.sprint.mission.discodeit.repository.MessageRepository;
@@ -14,7 +16,6 @@ import com.sprint.mission.discodeit.repository.ReadStatusRepository;
 import com.sprint.mission.discodeit.repository.UserRepository;
 import com.sprint.mission.discodeit.service.ChannelService;
 import java.util.List;
-import java.util.NoSuchElementException;
 import java.util.UUID;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -63,8 +64,7 @@ public class BasicChannelService implements ChannelService {
   public ChannelDto find(UUID channelId) {
     return channelRepository.findById(channelId)
         .map(channelMapper::toDto)
-        .orElseThrow(
-            () -> new NoSuchElementException("Channel with id " + channelId + " not found"));
+        .orElseThrow(() -> new ChannelNotFoundException(channelId));
   }
 
   @Transactional(readOnly = true)
@@ -88,10 +88,10 @@ public class BasicChannelService implements ChannelService {
     String newDescription = request.newDescription();
 
     Channel channel = channelRepository.findById(channelId).orElseThrow(
-            () -> new NoSuchElementException("Channel with id " + channelId + " not found"));
+        () -> new ChannelNotFoundException(channelId));
 
     if (channel.getType().equals(ChannelType.PRIVATE)) {
-      throw new IllegalArgumentException("Private channel cannot be updated");
+      throw new PrivateChannelUpdateException(channel);
     }
 
     channel.update(newName, newDescription);
@@ -103,7 +103,7 @@ public class BasicChannelService implements ChannelService {
   @Override
   public void delete(UUID channelId) {
     if (!channelRepository.existsById(channelId)) {
-      throw new NoSuchElementException("Channel with id " + channelId + " not found");
+      throw new ChannelNotFoundException(channelId);
     }
 
     messageRepository.deleteAllByChannelId(channelId);
