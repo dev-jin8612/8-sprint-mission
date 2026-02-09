@@ -48,7 +48,7 @@ bin/
 .discodeit
 
 # local file storage
-storage/
+/storage/
 
 #logs
 logs
