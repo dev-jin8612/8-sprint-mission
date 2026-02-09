@@ -1,9 +1,10 @@
-package com.sprint.mission.discodeit.dto.error;
+package com.sprint.mission.discodeit.dto.response;
 
 import com.sprint.mission.discodeit.exception.DiscodeitException;
 import java.time.Instant;
 import java.util.Map;
 import org.springframework.http.HttpStatus;
+import org.springframework.web.bind.MethodArgumentNotValidException;
 
 public record ErrorResponse(
     Instant timestamp,
@@ -14,6 +15,7 @@ public record ErrorResponse(
     int status
 ) {
 
+  // 커스텀 에러 처리
   public ErrorResponse(DiscodeitException e) {
     this(
         e.getTimestamp(),
@@ -25,6 +27,19 @@ public record ErrorResponse(
     );
   }
 
+  // 입력 검증 실패시 에러 처리
+  public ErrorResponse(MethodArgumentNotValidException e) {
+    this(
+        Instant.now(),
+        "WRONG_INPUT",
+        "입력이 잘 못되었습니다.",
+        Map.of(),
+        e.getClass().getTypeName(),
+        HttpStatus.BAD_REQUEST.value()
+    );
+  }
+
+  // 기타 예외 처리
   public ErrorResponse(Exception e) {
     this(
         Instant.now(),

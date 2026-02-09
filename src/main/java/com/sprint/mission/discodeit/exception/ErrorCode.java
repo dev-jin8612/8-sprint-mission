@@ -13,13 +13,17 @@ public enum ErrorCode {
   READSTATUS_NOT_FOUND("읽음 상태 없음", HttpStatus.NOT_FOUND),
   MESSAGE_NOT_FOUND("메세지 없음", HttpStatus.NOT_FOUND),
   BINARYCONTENT_NOT_FOUND("파일이 없음", HttpStatus.NOT_FOUND),
+  WRONG_INPUT("잘못된 입력", HttpStatus.BAD_REQUEST),
   CHANNEL_NOT_FOUND("채널 없음", HttpStatus.NOT_FOUND),
-  PRIVATE_CHANNEL_UPDATE("비공개 채널은 수정 불가", HttpStatus.UNPROCESSABLE_ENTITY);
+  PRIVATE_CHANNEL_UPDATE("비공개 채널은 수정 불가", HttpStatus.UNPROCESSABLE_ENTITY),
+  STORAGE_NOT_FOUND("이미지 없음", HttpStatus.NOT_FOUND),
+  DUPLICATE_STORAGE("채널 없음", HttpStatus.CONFLICT);
 
   HttpStatus status;
   String message;
 
-  ErrorCode(String message, HttpStatus notFound) {
+  ErrorCode(String message, HttpStatus status) {
     this.message = message;
+    this.status = status;
   }
 }
