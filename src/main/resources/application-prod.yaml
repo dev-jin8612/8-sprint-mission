@@ -1,20 +1,19 @@
 server:
-  port: 0 # 여기 바꿔야함
+  port: 8080
 
 spring:
+  application:
+    name: discodeit
   datasource:
     driver-class-name: org.postgresql.Driver
     url: jdbc:postgresql://localhost:5432/discodeit
     username: discodeit_user
     password: discodeit1234
-    hikari:
-      connection-init-sql: "schema.sql"
 
-# 초기 데이터 필요하면 만들어서 쓰기
-#    sql:
-#      init:
-#        mode: always
-#        schema-locations: classpath:data.sql
+  sql:
+    init:
+      mode: always
+      schema-locations: classpath:schema2.sql
 
   jpa:
     hibernate:
@@ -23,6 +22,11 @@ spring:
       hibernate:
         format_sql: true
     open-in-view: false
+
+  boot:
+    admin:
+      client:
+        url: ${SPRING_BOOT_ADMIN_CLIENT_URL:http://localhost:9090}
 
 logging:
   level:

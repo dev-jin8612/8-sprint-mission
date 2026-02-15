@@ -31,7 +31,7 @@ public class ChannelController implements ChannelApi {
 
   private final ChannelService channelService;
 
-  @PostMapping(path = "public")
+  @PostMapping("/public")
   public ResponseEntity<ChannelDto> create(@Valid @RequestBody PublicChannelCreateRequest request) {
     log.info("[ChannelController] 요청, 공개 채널 생성 - 채널이름: {}", request.name());
     ChannelDto createdChannel = channelService.create(request);
@@ -41,7 +41,7 @@ public class ChannelController implements ChannelApi {
         .body(createdChannel);
   }
 
-  @PostMapping(path = "private")
+  @PostMapping("/private")
   public ResponseEntity<ChannelDto> create(@Valid @RequestBody PrivateChannelCreateRequest request) {
     log.info("[ChannelController] 요청, 비공개 채널 생성");
     ChannelDto createdChannel = channelService.create(request);
@@ -51,7 +51,7 @@ public class ChannelController implements ChannelApi {
         .body(createdChannel);
   }
 
-  @PatchMapping(path = "{channelId}")
+  @PatchMapping("{channelId}")
   public ResponseEntity<ChannelDto> update(
       @PathVariable("channelId") UUID channelId,
       @Valid @RequestBody PublicChannelUpdateRequest request
@@ -64,7 +64,7 @@ public class ChannelController implements ChannelApi {
         .body(updatedChannel);
   }
 
-  @DeleteMapping(path = "{channelId}")
+  @DeleteMapping("{channelId}")
   public ResponseEntity<Void> delete(@PathVariable("channelId") UUID channelId) {
     log.info("[ChannelController] 요청, 채널 삭제 - 채널ID: {}", channelId);
     channelService.delete(channelId);

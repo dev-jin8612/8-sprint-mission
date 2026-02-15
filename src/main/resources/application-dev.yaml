@@ -1,7 +1,6 @@
-server:
-  port: 8080
-
 spring:
+  application:
+    name: discodeit
   datasource:
     url: jdbc:h2:mem:library;MODE=PostgreSQL;DB_CLOSE_DELAY=-1
     username: sa
@@ -30,9 +29,17 @@ spring:
   aop:
     proxy-target-class: true
 
+  boot:
+    admin:
+      client:
+        url: http://localhost:9090
+
 logging:
   level:
     com.ohgiraffers.stability: DEBUG
     org.springframework.web: DEBUG
   pattern:
     console: "%d{yyyy-MM-dd HH:mm:ss} [%thread] %-5level [%X{traceId}] %logger{36} - %msg%n"
+
+server:
+  port: 8080
