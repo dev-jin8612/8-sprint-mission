@@ -36,7 +36,7 @@ spring:
 
 logging:
   level:
-    com.ohgiraffers.stability: DEBUG
+    com.sprint.mission.discodeit: DEBUG
     org.springframework.web: DEBUG
   pattern:
     console: "%d{yyyy-MM-dd HH:mm:ss} [%thread] %-5level [%X{traceId}] %logger{36} - %msg%n"

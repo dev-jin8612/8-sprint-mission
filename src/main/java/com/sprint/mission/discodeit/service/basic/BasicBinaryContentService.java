@@ -37,9 +37,7 @@ public class BasicBinaryContentService implements BinaryContentService {
         contentType
     );
 
-    log.info("[BasicBinaryContentService] 성공, 프로필 찾기 - 정보: {}",
-        binaryContentRepository.save(binaryContent)
-    );
+    binaryContentRepository.save(binaryContent);
     binaryContentStorage.put(binaryContent.getId(), bytes);
     return binaryContentMapper.toDto(binaryContent);
   }
@@ -65,7 +63,6 @@ public class BasicBinaryContentService implements BinaryContentService {
       throw new BinaryContentNotFoundException(binaryContentId);
     }
 
-    log.info("[BasicBinaryContentService] 성공, 프로필 삭제 - 프로필ID: {}", binaryContentId);
     binaryContentRepository.deleteById(binaryContentId);
   }
 }

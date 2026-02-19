@@ -40,7 +40,7 @@ public class BasicChannelService implements ChannelService {
     String description = request.description();
     Channel channel = new Channel(ChannelType.PUBLIC, name, description);
 
-    log.info("[ChannelController] 성공, 공개 채널 생성 - 채널이름: {}", channelRepository.save(channel));
+    channelRepository.save(channel);
     return channelMapper.toDto(channel);
   }
 
@@ -55,7 +55,6 @@ public class BasicChannelService implements ChannelService {
         .toList();
 
     readStatusRepository.saveAll(readStatuses);
-    log.info("[ChannelController] 성공, 비공개 채널 생성");
     return channelMapper.toDto(channel);
   }
 
@@ -95,7 +94,6 @@ public class BasicChannelService implements ChannelService {
     }
 
     channel.update(newName, newDescription);
-    log.info("[ChannelController] 성공, 공개 채널 수정 - 정보: {}", channel);
     return channelMapper.toDto(channel);
   }
 
@@ -108,8 +106,6 @@ public class BasicChannelService implements ChannelService {
 
     messageRepository.deleteAllByChannelId(channelId);
     readStatusRepository.deleteAllByChannelId(channelId);
-
-    log.info("[ChannelController] 성공, 채널 삭제 - 채널ID: {}", channelId);
     channelRepository.deleteById(channelId);
   }
 }

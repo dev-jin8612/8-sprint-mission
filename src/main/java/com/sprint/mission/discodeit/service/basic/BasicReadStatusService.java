@@ -51,7 +51,6 @@ public class BasicReadStatusService implements ReadStatusService {
           return readStatusRepository.save(new ReadStatus(user, channel, lastReadAt));
         });
 
-    log.info("[BasicReadStatusService] 성공, 읽음 상태 생성 - 상태: {}", readStatus.getId());
     return readStatusMapper.toDto(readStatus);
   }
 
@@ -77,7 +76,6 @@ public class BasicReadStatusService implements ReadStatusService {
         .orElseThrow(() -> new ReadStatusNotFoundException(readStatusId));
 
     readStatus.update(newLastReadAt);
-    log.info("[BasicReadStatusService] 성공, 읽음 상태 수정 - 상태: {}", readStatus);
     return readStatusMapper.toDto(readStatus);
   }
 
@@ -88,7 +86,6 @@ public class BasicReadStatusService implements ReadStatusService {
       throw new ReadStatusNotFoundException(readStatusId);
     }
 
-    log.info("[BasicReadStatusService] 성공, 읽음 상태 삭제 - 상태ID: {}", readStatusId);
     readStatusRepository.deleteById(readStatusId);
   }
 }

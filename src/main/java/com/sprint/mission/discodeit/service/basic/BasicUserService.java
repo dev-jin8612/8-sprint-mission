@@ -9,12 +9,14 @@ import com.sprint.mission.discodeit.entity.User;
 import com.sprint.mission.discodeit.entity.UserStatus;
 import com.sprint.mission.discodeit.exception.User.UserAlreadyExistsException;
 import com.sprint.mission.discodeit.exception.User.UserNotFoundException;
+import com.sprint.mission.discodeit.exception.storage.StorageNotFoundException;
 import com.sprint.mission.discodeit.mapper.UserMapper;
 import com.sprint.mission.discodeit.repository.BinaryContentRepository;
 import com.sprint.mission.discodeit.repository.UserRepository;
 import com.sprint.mission.discodeit.repository.UserStatusRepository;
 import com.sprint.mission.discodeit.service.UserService;
 import com.sprint.mission.discodeit.storage.BinaryContentStorage;
+import java.io.IOException;
 import java.time.Instant;
 import java.util.List;
 import java.util.Optional;
@@ -23,6 +25,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.multipart.MultipartFile;
 
 @RequiredArgsConstructor
 @Service
@@ -39,8 +42,12 @@ public class BasicUserService implements UserService {
   @Override
   public UserDto create(
       UserCreateRequest userCreateRequest,
-      Optional<BinaryContentCreateRequest> optionalProfileCreateRequest
+      MultipartFile profile
   ) {
+
+    Optional<BinaryContentCreateRequest> profileRequests =
+        Optional.ofNullable(profile).flatMap(this::resolveProfileRequest);
+
     String username = userCreateRequest.username();
     String email = userCreateRequest.email();
 
@@ -51,7 +58,7 @@ public class BasicUserService implements UserService {
       throw new UserAlreadyExistsException(username);
     }
 
-    BinaryContent nullableProfile = optionalProfileCreateRequest
+    BinaryContent nullableProfile = profileRequests
         .map(profileRequest -> {
           String fileName = profileRequest.fileName();
           String contentType = profileRequest.contentType();
@@ -70,8 +77,8 @@ public class BasicUserService implements UserService {
     Instant now = Instant.now();
     UserStatus userStatus = new UserStatus(user, now);
 
-    log.info("[BasicUserService] 성공, 유저 생성 - 정보: {}", userRepository.save(user));
-    log.info("[BasicUserService] 성공, 유저 상태 생성 - 정보: {}", userStatusRepository.save(userStatus));
+    userRepository.save(user);
+    userStatusRepository.save(userStatus);
     return userMapper.toDto(user);
   }
 
@@ -94,8 +101,12 @@ public class BasicUserService implements UserService {
   public UserDto update(
       UUID userId,
       UserUpdateRequest userUpdateRequest,
-      Optional<BinaryContentCreateRequest> optionalProfileCreateRequest
+      MultipartFile profile
   ) {
+
+    Optional<BinaryContentCreateRequest> profileRequests =
+        Optional.ofNullable(profile).flatMap(this::resolveProfileRequest);
+
     User user = userRepository.findById(userId)
         .orElseThrow(() -> new UserNotFoundException(userId));
 
@@ -109,7 +120,7 @@ public class BasicUserService implements UserService {
       throw new UserAlreadyExistsException(newUsername);
     }
 
-    BinaryContent nullableProfile = optionalProfileCreateRequest
+    BinaryContent nullableProfile = profileRequests
         .map(profileRequest -> {
 
           String fileName = profileRequest.fileName();
@@ -138,5 +149,23 @@ public class BasicUserService implements UserService {
 
     log.info("[BasicUserService] 성공, 유저 삭제 - 정보: {}", userId);
     userRepository.deleteById(userId);
+  }
+
+
+  private Optional<BinaryContentCreateRequest> resolveProfileRequest(MultipartFile profileFile) {
+    if (profileFile.isEmpty()) {
+      return Optional.empty();
+    } else {
+      try {
+        BinaryContentCreateRequest binaryContentCreateRequest = new BinaryContentCreateRequest(
+            profileFile.getOriginalFilename(),
+            profileFile.getContentType(),
+            profileFile.getBytes()
+        );
+        return Optional.of(binaryContentCreateRequest);
+      } catch (IOException e) {
+        throw new StorageNotFoundException(e);
+      }
+    }
   }
 }

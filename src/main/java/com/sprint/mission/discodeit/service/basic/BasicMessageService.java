@@ -12,6 +12,7 @@ import com.sprint.mission.discodeit.entity.User;
 import com.sprint.mission.discodeit.exception.Channel.ChannelNotFoundException;
 import com.sprint.mission.discodeit.exception.Message.MessageNotFoundException;
 import com.sprint.mission.discodeit.exception.User.UserNotFoundException;
+import com.sprint.mission.discodeit.exception.storage.StorageNotFoundException;
 import com.sprint.mission.discodeit.mapper.MessageMapper;
 import com.sprint.mission.discodeit.mapper.PageResponseMapper;
 import com.sprint.mission.discodeit.repository.BinaryContentRepository;
@@ -20,7 +21,9 @@ import com.sprint.mission.discodeit.repository.MessageRepository;
 import com.sprint.mission.discodeit.repository.UserRepository;
 import com.sprint.mission.discodeit.service.MessageService;
 import com.sprint.mission.discodeit.storage.BinaryContentStorage;
+import java.io.IOException;
 import java.time.Instant;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
@@ -30,6 +33,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Slice;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.multipart.MultipartFile;
 
 @RequiredArgsConstructor
 @Service
@@ -48,39 +52,63 @@ public class BasicMessageService implements MessageService {
   @Override
   public MessageDto create(
       MessageCreateRequest messageCreateRequest,
-      List<BinaryContentCreateRequest> binaryContentCreateRequests
+      List<MultipartFile> files
   ) {
     UUID channelId = messageCreateRequest.channelId();
     UUID authorId = messageCreateRequest.authorId();
 
-    Channel channel = channelRepository.findById(channelId).orElseThrow(
-        () -> new ChannelNotFoundException(channelId));
+    Channel channel = channelRepository.findById(channelId)
+        .orElseThrow(() -> new ChannelNotFoundException(channelId));
 
-    User author = userRepository.findById(authorId).orElseThrow(
-        () -> new UserNotFoundException(authorId));
+    User author = userRepository.findById(authorId)
+        .orElseThrow(() -> new UserNotFoundException(authorId));
 
-    List<BinaryContent> attachments = binaryContentCreateRequests.stream()
-        .map(attachmentRequest -> {
-
-          String fileName = attachmentRequest.fileName();
-          String contentType = attachmentRequest.contentType();
-          byte[] bytes = attachmentRequest.bytes();
-
-          BinaryContent binaryContent = new BinaryContent(fileName, (long) bytes.length,
-              contentType);
-          binaryContentRepository.save(binaryContent);
-          binaryContentStorage.put(binaryContent.getId(), bytes);
-
-          return binaryContent;
-        })
+    List<BinaryContent> attachments = toAttachmentRequests(files).stream()
+        .map(this::saveAndStore)
         .toList();
 
-    String content = messageCreateRequest.content();
-    Message message = new Message(content, channel, author, attachments);
-
-    log.info("[BasicMessageService] 성공, 메세지 생성 - 내용: {}", messageRepository.save(message));
-    return messageMapper.toDto(message);
+    Message message = new Message(messageCreateRequest.content(), channel, author, attachments);
+    Message saved = messageRepository.save(message);
+    return messageMapper.toDto(saved);
   }
+
+  private List<BinaryContentCreateRequest> toAttachmentRequests(List<MultipartFile> files) {
+    if (files == null || files.isEmpty()) {
+      return List.of();
+    }
+
+    return files.stream()
+        .filter(file -> file != null && !file.isEmpty())
+        .map(this::toCreateRequest)
+        .toList();
+  }
+
+  private BinaryContentCreateRequest toCreateRequest(MultipartFile file) {
+    try {
+      return new BinaryContentCreateRequest(
+          file.getOriginalFilename(),
+          file.getContentType(),
+          file.getBytes()
+      );
+    } catch (IOException e) {
+      throw new StorageNotFoundException(e);
+    }
+  }
+
+  private BinaryContent saveAndStore(BinaryContentCreateRequest req) {
+    byte[] bytes = req.bytes();
+
+    BinaryContent binaryContent = new BinaryContent(
+        req.fileName(),
+        (long) bytes.length,
+        req.contentType()
+    );
+
+    BinaryContent saved = binaryContentRepository.save(binaryContent);
+    binaryContentStorage.put(saved.getId(), bytes);
+    return saved;
+  }
+
 
   @Transactional(readOnly = true)
   @Override
@@ -116,8 +144,6 @@ public class BasicMessageService implements MessageService {
         () -> new MessageNotFoundException(messageId));
 
     message.update(newContent);
-
-    log.info("[BasicMessageService] 성공, 메세지 수정 - 내용: {}", message);
     return messageMapper.toDto(message);
   }
 
@@ -128,7 +154,6 @@ public class BasicMessageService implements MessageService {
       throw new MessageNotFoundException(messageId);
     }
 
-    log.info("[BasicMessageService] 성공, 메세지 삭제 - 메세지ID: {}", messageId);
     messageRepository.deleteById(messageId);
   }
 }

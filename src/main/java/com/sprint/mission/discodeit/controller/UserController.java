@@ -7,6 +7,7 @@ import com.sprint.mission.discodeit.dto.request.BinaryContentCreateRequest;
 import com.sprint.mission.discodeit.dto.request.UserCreateRequest;
 import com.sprint.mission.discodeit.dto.request.UserStatusUpdateRequest;
 import com.sprint.mission.discodeit.dto.request.UserUpdateRequest;
+import com.sprint.mission.discodeit.exception.storage.StorageNotFoundException;
 import com.sprint.mission.discodeit.service.UserService;
 import com.sprint.mission.discodeit.service.UserStatusService;
 import jakarta.validation.Valid;
@@ -47,9 +48,7 @@ public class UserController implements UserApi {
   ) {
     log.info("[UserController] 요청, 유저 생성 - 유저 이름: {}", userCreateRequest.username());
 
-    Optional<BinaryContentCreateRequest> profileRequest =
-        Optional.ofNullable(profile).flatMap(this::resolveProfileRequest);
-    UserDto createdUser = userService.create(userCreateRequest, profileRequest);
+    UserDto createdUser = userService.create(userCreateRequest, profile);
 
     return ResponseEntity
         .status(HttpStatus.CREATED)
@@ -68,9 +67,7 @@ public class UserController implements UserApi {
   ) {
     log.info("[UserController] 요청, 유저 수정 - 대상 유저: {}", userId);
 
-    Optional<BinaryContentCreateRequest> profileRequest = Optional.ofNullable(profile)
-        .flatMap(this::resolveProfileRequest);
-    UserDto updatedUser = userService.update(userId, userUpdateRequest, profileRequest);
+    UserDto updatedUser = userService.update(userId, userUpdateRequest, profile);
 
     return ResponseEntity
         .status(HttpStatus.OK)
@@ -90,7 +87,7 @@ public class UserController implements UserApi {
   @GetMapping
   @Override
   public ResponseEntity<List<UserDto>> findAll() {
-    log.info("[UserController] 요청, 유저 전체" );
+    log.info("[UserController] 요청, 유저 전체");
     List<UserDto> users = userService.findAll();
     return ResponseEntity
         .status(HttpStatus.OK)
@@ -108,22 +105,5 @@ public class UserController implements UserApi {
     return ResponseEntity
         .status(HttpStatus.OK)
         .body(updatedUserStatus);
-  }
-
-  private Optional<BinaryContentCreateRequest> resolveProfileRequest(MultipartFile profileFile) {
-    if (profileFile.isEmpty()) {
-      return Optional.empty();
-    } else {
-      try {
-        BinaryContentCreateRequest binaryContentCreateRequest = new BinaryContentCreateRequest(
-            profileFile.getOriginalFilename(),
-            profileFile.getContentType(),
-            profileFile.getBytes()
-        );
-        return Optional.of(binaryContentCreateRequest);
-      } catch (IOException e) {
-        throw new RuntimeException(e);
-      }
-    }
   }
 }

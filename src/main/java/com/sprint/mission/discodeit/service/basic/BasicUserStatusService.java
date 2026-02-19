@@ -46,8 +46,7 @@ public class BasicUserStatusService implements UserStatusService {
     Instant lastActiveAt = request.lastActiveAt();
     UserStatus userStatus = new UserStatus(user, lastActiveAt);
 
-    log.info("[BasicUserStatusService] 성공, 유저 상태 생성 - 상태: {}",
-        userStatusRepository.save(userStatus));
+    userStatusRepository.save(userStatus);
     return userStatusMapper.toDto(userStatus);
   }
 
@@ -72,7 +71,6 @@ public class BasicUserStatusService implements UserStatusService {
         .orElseThrow(() -> new UserStatusNotFoundException(userStatusId));
     userStatus.update(request.newLastActiveAt());
 
-    log.info("[BasicUserStatusService] 성공, 유저 상태 수정 - 상태: {}", userStatus);
     return userStatusMapper.toDto(userStatus);
   }
 
@@ -83,7 +81,6 @@ public class BasicUserStatusService implements UserStatusService {
         .orElseThrow(() -> new UserStatusNotFoundException(userId));
     userStatus.update(request.newLastActiveAt());
 
-    log.info("[BasicUserStatusService] 성공, 유저 상태 수정 - 상태: {}", userStatus);
     return userStatusMapper.toDto(userStatus);
   }
 
@@ -93,7 +90,7 @@ public class BasicUserStatusService implements UserStatusService {
     if (!userStatusRepository.existsById(userStatusId)) {
       throw new UserStatusNotFoundException(userStatusId);
     }
-    log.info("[BasicUserStatusService] 성공, 유저 상태 삭제 - 상태ID: {}", userStatusId);
+
     userStatusRepository.deleteById(userStatusId);
   }
 }

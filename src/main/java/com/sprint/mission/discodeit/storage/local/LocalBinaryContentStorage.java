@@ -1,6 +1,7 @@
 package com.sprint.mission.discodeit.storage.local;
 
 import com.sprint.mission.discodeit.dto.data.BinaryContentDto;
+import com.sprint.mission.discodeit.exception.BinaryContent.BinaryContentNotFoundException;
 import com.sprint.mission.discodeit.exception.storage.StorageAlreadyExistsException;
 import com.sprint.mission.discodeit.exception.storage.StorageNotFoundException;
 import com.sprint.mission.discodeit.storage.BinaryContentStorage;
@@ -40,8 +41,8 @@ public class LocalBinaryContentStorage implements BinaryContentStorage {
       try {
         Files.createDirectories(root);
       } catch (IOException e) {
-        e.printStackTrace();
-        throw new RuntimeException(e);
+        log.error("message", e);
+        throw new StorageNotFoundException(e);
       }
     }
   }
@@ -54,10 +55,9 @@ public class LocalBinaryContentStorage implements BinaryContentStorage {
     try (OutputStream outputStream = Files.newOutputStream(filePath)) {
       outputStream.write(bytes);
     } catch (IOException e) {
-      throw new RuntimeException(e);
+      throw new BinaryContentNotFoundException(e);
     }
 
-    log.info("[LocalBinaryContentStorage] 성공, 프로필 저장 - 프로필ID: {}", binaryContentId);
     return binaryContentId;
   }
 
@@ -69,8 +69,8 @@ public class LocalBinaryContentStorage implements BinaryContentStorage {
     try {
       return Files.newInputStream(filePath);
     } catch (IOException e) {
-      e.printStackTrace();
-      throw new RuntimeException(e);
+      log.error("message", e);
+      throw new BinaryContentNotFoundException(e);
     }
   }
 
@@ -82,11 +82,6 @@ public class LocalBinaryContentStorage implements BinaryContentStorage {
   public ResponseEntity<Resource> download(BinaryContentDto metaData) {
     InputStream inputStream = get(metaData.id());
     Resource resource = new InputStreamResource(inputStream);
-
-    log.info("[LocalBinaryContentStorage] 성공, 프로필 다운로드 - 프로필ID: {}, 이름: {}",
-        metaData.id(),
-        resource.getFilename()
-    );
 
     return ResponseEntity
         .status(HttpStatus.OK)

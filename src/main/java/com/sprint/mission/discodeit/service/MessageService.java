@@ -9,11 +9,12 @@ import java.time.Instant;
 import java.util.List;
 import java.util.UUID;
 import org.springframework.data.domain.Pageable;
+import org.springframework.web.multipart.MultipartFile;
 
 public interface MessageService {
 
   MessageDto create(MessageCreateRequest messageCreateRequest,
-      List<BinaryContentCreateRequest> binaryContentCreateRequests);
+      List<MultipartFile> binaryContentCreateRequests);
 
   MessageDto find(UUID messageId);
 

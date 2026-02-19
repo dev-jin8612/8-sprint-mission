@@ -6,6 +6,7 @@ import com.sprint.mission.discodeit.dto.request.BinaryContentCreateRequest;
 import com.sprint.mission.discodeit.dto.request.MessageCreateRequest;
 import com.sprint.mission.discodeit.dto.request.MessageUpdateRequest;
 import com.sprint.mission.discodeit.dto.response.PageResponse;
+import com.sprint.mission.discodeit.exception.storage.StorageNotFoundException;
 import com.sprint.mission.discodeit.service.MessageService;
 import jakarta.validation.Valid;
 import java.io.IOException;
@@ -49,23 +50,8 @@ public class MessageController implements MessageApi {
   ) {
     log.info("[MessageController] 요청, 메세지 생성 - 내용: {}", messageCreateRequest.toString());
 
-    List<BinaryContentCreateRequest> attachmentRequests = Optional.ofNullable(attachments)
-        .map(files -> files.stream()
-            .map(file -> {
-              try {
-                return new BinaryContentCreateRequest(
-                    file.getOriginalFilename(),
-                    file.getContentType(),
-                    file.getBytes()
-                );
-              } catch (IOException e) {
-                throw new RuntimeException(e);
-              }
-            })
-            .toList())
-        .orElse(new ArrayList<>());
+    MessageDto createdMessage = messageService.create(messageCreateRequest, attachments);
 
-    MessageDto createdMessage = messageService.create(messageCreateRequest, attachmentRequests);
     return ResponseEntity
         .status(HttpStatus.CREATED)
         .body(createdMessage);
@@ -76,7 +62,7 @@ public class MessageController implements MessageApi {
       @PathVariable("messageId") UUID messageId,
       @Valid @RequestBody MessageUpdateRequest request
   ) {
-    log.info("[MessageController] 요청, 메세지 수정 - 대상: {}, 내용: {}",messageId, request.newContent());
+    log.info("[MessageController] 요청, 메세지 수정 - 대상: {}, 내용: {}", messageId, request.newContent());
     MessageDto updatedMessage = messageService.update(messageId, request);
     return ResponseEntity
         .status(HttpStatus.OK)
@@ -85,7 +71,7 @@ public class MessageController implements MessageApi {
 
   @DeleteMapping(path = "{messageId}")
   public ResponseEntity<Void> delete(@PathVariable("messageId") UUID messageId) {
-    log.info("[MessageController] 요청, 메세지 삭제 - 대상: {}",messageId);
+    log.info("[MessageController] 요청, 메세지 삭제 - 대상: {}", messageId);
     messageService.delete(messageId);
     return ResponseEntity
         .status(HttpStatus.NO_CONTENT)
@@ -103,7 +89,7 @@ public class MessageController implements MessageApi {
           direction = Direction.DESC
       ) Pageable pageable
   ) {
-    log.info("[MessageController] 요청, 메세지 전체 - 대상: {}",channelId);
+    log.info("[MessageController] 요청, 메세지 전체 - 대상: {}", channelId);
     PageResponse<MessageDto> messages = messageService.findAllByChannelId(channelId, cursor,
         pageable);
     return ResponseEntity

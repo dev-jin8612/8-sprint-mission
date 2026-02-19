@@ -9,11 +9,4 @@ public record UserUpdateRequest(
     @NotBlank String newPassword
 ) {
 
-  public static record UserCreateRequest(
-      String email,
-      String username,
-      String password
-  ) {
-
-  }
 }
