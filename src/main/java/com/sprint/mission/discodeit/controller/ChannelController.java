@@ -42,7 +42,8 @@ public class ChannelController implements ChannelApi {
   }
 
   @PostMapping("/private")
-  public ResponseEntity<ChannelDto> create(@Valid @RequestBody PrivateChannelCreateRequest request) {
+  public ResponseEntity<ChannelDto> create(
+      @Valid @RequestBody PrivateChannelCreateRequest request) {
     log.info("[ChannelController] 요청, 비공개 채널 생성");
     ChannelDto createdChannel = channelService.create(request);
 
@@ -56,7 +57,7 @@ public class ChannelController implements ChannelApi {
       @PathVariable("channelId") UUID channelId,
       @Valid @RequestBody PublicChannelUpdateRequest request
   ) {
-    log.info("[ChannelController] 요청, 공개 채널 수정 - 대상: {}, 새이름: {}",channelId, request.newName());
+    log.info("[ChannelController] 요청, 공개 채널 수정 - 대상: {}, 새이름: {}", channelId, request.newName());
     ChannelDto updatedChannel = channelService.update(channelId, request);
 
     return ResponseEntity

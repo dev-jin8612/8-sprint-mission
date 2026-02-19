@@ -26,7 +26,8 @@ public class BinaryContentController implements BinaryContentApi {
   private final BinaryContentStorage binaryContentStorage;
 
   @GetMapping(path = "{binaryContentId}")
-  public ResponseEntity<BinaryContentDto> find(@PathVariable("binaryContentId") UUID binaryContentId) {
+  public ResponseEntity<BinaryContentDto> find(
+      @PathVariable("binaryContentId") UUID binaryContentId) {
     log.info("[BinaryContentController] 요청, 프로필 찾기 - 프로필ID: {}", binaryContentId);
     BinaryContentDto binaryContent = binaryContentService.find(binaryContentId);
 
@@ -36,7 +37,8 @@ public class BinaryContentController implements BinaryContentApi {
   }
 
   @GetMapping
-  public ResponseEntity<List<BinaryContentDto>> findAllByIdIn(@RequestParam("binaryContentIds") List<UUID> binaryContentIds) {
+  public ResponseEntity<List<BinaryContentDto>> findAllByIdIn(
+      @RequestParam("binaryContentIds") List<UUID> binaryContentIds) {
     log.info("[BinaryContentController] 요청, 프로필 전체");
     List<BinaryContentDto> binaryContents = binaryContentService.findAllByIdIn(binaryContentIds);
 
