@@ -78,7 +78,6 @@ public class BasicUserService implements UserService {
     UserStatus userStatus = new UserStatus(user, now);
 
     userRepository.save(user);
-    userStatusRepository.save(userStatus);
     return userMapper.toDto(user);
   }
 
