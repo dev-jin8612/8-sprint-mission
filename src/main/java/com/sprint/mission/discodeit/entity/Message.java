@@ -1,56 +1,54 @@
 package com.sprint.mission.discodeit.entity;
 
+import com.sprint.mission.discodeit.entity.base.BaseUpdatableEntity;
+import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
-import jakarta.persistence.ForeignKey;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.JoinTable;
-import jakarta.persistence.ManyToMany;
 import jakarta.persistence.ManyToOne;
+import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
 import java.util.ArrayList;
 import java.util.List;
+import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import lombok.Setter;
+import org.hibernate.annotations.BatchSize;
 
-@Setter
-@Getter
 @Entity
-@NoArgsConstructor
-@Table(name = "messages", schema = "discodeit")
-public class Message extends BaseUpdatetableEntity {
-// 여기는 전체적으로 참고함
-  @Column(name = "content", nullable = false, columnDefinition = "TEXT")
+@Table(name = "messages")
+@Getter
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
+public class Message extends BaseUpdatableEntity {
+
+  @Column(columnDefinition = "text", nullable = false)
   private String content;
-
   @ManyToOne(fetch = FetchType.LAZY, optional = false)
-  @JoinColumn(name = "channel_id", nullable = false, foreignKey = @ForeignKey(name = "fk_messages_channel"))
+  @JoinColumn(name = "channel_id", columnDefinition = "uuid")
   private Channel channel;
-
   @ManyToOne(fetch = FetchType.LAZY)
-  @JoinColumn(name = "author_id", foreignKey = @ForeignKey(name = "fk_messages_author"))
+  @JoinColumn(name = "author_id", columnDefinition = "uuid")
   private User author;
-
-  @ManyToMany(fetch = FetchType.LAZY)
+  @BatchSize(size = 100)
+  @OneToMany(fetch = FetchType.LAZY, orphanRemoval = true, cascade = CascadeType.ALL)
   @JoinTable(
       name = "message_attachments",
-//      schema = "discodeit",
       joinColumns = @JoinColumn(name = "message_id"),
       inverseJoinColumns = @JoinColumn(name = "attachment_id")
   )
-  private List<BinaryContent> attachmentIds = new ArrayList<>();
+  private List<BinaryContent> attachments = new ArrayList<>();
 
-  public Message(String content, Channel channel, User author, List<BinaryContent> attachmentIds) {
-    this.content = content;
+  public Message(String content, Channel channel, User author, List<BinaryContent> attachments) {
     this.channel = channel;
+    this.content = content;
     this.author = author;
-    this.attachmentIds = attachmentIds;
+    this.attachments = attachments;
   }
 
   public void update(String newContent) {
-    if (newContent != null) {
+    if (newContent != null && !newContent.equals(this.content)) {
       this.content = newContent;
     }
   }

@@ -1,76 +1,59 @@
 package com.sprint.mission.discodeit.entity;
 
+import com.fasterxml.jackson.annotation.JsonManagedReference;
+import com.sprint.mission.discodeit.entity.base.BaseUpdatableEntity;
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
-import jakarta.persistence.ForeignKey;
 import jakarta.persistence.JoinColumn;
-import jakarta.persistence.OneToMany;
 import jakarta.persistence.OneToOne;
 import jakarta.persistence.Table;
-import java.time.Instant;
-import java.util.ArrayList;
-import java.util.List;
+import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
-@Setter
-@Getter
 @Entity
-@NoArgsConstructor
-@Table(name = "users", schema = "discodeit")
-public class User extends BaseUpdatetableEntity {
-//  전체 참고
+@Table(name = "users")
+@Getter
+@NoArgsConstructor(access = AccessLevel.PROTECTED)  // JPA를 위한 기본 생성자
+public class User extends BaseUpdatableEntity {
 
-  @Column(name = "username", nullable = false, unique = true, length = 50)
+  @Column(length = 50, nullable = false, unique = true)
   private String username;
-
-  @Column(name = "password", nullable = false, length = 60)
-  private String password;
-
-  @Column(name = "email", nullable = false, unique = true, length = 100)
+  @Column(length = 100, nullable = false, unique = true)
   private String email;
-
-  @OneToOne(mappedBy = "user",
-      cascade = CascadeType.ALL, orphanRemoval = true)
-  private UserStatus userStatus;
-
-  @OneToOne(fetch = FetchType.LAZY, orphanRemoval = true)
-  @JoinColumn(name = "profile_id", referencedColumnName = "id", foreignKey = @ForeignKey(name = "fk_users_binary_content"))
+  @Column(length = 60, nullable = false)
+  private String password;
+  @OneToOne(cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
+  @JoinColumn(name = "profile_id", columnDefinition = "uuid")
   private BinaryContent profile;
+  @JsonManagedReference
+  @Setter(AccessLevel.PROTECTED)
+  @OneToOne(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
+  private UserStatus status;
 
-  @OneToMany(mappedBy = "user", orphanRemoval = true)
-  private List<ReadStatus> readStatuses = new ArrayList<>();
-
-  public User(String username, String password, String email, BinaryContent profile) {
+  public User(String username, String email, String password, BinaryContent profile) {
     this.username = username;
-    this.password = password;
     this.email = email;
+    this.password = password;
     this.profile = profile;
   }
 
-  public void update(String username, String password, String email, BinaryContent profile) {
-    if (username != null) {
-      this.username = username;
+  public void update(String newUsername, String newEmail, String newPassword,
+      BinaryContent newProfile) {
+    if (newUsername != null && !newUsername.equals(this.username)) {
+      this.username = newUsername;
     }
-    if (email != null) {
-      this.email = email;
+    if (newEmail != null && !newEmail.equals(this.email)) {
+      this.email = newEmail;
     }
-    if (password != null) {
-      this.password = password;
+    if (newPassword != null && !newPassword.equals(this.password)) {
+      this.password = newPassword;
     }
-    if (profile != null) {
-      this.profile = profile;
-    }
-  }
-
-  public void setUserStatus(UserStatus userStatus) {
-    this.userStatus = userStatus;
-    if (userStatus.getUser() != this) {
-      userStatus.setUser(this);
+    if (newProfile != null) {
+      this.profile = newProfile;
     }
   }
-
 }

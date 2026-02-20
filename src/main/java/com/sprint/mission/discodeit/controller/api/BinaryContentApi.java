@@ -1,46 +1,58 @@
 package com.sprint.mission.discodeit.controller.api;
 
-import com.sprint.mission.discodeit.dto.data.BinaryContentDTO;
+import com.sprint.mission.discodeit.dto.data.BinaryContentDto;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.media.ArraySchema;
+import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.media.ExampleObject;
+import io.swagger.v3.oas.annotations.media.Schema;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
-import java.util.List;
-import java.util.UUID;
 import org.springframework.core.io.Resource;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestParam;
 
-@Tag(name = "Binary API", description = "Binary 관련 API")
+import java.util.List;
+import java.util.UUID;
+
+@Tag(name = "BinaryContent", description = "첨부 파일 API")
 public interface BinaryContentApi {
 
-  @Operation(summary = "Binary 단건 조회", description = "Binary 하나를 조회합니다.")
-  ResponseEntity<BinaryContentDTO> find(
-      @Parameter(
-          name = "binaryContentId",
-          description = "조회할 Binary의 UUID입니다.",
-          example = "550e8400-e29b-41d4-a716-446655440000",
-          required = true
+  @Operation(summary = "첨부 파일 조회")
+  @ApiResponses(value = {
+      @ApiResponse(
+          responseCode = "200", description = "첨부 파일 조회 성공",
+          content = @Content(schema = @Schema(implementation = BinaryContentDto.class))
+      ),
+      @ApiResponse(
+          responseCode = "404", description = "첨부 파일을 찾을 수 없음",
+          content = @Content(examples = @ExampleObject(value = "BinaryContent with id {binaryContentId} not found"))
       )
-      @PathVariable UUID binaryContentId
+  })
+  ResponseEntity<BinaryContentDto> find(
+      @Parameter(description = "조회할 첨부 파일 ID") UUID binaryContentId
   );
 
-  @Operation(summary = "Binary 다건 조회", description = "Binary를 여러개 조회합니다.")
-  ResponseEntity<List<BinaryContentDTO>> binaryMultiSearch(
-      @Parameter(
-          description = "조회할 BinaryId를 ,로 구분하여 입력합니다.",
-          example = "550e8400-e29b-41d4-a716-446655440000,550e8400-e29b-41d4-a716-446655440001",
-          required = true
+  @Operation(summary = "여러 첨부 파일 조회")
+  @ApiResponses(value = {
+      @ApiResponse(
+          responseCode = "200", description = "첨부 파일 목록 조회 성공",
+          content = @Content(array = @ArraySchema(schema = @Schema(implementation = BinaryContentDto.class)))
       )
-      @RequestParam("binaryContentIds") List<UUID> binaryContentIds
+  })
+  ResponseEntity<List<BinaryContentDto>> findAllByIdIn(
+      @Parameter(description = "조회할 첨부 파일 ID 목록") List<UUID> binaryContentIds
   );
 
-  @Operation(summary = "Binary 다운로드", description = "Binary 파일을 다운로드합니다.")
-  ResponseEntity<Resource> download(
-      @Parameter(
-          description = "다운로드할 Binary의 UUID입니다.",
-          required = true
+  @Operation(summary = "파일 다운로드")
+  @ApiResponses(value = {
+      @ApiResponse(
+          responseCode = "200", description = "파일 다운로드 성공",
+          content = @Content(schema = @Schema(implementation = Resource.class))
       )
-      @PathVariable UUID binaryContentId
+  })
+  ResponseEntity<?> download(
+      @Parameter(description = "다운로드할 파일 ID") UUID binaryContentId
   );
-}
+} 
