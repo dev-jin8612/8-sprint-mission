@@ -12,6 +12,7 @@ import java.util.List;
 import java.util.UUID;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -24,22 +25,26 @@ public class BasicBinaryContentService implements BinaryContentService {
   private final BinaryContentMapper binaryContentMapper;
   private final BinaryContentStorage binaryContentStorage;
 
+  @Value("${spring.profiles.active}")
+  private String activeProfile;  // 현재 활성 프로파일 확인
+
   @Transactional
   @Override
   public BinaryContentDto create(BinaryContentCreateRequest request) {
+    // 현 create는 별도로 안쓰이고 있지만 쓴다면
+    // 호출하기 전에 s3Service.uploadFile(MultipartFile profile); 하고 호출하기
     String fileName = request.fileName();
     byte[] bytes = request.bytes();
     String contentType = request.contentType();
 
-    BinaryContent binaryContent = new BinaryContent(
-        fileName,
-        (long) bytes.length,
-        contentType
-    );
+    BinaryContent binaryContent =
+        new BinaryContent(fileName, (long) bytes.length, contentType);
 
-    binaryContentRepository.save(binaryContent);
-    binaryContentStorage.put(binaryContent.getId(), bytes);
-    return binaryContentMapper.toDto(binaryContent);
+    BinaryContent returnBinary = binaryContentRepository.save(binaryContent);
+    if (!"prod".equals(activeProfile)) {
+      binaryContentStorage.put(returnBinary.getId(), bytes);
+    }
+    return binaryContentMapper.toDto(returnBinary);
   }
 
   @Override

@@ -1,0 +1,93 @@
+{
+  "containerDefinitions": [
+    {
+      "name": "chap02-container2",
+      "image": "827025938160.dkr.ecr.ap-northeast-2.amazonaws.com/chap02-aws-deploy:latest",
+      "cpu": 512,
+      "memory": 307,
+      "memoryReservation": 205,
+      "portMappings": [
+        {
+          "name": "chap02-container2-8080-tcp", ///////////////////
+          "containerPort": 8080,
+          "hostPort": 80,
+          "protocol": "tcp",
+          "appProtocol": "http"
+        }
+      ],
+      "essential": true,
+      "environment": [
+        {
+          "name": "AWS_REGION",
+          "value": "ap-northeast-2"
+        },
+        {
+          "name": "RDS_DATABASE",
+          "value": "menudb"
+        },
+        {
+          "name": "AWS_S3_BUCKET",
+          "value": "discodeit-binary-content-storage-hjs"
+        },
+        {
+          "name": "SPRING_PROFILES_ACTIVE",
+          "value": "prod"
+        },
+        {
+          "name": "RDS_ENDPOINT",///////////////////
+          "value": "menu-management-db.cjo6q682km4z.ap-northeast-2.rds.amazonaws.com"
+        },
+        {
+          "name": "STORAGE_TYPE",
+          "value": "s3"
+        },
+        {
+          "name": "RDS_USERNAME",
+          "value": "postgres"
+        }
+      ],
+      "environmentFiles": [],
+      "mountPoints": [],
+      "volumesFrom": [],
+      "ulimits": [],
+      "logConfiguration": {
+        "logDriver": "awslogs",
+        "options": {
+          "awslogs-group": "/ecs/chap02-task-definition",
+          "awslogs-create-group": "true",
+          "awslogs-region": "ap-northeast-2",///////////////////
+          "awslogs-stream-prefix": "ecs"
+        },
+        "secretOptions": []
+      },
+      "healthCheck": {
+        "command": [
+          "CMD-SHELL",
+          "curl -f http://localhost:8080/actuator/health || exit 1"
+        ],
+        "interval": 30,
+        "timeout": 5,
+        "retries": 3,
+        "startPeriod": 60
+      },
+      "systemControls": []
+    }
+  ],
+  "family": "chap02-task-definition",
+  "executionRoleArn": "arn:aws:iam::827025938160:role/ecsTaskExecutionRole",///////////////////
+  "networkMode": "bridge",
+  "volumes": [],
+  "placementConstraints": [],
+  "compatibilities": [
+    "EC2"
+  ],
+  "requiresCompatibilities": [
+    "EC2"
+  ],
+  "cpu": "512",
+  "memory": "512",
+  "runtimePlatform": {
+    "cpuArchitecture": "X86_64",
+    "operatingSystemFamily": "LINUX"
+  }
+}

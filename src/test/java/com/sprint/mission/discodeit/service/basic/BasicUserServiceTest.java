@@ -1,4 +1,4 @@
-package com.sprint.mission.discodeit.unitTest;
+package com.sprint.mission.discodeit.service.basic;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
@@ -14,7 +14,6 @@ import com.sprint.mission.discodeit.mapper.UserMapper;
 import com.sprint.mission.discodeit.repository.BinaryContentRepository;
 import com.sprint.mission.discodeit.repository.UserRepository;
 import com.sprint.mission.discodeit.repository.UserStatusRepository;
-import com.sprint.mission.discodeit.service.basic.BasicUserService;
 import com.sprint.mission.discodeit.storage.BinaryContentStorage;
 import java.util.Optional;
 import java.util.UUID;
@@ -29,7 +28,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 
 @ExtendWith(MockitoExtension.class)
 @DisplayName("UserService 단위 테스트")
-public class UserServiceTest {
+public class BasicUserServiceTest {
 
   // 테스트에 필요한 객체 준비
   @Mock
@@ -83,7 +82,7 @@ public class UserServiceTest {
       given(userRepository.existsByUsername(username)).willReturn(false);
 
       // when
-      userService.create(userCreateRequest, Optional.empty());
+      userService.create(userCreateRequest, null);
 
       // then
       assertNotNull(userRepository.findByUsername(username));
@@ -98,7 +97,7 @@ public class UserServiceTest {
       // when & then
       assertThrows(
           DiscodeitException.class,
-          () -> userService.create(userCreateRequest, Optional.empty())
+          () -> userService.create(userCreateRequest, null)
       );
 
       // then
@@ -118,7 +117,7 @@ public class UserServiceTest {
       // when & then
       assertThrows(
           DiscodeitException.class,
-          () -> userService.create(userCreateRequest, Optional.empty())
+          () -> userService.create(userCreateRequest, null)
       );
 
       // then
@@ -150,7 +149,7 @@ public class UserServiceTest {
       given(userRepository.findById(any())).willReturn(Optional.of(user));
 
       // when
-      userService.update(UUID.randomUUID(), userUpdateRequest, Optional.empty());
+      userService.update(UUID.randomUUID(), userUpdateRequest, null);
 
       // then
       assertNotNull(userRepository.findByUsername(username));
@@ -166,7 +165,7 @@ public class UserServiceTest {
       // when & then
       assertThrows(
           DiscodeitException.class,
-          () -> userService.update(UUID.randomUUID(), userUpdateRequest, Optional.empty())
+          () -> userService.update(UUID.randomUUID(), userUpdateRequest, null)
       );
 
       // then
@@ -186,7 +185,7 @@ public class UserServiceTest {
       // when & then
       assertThrows(
           DiscodeitException.class,
-          () -> userService.update(UUID.randomUUID(), userUpdateRequest, Optional.empty())
+          () -> userService.update(UUID.randomUUID(), userUpdateRequest, null)
       );
 
       // then

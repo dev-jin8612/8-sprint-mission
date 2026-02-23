@@ -1,4 +1,4 @@
-package com.sprint.mission.discodeit.sliceTest;
+package com.sprint.mission.discodeit.service.repository;
 
 import static org.assertj.core.api.Assertions.assertThat;
 

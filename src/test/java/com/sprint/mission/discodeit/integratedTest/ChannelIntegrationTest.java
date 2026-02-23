@@ -61,7 +61,7 @@ class ChannelIntegrationTest {
   UserMapper userMapper;
 
   private User saveUser(String username, String email) {
-    userService.create(new UserCreateRequest(username, email, "pw"), Optional.empty());
+    userService.create(new UserCreateRequest(username, email, "pw"), null);
     return userRepository.findByUsername(username).orElse(null);
   }
 

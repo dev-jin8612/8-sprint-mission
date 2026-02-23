@@ -20,6 +20,7 @@ import com.sprint.mission.discodeit.repository.ChannelRepository;
 import com.sprint.mission.discodeit.repository.MessageRepository;
 import com.sprint.mission.discodeit.repository.UserRepository;
 import com.sprint.mission.discodeit.service.MessageService;
+import com.sprint.mission.discodeit.service.S3Service;
 import com.sprint.mission.discodeit.storage.BinaryContentStorage;
 import java.io.IOException;
 import java.time.Instant;
@@ -28,6 +29,7 @@ import java.util.Optional;
 import java.util.UUID;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Slice;
 import org.springframework.stereotype.Service;
@@ -46,6 +48,11 @@ public class BasicMessageService implements MessageService {
   private final BinaryContentStorage binaryContentStorage;
   private final BinaryContentRepository binaryContentRepository;
   private final PageResponseMapper pageResponseMapper;
+
+  private final S3Service s3Service;  // S3Service 추가
+
+  @Value("${spring.profiles.active}")
+  private String activeProfile;  // 현재 활성 프로파일 확인
 
   @Transactional
   @Override
@@ -84,6 +91,12 @@ public class BasicMessageService implements MessageService {
 
   private BinaryContentCreateRequest toCreateRequest(MultipartFile file) {
     try {
+
+      // AWS 환경: S3에 업로드
+      if ("prod".equals(activeProfile)) {
+        s3Service.uploadFile(file);
+      }
+
       return new BinaryContentCreateRequest(
           file.getOriginalFilename(),
           file.getContentType(),
@@ -104,7 +117,11 @@ public class BasicMessageService implements MessageService {
     );
 
     BinaryContent saved = binaryContentRepository.save(binaryContent);
-    binaryContentStorage.put(saved.getId(), bytes);
+
+    if (!"prod".equals(activeProfile)) {
+      binaryContentStorage.put(saved.getId(), bytes);
+    }
+
     return saved;
   }
 
