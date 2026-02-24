@@ -1,0 +1,70 @@
+services:
+  postgres:
+    image: postgres:17
+    container_name: discodeit-db
+    restart: unless-stopped
+
+    environment:
+      POSTGRES_DB: ${RDS_DATABASE:-menudb}
+      POSTGRES_USER: ${RDS_USERNAME:-postgres}
+      POSTGRES_PASSWORD: ${RDS_PASSWORD:-postgres}
+      TZ: "Asia/Seoul"
+
+    ports:
+      # 로컬 DB 포트(요구대로 .env의 DB_PORT 사용)
+      - "${DB_PORT:-5432}:5432"
+
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+      # 최초 초기화 시 schema 실행(현재 프로젝트에 schema2.sql이 있으므로 그걸 사용)
+      - ./schema.sql:/docker-entrypoint-initdb.d/01_schema.sql:ro
+
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${RDS_USERNAME:-postgres} -d ${RDS_DATABASE:-menudb}"]
+      interval: 10s
+      timeout: 5s
+      retries: 10
+      start_period: 30s
+
+  app:
+    container_name: discodeit-app
+    build:
+      context: .
+      dockerfile: Dockerfile
+    restart: unless-stopped
+
+    depends_on:
+      postgres:
+        condition: service_healthy
+
+    environment:
+      # 프로필
+      SPRING_PROFILES_ACTIVE: ${SPRING_PROFILES_ACTIVE:-prod}
+
+      # DB 연결: RDS_ENDPOINT는 무시하고, compose 서비스명 postgres로 고정
+      SPRING_DATASOURCE_URL: jdbc:postgresql://postgres:5432/${RDS_DATABASE:-menudb}
+      SPRING_DATASOURCE_USERNAME: ${RDS_USERNAME:-postgres}
+      SPRING_DATASOURCE_PASSWORD: ${RDS_PASSWORD:-postgres}
+
+      # 프로젝트 정보/JVM 옵션(요구사항)
+      PROJECT_NAME: ${PROJECT_NAME:-discodeit}
+      PROJECT_VERSION: ${PROJECT_VERSION:-1.2-M8}
+      JVM_OPTS: ${JVM_OPTS:-}
+
+      TZ: "Asia/Seoul"
+
+    ports:
+      # http://localhost:8081 접속
+      - "${APP_PORT:-8081}:8080"
+
+    volumes:
+      # BinaryContentStorage 영속화(경로는 실제 설정에 맞게 필요 시 변경)
+      - binary-content-data:/app/.binary-content
+
+volumes:
+  postgres_data:
+    driver: local
+    name: discodeit-postgres-data
+  binary-content-data:
+    driver: local
+    name: discodeit-binary-content
