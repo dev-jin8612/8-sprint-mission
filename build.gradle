@@ -91,6 +91,9 @@ dependencies {
 
     testImplementation "org.testcontainers:junit-jupiter:1.20.4"
     testImplementation "org.testcontainers:localstack:1.20.4"
+
+    testCompileOnly 'org.projectlombok:lombok'
+    testAnnotationProcessor 'org.projectlombok:lombok'
 }
 
 tasks.named('test') {
