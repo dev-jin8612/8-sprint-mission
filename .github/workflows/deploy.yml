@@ -68,7 +68,7 @@ jobs:
       - name: Fetch current task definition
         run: |
           aws ecs describe-task-definition \
-            --task-definition "${{ vars.ECS_CONTAINER_NAME }}" \
+            --task-definition "${{ vars.ECS_TASK_DEFINITION }}" \
             --query taskDefinition \
             --output json > taskdef.json
 
