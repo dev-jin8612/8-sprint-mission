@@ -1,7 +1,7 @@
 package com.sprint.mission.discodeit.storage.s3;
 
 import com.sprint.mission.discodeit.config.StorageConfig;
-import com.sprint.mission.discodeit.dto.data.BinaryContentDto;
+import com.sprint.mission.discodeit.dto.data.BinaryContentDTO;
 import com.sprint.mission.discodeit.storage.BinaryContentStorage;
 import java.io.InputStream;
 import java.nio.charset.StandardCharsets;
@@ -85,8 +85,8 @@ class S3BinaryContentStorageTest {
     UUID id = UUID.randomUUID();
     storage.put(id, "x".getBytes(StandardCharsets.UTF_8));
 
-    // 프로젝트 BinaryContentDto에 맞게 생성자/팩토리만 맞추시면 됩니다.
-    BinaryContentDto dto = new BinaryContentDto(
+    // 프로젝트 BinaryContentDTO에 맞게 생성자/팩토리만 맞추시면 됩니다.
+    BinaryContentDTO dto = new BinaryContentDTO(
         id,
         "x.txt",
         1L,

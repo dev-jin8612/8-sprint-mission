@@ -142,7 +142,7 @@ public class BasicChannelServiceTest {
 
       // then
       then(channelRepository).should().findById(id);
-      then(channelMapper).should().toDto(any());
+      then(channelMapper).should().toDTO(any());
     }
 
     @Test
@@ -158,7 +158,7 @@ public class BasicChannelServiceTest {
       );
 
       // then
-      then(channelMapper).should(never()).toDto(any());
+      then(channelMapper).should(never()).toDTO(any());
     }
 
     @Test

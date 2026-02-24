@@ -1,6 +1,6 @@
 package com.sprint.mission.discodeit.service.basic;
 
-import com.sprint.mission.discodeit.dto.data.ReadStatusDto;
+import com.sprint.mission.discodeit.dto.data.ReadStatusDTO;
 import com.sprint.mission.discodeit.dto.request.ReadStatusCreateRequest;
 import com.sprint.mission.discodeit.dto.request.ReadStatusUpdateRequest;
 import com.sprint.mission.discodeit.entity.Channel;
@@ -34,7 +34,7 @@ public class BasicReadStatusService implements ReadStatusService {
 
   @Transactional
   @Override
-  public ReadStatusDto create(ReadStatusCreateRequest request) {
+  public ReadStatusDTO create(ReadStatusCreateRequest request) {
     UUID userId = request.userId();
     UUID channelId = request.channelId();
 
@@ -51,32 +51,32 @@ public class BasicReadStatusService implements ReadStatusService {
           return readStatusRepository.save(new ReadStatus(user, channel, lastReadAt));
         });
 
-    return readStatusMapper.toDto(readStatus);
+    return readStatusMapper.toDTO(readStatus);
   }
 
   @Override
-  public ReadStatusDto find(UUID readStatusId) {
+  public ReadStatusDTO find(UUID readStatusId) {
     return readStatusRepository.findById(readStatusId)
-        .map(readStatusMapper::toDto)
+        .map(readStatusMapper::toDTO)
         .orElseThrow(() -> new ReadStatusNotFoundException(readStatusId));
   }
 
   @Override
-  public List<ReadStatusDto> findAllByUserId(UUID userId) {
+  public List<ReadStatusDTO> findAllByUserId(UUID userId) {
     return readStatusRepository.findAllByUserId(userId).stream()
-        .map(readStatusMapper::toDto)
+        .map(readStatusMapper::toDTO)
         .toList();
   }
 
   @Transactional
   @Override
-  public ReadStatusDto update(UUID readStatusId, ReadStatusUpdateRequest request) {
+  public ReadStatusDTO update(UUID readStatusId, ReadStatusUpdateRequest request) {
     Instant newLastReadAt = request.newLastReadAt();
     ReadStatus readStatus = readStatusRepository.findById(readStatusId)
         .orElseThrow(() -> new ReadStatusNotFoundException(readStatusId));
 
     readStatus.update(newLastReadAt);
-    return readStatusMapper.toDto(readStatus);
+    return readStatusMapper.toDTO(readStatus);
   }
 
   @Transactional

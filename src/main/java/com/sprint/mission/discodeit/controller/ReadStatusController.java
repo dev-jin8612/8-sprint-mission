@@ -1,7 +1,7 @@
 package com.sprint.mission.discodeit.controller;
 
 import com.sprint.mission.discodeit.controller.api.ReadStatusApi;
-import com.sprint.mission.discodeit.dto.data.ReadStatusDto;
+import com.sprint.mission.discodeit.dto.data.ReadStatusDTO;
 import com.sprint.mission.discodeit.dto.request.ReadStatusCreateRequest;
 import com.sprint.mission.discodeit.dto.request.ReadStatusUpdateRequest;
 import com.sprint.mission.discodeit.service.ReadStatusService;
@@ -28,27 +28,27 @@ public class ReadStatusController implements ReadStatusApi {
   private final ReadStatusService readStatusService;
 
   @PostMapping
-  public ResponseEntity<ReadStatusDto> create(@Valid @RequestBody ReadStatusCreateRequest request) {
-    ReadStatusDto createdReadStatus = readStatusService.create(request);
+  public ResponseEntity<ReadStatusDTO> create(@Valid @RequestBody ReadStatusCreateRequest request) {
+    ReadStatusDTO createdReadStatus = readStatusService.create(request);
     return ResponseEntity
         .status(HttpStatus.CREATED)
         .body(createdReadStatus);
   }
 
   @PatchMapping(path = "{readStatusId}")
-  public ResponseEntity<ReadStatusDto> update(
+  public ResponseEntity<ReadStatusDTO> update(
       @PathVariable("readStatusId") UUID readStatusId,
       @Valid @RequestBody ReadStatusUpdateRequest request
   ) {
-    ReadStatusDto updatedReadStatus = readStatusService.update(readStatusId, request);
+    ReadStatusDTO updatedReadStatus = readStatusService.update(readStatusId, request);
     return ResponseEntity
         .status(HttpStatus.OK)
         .body(updatedReadStatus);
   }
 
   @GetMapping
-  public ResponseEntity<List<ReadStatusDto>> findAllByUserId(@RequestParam("userId") UUID userId) {
-    List<ReadStatusDto> readStatuses = readStatusService.findAllByUserId(userId);
+  public ResponseEntity<List<ReadStatusDTO>> findAllByUserId(@RequestParam("userId") UUID userId) {
+    List<ReadStatusDTO> readStatuses = readStatusService.findAllByUserId(userId);
     return ResponseEntity
         .status(HttpStatus.OK)
         .body(readStatuses);

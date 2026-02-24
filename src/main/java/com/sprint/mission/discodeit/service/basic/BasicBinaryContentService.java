@@ -1,6 +1,6 @@
 package com.sprint.mission.discodeit.service.basic;
 
-import com.sprint.mission.discodeit.dto.data.BinaryContentDto;
+import com.sprint.mission.discodeit.dto.data.BinaryContentDTO;
 import com.sprint.mission.discodeit.dto.request.BinaryContentCreateRequest;
 import com.sprint.mission.discodeit.entity.BinaryContent;
 import com.sprint.mission.discodeit.exception.BinaryContent.BinaryContentNotFoundException;
@@ -30,7 +30,7 @@ public class BasicBinaryContentService implements BinaryContentService {
 
   @Transactional
   @Override
-  public BinaryContentDto create(BinaryContentCreateRequest request) {
+  public BinaryContentDTO create(BinaryContentCreateRequest request) {
     // 현 create는 별도로 안쓰이고 있지만 쓴다면
     // 호출하기 전에 s3Service.uploadFile(MultipartFile profile); 하고 호출하기
     String fileName = request.fileName();
@@ -44,20 +44,20 @@ public class BasicBinaryContentService implements BinaryContentService {
     if (!"prod".equals(activeProfile)) {
       binaryContentStorage.put(returnBinary.getId(), bytes);
     }
-    return binaryContentMapper.toDto(returnBinary);
+    return binaryContentMapper.toDTO(returnBinary);
   }
 
   @Override
-  public BinaryContentDto find(UUID binaryContentId) {
+  public BinaryContentDTO find(UUID binaryContentId) {
     return binaryContentRepository.findById(binaryContentId)
-        .map(binaryContentMapper::toDto)
+        .map(binaryContentMapper::toDTO)
         .orElseThrow(() -> new BinaryContentNotFoundException(binaryContentId));
   }
 
   @Override
-  public List<BinaryContentDto> findAllByIdIn(List<UUID> binaryContentIds) {
+  public List<BinaryContentDTO> findAllByIdIn(List<UUID> binaryContentIds) {
     return binaryContentRepository.findAllById(binaryContentIds).stream()
-        .map(binaryContentMapper::toDto)
+        .map(binaryContentMapper::toDTO)
         .toList();
   }
 

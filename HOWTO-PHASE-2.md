@@ -381,7 +381,7 @@ public class MenuService {
             Menu menu = new Menu(menuName, menuPrice, menuDescription, category, imageUrl, menuStock);
             Menu savedMenu = menuRepository.save(menu);
             
-            return convertToDTO(savedMenu);
+            return converttoDTO(savedMenu);
             
         } catch (IOException e) {
             throw new RuntimeException("파일 업로드 중 오류가 발생했습니다.", e);

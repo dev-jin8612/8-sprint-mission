@@ -1,7 +1,7 @@
 package com.sprint.mission.discodeit.storage.prod;
 
 import com.sprint.mission.discodeit.config.StorageProperties;
-import com.sprint.mission.discodeit.dto.data.BinaryContentDto;
+import com.sprint.mission.discodeit.dto.data.BinaryContentDTO;
 import com.sprint.mission.discodeit.storage.BinaryContentStorage;
 import java.io.InputStream;
 import java.net.URI;
@@ -75,7 +75,7 @@ public class S3BinaryContentStorage implements BinaryContentStorage {
   }
 
   @Override
-  public ResponseEntity<?> download(BinaryContentDto dto) {
+  public ResponseEntity<?> download(BinaryContentDTO dto) {
     String key = toKey(dto.id());
     String url = generatePresignedUrl(key);
 

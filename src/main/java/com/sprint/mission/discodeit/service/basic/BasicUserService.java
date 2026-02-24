@@ -1,6 +1,6 @@
 package com.sprint.mission.discodeit.service.basic;
 
-import com.sprint.mission.discodeit.dto.data.UserDto;
+import com.sprint.mission.discodeit.dto.data.UserDTO;
 import com.sprint.mission.discodeit.dto.request.BinaryContentCreateRequest;
 import com.sprint.mission.discodeit.dto.request.UserCreateRequest;
 import com.sprint.mission.discodeit.dto.request.UserUpdateRequest;
@@ -47,7 +47,7 @@ public class BasicUserService implements UserService {
 
   @Transactional
   @Override
-  public UserDto create(
+  public UserDTO create(
       UserCreateRequest userCreateRequest,
       MultipartFile profile
   ) {
@@ -97,26 +97,26 @@ public class BasicUserService implements UserService {
     UserStatus userStatus = new UserStatus(user, now);
 
     userRepository.save(user);
-    return userMapper.toDto(user);
+    return userMapper.toDTO(user);
   }
 
   @Override
-  public UserDto find(UUID userId) {
+  public UserDTO find(UUID userId) {
     return userRepository.findById(userId)
-        .map(userMapper::toDto)
+        .map(userMapper::toDTO)
         .orElseThrow(() -> new UserNotFoundException(userId));
   }
 
   @Override
-  public List<UserDto> findAll() {
+  public List<UserDTO> findAll() {
     return userRepository.findAllWithProfileAndStatus().stream()
-        .map(userMapper::toDto)
+        .map(userMapper::toDTO)
         .toList();
   }
 
   @Transactional
   @Override
-  public UserDto update(
+  public UserDTO update(
       UUID userId,
       UserUpdateRequest userUpdateRequest,
       MultipartFile profile
@@ -166,7 +166,7 @@ public class BasicUserService implements UserService {
     String newPassword = userUpdateRequest.newPassword();
     user.update(newUsername, newEmail, newPassword, nullableProfile);
     
-    return userMapper.toDto(user);
+    return userMapper.toDTO(user);
   }
 
   @Transactional

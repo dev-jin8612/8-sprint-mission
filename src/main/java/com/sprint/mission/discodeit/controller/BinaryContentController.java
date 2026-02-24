@@ -1,7 +1,7 @@
 package com.sprint.mission.discodeit.controller;
 
 import com.sprint.mission.discodeit.controller.api.BinaryContentApi;
-import com.sprint.mission.discodeit.dto.data.BinaryContentDto;
+import com.sprint.mission.discodeit.dto.data.BinaryContentDTO;
 import com.sprint.mission.discodeit.service.BinaryContentService;
 import com.sprint.mission.discodeit.storage.BinaryContentStorage;
 import java.util.List;
@@ -26,10 +26,10 @@ public class BinaryContentController implements BinaryContentApi {
   private final BinaryContentStorage binaryContentStorage;
 
   @GetMapping(path = "{binaryContentId}")
-  public ResponseEntity<BinaryContentDto> find(
+  public ResponseEntity<BinaryContentDTO> find(
       @PathVariable("binaryContentId") UUID binaryContentId) {
     log.info("[BinaryContentController] 요청, 프로필 찾기 - 프로필ID: {}", binaryContentId);
-    BinaryContentDto binaryContent = binaryContentService.find(binaryContentId);
+    BinaryContentDTO binaryContent = binaryContentService.find(binaryContentId);
 
     return ResponseEntity
         .status(HttpStatus.OK)
@@ -37,10 +37,10 @@ public class BinaryContentController implements BinaryContentApi {
   }
 
   @GetMapping
-  public ResponseEntity<List<BinaryContentDto>> findAllByIdIn(
+  public ResponseEntity<List<BinaryContentDTO>> findAllByIdIn(
       @RequestParam("binaryContentIds") List<UUID> binaryContentIds) {
     log.info("[BinaryContentController] 요청, 프로필 전체");
-    List<BinaryContentDto> binaryContents = binaryContentService.findAllByIdIn(binaryContentIds);
+    List<BinaryContentDTO> binaryContents = binaryContentService.findAllByIdIn(binaryContentIds);
 
     return ResponseEntity
         .status(HttpStatus.OK)
@@ -50,7 +50,7 @@ public class BinaryContentController implements BinaryContentApi {
   @GetMapping(path = "{binaryContentId}/download")
   public ResponseEntity<?> download(@PathVariable("binaryContentId") UUID binaryContentId) {
     log.info("[BinaryContentController] 요청, 프로필 다운로드 - 프로필ID: {}", binaryContentId);
-    BinaryContentDto binaryContentDto = binaryContentService.find(binaryContentId);
-    return binaryContentStorage.download(binaryContentDto);
+    BinaryContentDTO binaryContentDTO = binaryContentService.find(binaryContentId);
+    return binaryContentStorage.download(binaryContentDTO);
   }
 }

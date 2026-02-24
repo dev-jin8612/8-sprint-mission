@@ -1,6 +1,6 @@
 package com.sprint.mission.discodeit.service.basic;
 
-import com.sprint.mission.discodeit.dto.data.UserStatusDto;
+import com.sprint.mission.discodeit.dto.data.UserStatusDTO;
 import com.sprint.mission.discodeit.dto.request.UserStatusCreateRequest;
 import com.sprint.mission.discodeit.dto.request.UserStatusUpdateRequest;
 import com.sprint.mission.discodeit.entity.User;
@@ -32,7 +32,7 @@ public class BasicUserStatusService implements UserStatusService {
 
   @Transactional
   @Override
-  public UserStatusDto create(UserStatusCreateRequest request) {
+  public UserStatusDTO create(UserStatusCreateRequest request) {
     UUID userId = request.userId();
 
     User user = userRepository.findById(userId)
@@ -47,41 +47,41 @@ public class BasicUserStatusService implements UserStatusService {
     UserStatus userStatus = new UserStatus(user, lastActiveAt);
 
     userStatusRepository.save(userStatus);
-    return userStatusMapper.toDto(userStatus);
+    return userStatusMapper.toDTO(userStatus);
   }
 
   @Override
-  public UserStatusDto find(UUID userStatusId) {
+  public UserStatusDTO find(UUID userStatusId) {
     return userStatusRepository.findById(userStatusId)
-        .map(userStatusMapper::toDto)
+        .map(userStatusMapper::toDTO)
         .orElseThrow(() -> new UserStatusNotFoundException(userStatusId));
   }
 
   @Override
-  public List<UserStatusDto> findAll() {
+  public List<UserStatusDTO> findAll() {
     return userStatusRepository.findAll().stream()
-        .map(userStatusMapper::toDto)
+        .map(userStatusMapper::toDTO)
         .toList();
   }
 
   @Transactional
   @Override
-  public UserStatusDto update(UUID userStatusId, UserStatusUpdateRequest request) {
+  public UserStatusDTO update(UUID userStatusId, UserStatusUpdateRequest request) {
     UserStatus userStatus = userStatusRepository.findById(userStatusId)
         .orElseThrow(() -> new UserStatusNotFoundException(userStatusId));
     userStatus.update(request.newLastActiveAt());
 
-    return userStatusMapper.toDto(userStatus);
+    return userStatusMapper.toDTO(userStatus);
   }
 
   @Transactional
   @Override
-  public UserStatusDto updateByUserId(UUID userId, UserStatusUpdateRequest request) {
+  public UserStatusDTO updateByUserId(UUID userId, UserStatusUpdateRequest request) {
     UserStatus userStatus = userStatusRepository.findByUserId(userId)
         .orElseThrow(() -> new UserStatusNotFoundException(userId));
     userStatus.update(request.newLastActiveAt());
 
-    return userStatusMapper.toDto(userStatus);
+    return userStatusMapper.toDTO(userStatus);
   }
 
   @Transactional
