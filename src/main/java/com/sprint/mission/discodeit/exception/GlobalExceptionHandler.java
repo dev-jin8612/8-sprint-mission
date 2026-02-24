@@ -44,4 +44,9 @@ public class GlobalExceptionHandler {
         .status(HttpStatus.INTERNAL_SERVER_ERROR)
         .body(response);
   }
+
+  @ExceptionHandler(org.springframework.web.servlet.resource.NoResourceFoundException.class)
+  public ResponseEntity<Void> handleNoResource(org.springframework.web.servlet.resource.NoResourceFoundException e) {
+    return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
+  }
 }

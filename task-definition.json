@@ -1,15 +1,15 @@
 {
   "containerDefinitions": [
     {
-      "name": "chap02-container2",
-      "image": "827025938160.dkr.ecr.ap-northeast-2.amazonaws.com/chap02-aws-deploy:latest",
+      "name": "discodeit-app",
+      "image": "827025938160.dkr.ecr.ap-northeast-2.amazonaws.com/discodeit:latest",
       "cpu": 512,
-      "memory": 307,
-      "memoryReservation": 205,
+      "memory": 512,
+      "memoryReservation": 256,
       "portMappings": [
         {
-          "name": "chap02-container2-8080-tcp", ///////////////////
-          "containerPort": 8080,
+          "name": "discodeit-app-80-tcp",
+          "containerPort": 80,
           "hostPort": 80,
           "protocol": "tcp",
           "appProtocol": "http"
@@ -23,7 +23,7 @@
         },
         {
           "name": "RDS_DATABASE",
-          "value": "menudb"
+          "value": "discodeit-db"
         },
         {
           "name": "AWS_S3_BUCKET",
@@ -34,8 +34,8 @@
           "value": "prod"
         },
         {
-          "name": "RDS_ENDPOINT",///////////////////
-          "value": "menu-management-db.cjo6q682km4z.ap-northeast-2.rds.amazonaws.com"
+          "name": "RDS_ENDPOINT",
+          "value": "discodeit-db.cjo6q682km4z.ap-northeast-2.rds.amazonaws.com"
         },
         {
           "name": "STORAGE_TYPE",
@@ -43,7 +43,7 @@
         },
         {
           "name": "RDS_USERNAME",
-          "value": "postgres"
+          "value": "discodeit_user"
         }
       ],
       "environmentFiles": [],
@@ -55,7 +55,7 @@
         "options": {
           "awslogs-group": "/ecs/chap02-task-definition",
           "awslogs-create-group": "true",
-          "awslogs-region": "ap-northeast-2",///////////////////
+          "awslogs-region": "ap-northeast-2",
           "awslogs-stream-prefix": "ecs"
         },
         "secretOptions": []
@@ -74,7 +74,7 @@
     }
   ],
   "family": "chap02-task-definition",
-  "executionRoleArn": "arn:aws:iam::827025938160:role/ecsTaskExecutionRole",///////////////////
+  "executionRoleArn": "arn:aws:iam::827025938160:role/ecsTaskExecutionRole",
   "networkMode": "bridge",
   "volumes": [],
   "placementConstraints": [],
