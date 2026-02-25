@@ -102,6 +102,15 @@ jobs:
             --output text)"
           echo "task_def_arn=${NEW_TD_ARN}" >> "$GITHUB_OUTPUT"
 
+      - name: Scale down service to 0
+        run: |
+          aws ecs update-service \
+            --cluster "${{ vars.ECS_CLUSTER }}" \
+            --service "${{ vars.ECS_SERVICE }}" \
+            --desired-count 0
+            --cluster "${{ vars.ECS_CLUSTER }}" \
+            --services "${{ vars.ECS_SERVICE }}"
+
       - name: Update service to new task definition and scale up
         run: |
           aws ecs update-service \
