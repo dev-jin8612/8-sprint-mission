@@ -103,7 +103,7 @@ jobs:
           aws ecs update-service \
             --cluster "${{ vars.ECS_CLUSTER }}" \
             --service "${{ vars.ECS_SERVICE }}" \
-            --desired-count 0
+            --desired-count 0 \
             --deployment-configuration "maximumPercent=200,minimumHealthyPercent=0"
 
           # 무한대기 방지(10분). 실패 시 서비스 상태 덤프
