@@ -102,19 +102,21 @@ jobs:
             --output text)"
           echo "task_def_arn=${NEW_TD_ARN}" >> "$GITHUB_OUTPUT"
 
-      - name: Scale down service to 0
+      - name: Scale down service to 0 (with timeout)
         run: |
           aws ecs update-service \
             --cluster "${{ vars.ECS_CLUSTER }}" \
             --service "${{ vars.ECS_SERVICE }}" \
-            --desired-count 0 \
+            --desired-count 0
 
-          aws ecs wait services-stable \
+          # 무한대기 방지(10분). 실패 시 서비스 상태 덤프
+          timeout 600 aws ecs wait services-stable \
             --cluster "${{ vars.ECS_CLUSTER }}" \
-            --services "${{ vars.ECS_SERVICE }}"
+            --services "${{ vars.ECS_SERVICE }}" \
+          || (echo "wait timed out; dumping service state..." && \
+              aws ecs describe-services --cluster "${{ vars.ECS_CLUSTER }}" --services "${{ vars.ECS_SERVICE }}" --output json && exit 1)
 
-
-      - name: Update service to new task definition and scale up
+      - name: Update service to new task definition and scale up (with timeout)
         run: |
           aws ecs update-service \
             --cluster "${{ vars.ECS_CLUSTER }}" \
@@ -123,6 +125,8 @@ jobs:
             --desired-count 1 \
             --force-new-deployment
 
-          aws ecs wait services-stable \
+          timeout 600 aws ecs wait services-stable \
             --cluster "${{ vars.ECS_CLUSTER }}" \
-            --services "${{ vars.ECS_SERVICE }}"
+            --services "${{ vars.ECS_SERVICE }}" \
+          || (echo "wait timed out; dumping service state..." && \
+              aws ecs describe-services --cluster "${{ vars.ECS_CLUSTER }}" --services "${{ vars.ECS_SERVICE }}" --output json && exit 1)
