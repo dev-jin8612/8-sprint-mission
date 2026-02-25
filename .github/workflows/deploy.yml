@@ -111,16 +111,16 @@ jobs:
 #            --cluster "${{ vars.ECS_CLUSTER }}" \
 #            --services "${{ vars.ECS_SERVICE }}"
 #
-#      - name: Update service to new task definition and scale up
-#        run: |
-#          aws ecs update-service \
-#            --cluster "${{ vars.ECS_CLUSTER }}" \
-#            --service "${{ vars.ECS_SERVICE }}" \
-#            --task-definition "${{ steps.register.outputs.task_def_arn }}" \
-#            --desired-count 1 \
-#            --force-new-deployment
-#            --cluster "${{ vars.ECS_CLUSTER }}" \
-#            --services "${{ vars.ECS_SERVICE }}"
+      - name: Update service to new task definition and scale up
+        run: |
+          aws ecs update-service \
+            --cluster "${{ vars.ECS_CLUSTER }}" \
+            --service "${{ vars.ECS_SERVICE }}" \
+            --task-definition "${{ steps.register.outputs.task_def_arn }}" \
+            --desired-count 1 \
+            --force-new-deployment
+            --cluster "${{ vars.ECS_CLUSTER }}" \
+            --services "${{ vars.ECS_SERVICE }}"
 #
 #      - name: Describe service (debug)
 #        run: |
