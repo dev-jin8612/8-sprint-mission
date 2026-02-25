@@ -120,7 +120,6 @@ jobs:
             --task-definition "${{ steps.register.outputs.task_def_arn }}" \
             --desired-count 1 \
             --force-new-deployment
-          aws ecs wait services-stable \
             --cluster "${{ vars.ECS_CLUSTER }}" \
             --services "${{ vars.ECS_SERVICE }}"
 
