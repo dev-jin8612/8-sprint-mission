@@ -25,6 +25,11 @@ spring:
     init:
       mode: always
       encoding: UTF-8
+      data-locations: classpath:schema3.sql
+
+file:
+  upload-dir: uploads/
+  base-url: /api/images/
 
   aop:
     proxy-target-class: true

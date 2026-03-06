@@ -1,8 +1,8 @@
 package com.sprint.mission.discodeit.controller;
 
 import com.sprint.mission.discodeit.controller.api.UserApi;
-import com.sprint.mission.discodeit.dto.data.UserDto;
-import com.sprint.mission.discodeit.dto.data.UserStatusDto;
+import com.sprint.mission.discodeit.dto.data.UserDTO;
+import com.sprint.mission.discodeit.dto.data.UserStatusDTO;
 import com.sprint.mission.discodeit.dto.request.UserCreateRequest;
 import com.sprint.mission.discodeit.dto.request.UserStatusUpdateRequest;
 import com.sprint.mission.discodeit.dto.request.UserUpdateRequest;
@@ -38,13 +38,13 @@ public class UserController implements UserApi {
 
   @PostMapping(consumes = {MediaType.MULTIPART_FORM_DATA_VALUE})
   @Override
-  public ResponseEntity<UserDto> create(
+  public ResponseEntity<UserDTO> create(
       @Valid @RequestPart("userCreateRequest") UserCreateRequest userCreateRequest,
       @RequestPart(value = "profile", required = false) MultipartFile profile
   ) {
     log.info("[UserController] 요청, 유저 생성 - 유저 이름: {}", userCreateRequest.username());
 
-    UserDto createdUser = userService.create(userCreateRequest, profile);
+    UserDTO createdUser = userService.create(userCreateRequest, profile);
 
     return ResponseEntity
         .status(HttpStatus.CREATED)
@@ -56,14 +56,14 @@ public class UserController implements UserApi {
       consumes = {MediaType.MULTIPART_FORM_DATA_VALUE}
   )
   @Override
-  public ResponseEntity<UserDto> update(
+  public ResponseEntity<UserDTO> update(
       @PathVariable("userId") UUID userId,
       @Valid @RequestPart("userUpdateRequest") UserUpdateRequest userUpdateRequest,
       @RequestPart(value = "profile", required = false) MultipartFile profile
   ) {
     log.info("[UserController] 요청, 유저 수정 - 대상 유저: {}", userId);
 
-    UserDto updatedUser = userService.update(userId, userUpdateRequest, profile);
+    UserDTO updatedUser = userService.update(userId, userUpdateRequest, profile);
 
     return ResponseEntity
         .status(HttpStatus.OK)
@@ -82,9 +82,9 @@ public class UserController implements UserApi {
 
   @GetMapping
   @Override
-  public ResponseEntity<List<UserDto>> findAll() {
+  public ResponseEntity<List<UserDTO>> findAll() {
     log.info("[UserController] 요청, 유저 전체");
-    List<UserDto> users = userService.findAll();
+    List<UserDTO> users = userService.findAll();
     return ResponseEntity
         .status(HttpStatus.OK)
         .body(users);
@@ -92,11 +92,11 @@ public class UserController implements UserApi {
 
   @PatchMapping(path = "{userId}/userStatus")
   @Override
-  public ResponseEntity<UserStatusDto> updateUserStatusByUserId(
+  public ResponseEntity<UserStatusDTO> updateUserStatusByUserId(
       @PathVariable("userId") UUID userId,
       @RequestBody UserStatusUpdateRequest request
   ) {
-    UserStatusDto updatedUserStatus = userStatusService.updateByUserId(userId, request);
+    UserStatusDTO updatedUserStatus = userStatusService.updateByUserId(userId, request);
 
     return ResponseEntity
         .status(HttpStatus.OK)

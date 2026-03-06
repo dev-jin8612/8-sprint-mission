@@ -9,7 +9,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.sprint.mission.discodeit.dto.data.UserDto;
+import com.sprint.mission.discodeit.dto.data.UserDTO;
 import com.sprint.mission.discodeit.dto.request.PrivateChannelCreateRequest;
 import com.sprint.mission.discodeit.dto.request.PublicChannelCreateRequest;
 import com.sprint.mission.discodeit.dto.request.PublicChannelUpdateRequest;
@@ -61,7 +61,7 @@ class ChannelIntegrationTest {
   UserMapper userMapper;
 
   private User saveUser(String username, String email) {
-    userService.create(new UserCreateRequest(username, email, "pw"), Optional.empty());
+    userService.create(new UserCreateRequest(username, email, "pw"), null);
     return userRepository.findByUsername(username).orElse(null);
   }
 

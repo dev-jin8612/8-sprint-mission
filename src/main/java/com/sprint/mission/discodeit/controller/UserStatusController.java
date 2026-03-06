@@ -1,6 +1,6 @@
 package com.sprint.mission.discodeit.controller;
 
-import com.sprint.mission.discodeit.dto.data.UserStatusDto;
+import com.sprint.mission.discodeit.dto.data.UserStatusDTO;
 import com.sprint.mission.discodeit.dto.request.UserStatusUpdateRequest;
 import com.sprint.mission.discodeit.service.UserStatusService;
 import io.swagger.v3.oas.annotations.Operation;
@@ -29,13 +29,13 @@ public class UserStatusController {
   // 유저 상태 수정
   @PatchMapping("/{userId}")
   @Operation(summary = "유저 접속상태 변경", description = "유저의 접속정보를 변경합니다.")
-  public ResponseEntity<UserStatusDto> userStatusUpdate(
+  public ResponseEntity<UserStatusDTO> userStatusUpdate(
       @Parameter(description = "접속 상태를 변경할 유저 ID입니다.")
       @PathVariable UUID userId,
       @Parameter(description = "접속 시간을 나타냅니다.")
       @Valid @RequestBody UserStatusUpdateRequest userStatusUpdateRequest
   ) {
-    UserStatusDto userStatus = userStatusService.updateByUserId(userId, userStatusUpdateRequest);
+    UserStatusDTO userStatus = userStatusService.updateByUserId(userId, userStatusUpdateRequest);
 
     log.info(userStatus.id() + " 상태 수정까지는 성공");
     return ResponseEntity.ok(userStatus);

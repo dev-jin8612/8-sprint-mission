@@ -1,6 +1,6 @@
 package com.sprint.mission.discodeit.service.basic;
 
-import com.sprint.mission.discodeit.dto.data.UserDto;
+import com.sprint.mission.discodeit.dto.data.UserDTO;
 import com.sprint.mission.discodeit.dto.request.LoginRequest;
 import com.sprint.mission.discodeit.entity.User;
 import com.sprint.mission.discodeit.exception.Auth.AuthPasswordInputException;
@@ -23,7 +23,7 @@ public class BasicAuthService implements AuthService {
 
   @Transactional(readOnly = true)
   @Override
-  public UserDto login(LoginRequest loginRequest) {
+  public UserDTO login(LoginRequest loginRequest) {
     String username = loginRequest.username();
     String password = loginRequest.password();
 
@@ -33,6 +33,6 @@ public class BasicAuthService implements AuthService {
     if (!user.getPassword().equals(password)) {
       throw new AuthPasswordInputException();
     }
-    return userMapper.toDto(user);
+    return userMapper.toDTO(user);
   }
 }

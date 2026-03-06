@@ -1,6 +1,6 @@
 package com.sprint.mission.discodeit.service.basic;
 
-import com.sprint.mission.discodeit.dto.data.UserDto;
+import com.sprint.mission.discodeit.dto.data.UserDTO;
 import com.sprint.mission.discodeit.dto.request.BinaryContentCreateRequest;
 import com.sprint.mission.discodeit.dto.request.UserCreateRequest;
 import com.sprint.mission.discodeit.dto.request.UserUpdateRequest;
@@ -14,6 +14,7 @@ import com.sprint.mission.discodeit.mapper.UserMapper;
 import com.sprint.mission.discodeit.repository.BinaryContentRepository;
 import com.sprint.mission.discodeit.repository.UserRepository;
 import com.sprint.mission.discodeit.repository.UserStatusRepository;
+import com.sprint.mission.discodeit.service.S3Service;
 import com.sprint.mission.discodeit.service.UserService;
 import com.sprint.mission.discodeit.storage.BinaryContentStorage;
 import java.io.IOException;
@@ -23,6 +24,7 @@ import java.util.Optional;
 import java.util.UUID;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
@@ -38,9 +40,14 @@ public class BasicUserService implements UserService {
   private final BinaryContentRepository binaryContentRepository;
   private final BinaryContentStorage binaryContentStorage;
 
+  private final S3Service s3Service;  // S3Service 추가
+
+  @Value("${spring.profiles.active}")
+  private String activeProfile;  // 현재 활성 프로파일 확인
+
   @Transactional
   @Override
-  public UserDto create(
+  public UserDTO create(
       UserCreateRequest userCreateRequest,
       MultipartFile profile
   ) {
@@ -60,15 +67,27 @@ public class BasicUserService implements UserService {
 
     BinaryContent nullableProfile = profileRequests
         .map(profileRequest -> {
-          String fileName = profileRequest.fileName();
+          String fileName = null;
           String contentType = profileRequest.contentType();
           byte[] bytes = profileRequest.bytes();
 
-          BinaryContent binaryContent = new BinaryContent(fileName, (long) bytes.length,
-              contentType);
-          binaryContentRepository.save(binaryContent);
-          binaryContentStorage.put(binaryContent.getId(), bytes);
-          return binaryContent;
+          if ("prod".equals(activeProfile)) {
+            // AWS 환경: S3에 업로드
+            fileName = s3Service.uploadFile(profile);
+          } else {
+            fileName = profileRequest.fileName();
+          }
+
+          BinaryContent binaryContent =
+              new BinaryContent(fileName, (long) bytes.length, contentType);
+
+          BinaryContent returnBinary = binaryContentRepository.save(binaryContent);
+
+          if (!"prod".equals(activeProfile)) {
+            binaryContentStorage.put(returnBinary.getId(), bytes);
+          }
+
+          return returnBinary;
         }).orElse(null);
 
     String password = userCreateRequest.password();
@@ -78,26 +97,26 @@ public class BasicUserService implements UserService {
     UserStatus userStatus = new UserStatus(user, now);
 
     userRepository.save(user);
-    return userMapper.toDto(user);
+    return userMapper.toDTO(user);
   }
 
   @Override
-  public UserDto find(UUID userId) {
+  public UserDTO find(UUID userId) {
     return userRepository.findById(userId)
-        .map(userMapper::toDto)
+        .map(userMapper::toDTO)
         .orElseThrow(() -> new UserNotFoundException(userId));
   }
 
   @Override
-  public List<UserDto> findAll() {
+  public List<UserDTO> findAll() {
     return userRepository.findAllWithProfileAndStatus().stream()
-        .map(userMapper::toDto)
+        .map(userMapper::toDTO)
         .toList();
   }
 
   @Transactional
   @Override
-  public UserDto update(
+  public UserDTO update(
       UUID userId,
       UserUpdateRequest userUpdateRequest,
       MultipartFile profile
@@ -121,22 +140,33 @@ public class BasicUserService implements UserService {
 
     BinaryContent nullableProfile = profileRequests
         .map(profileRequest -> {
-
-          String fileName = profileRequest.fileName();
+          String fileName = null;
           String contentType = profileRequest.contentType();
           byte[] bytes = profileRequest.bytes();
-          BinaryContent binaryContent = new BinaryContent(fileName, (long) bytes.length,
-              contentType);
 
-          binaryContentRepository.save(binaryContent);
-          binaryContentStorage.put(binaryContent.getId(), bytes);
-          return binaryContent;
+          if ("prod".equals(activeProfile)) {
+            // AWS 환경: S3에 업로드
+            fileName = s3Service.uploadFile(profile);
+          } else {
+            fileName = profileRequest.fileName();
+          }
+
+          BinaryContent binaryContent =
+              new BinaryContent(fileName, (long) bytes.length, contentType);
+
+          BinaryContent returnBinary = binaryContentRepository.save(binaryContent);
+
+          if (!"prod".equals(activeProfile)) {
+            binaryContentStorage.put(returnBinary.getId(), bytes);
+          }
+
+          return returnBinary;
         }).orElse(null);
 
     String newPassword = userUpdateRequest.newPassword();
     user.update(newUsername, newEmail, newPassword, nullableProfile);
-    log.info("[BasicUserService] 성공, 유저 수정 - 정보: {}", user);
-    return userMapper.toDto(user);
+    
+    return userMapper.toDTO(user);
   }
 
   @Transactional
@@ -146,7 +176,6 @@ public class BasicUserService implements UserService {
       throw new UserNotFoundException(userId);
     }
 
-    log.info("[BasicUserService] 성공, 유저 삭제 - 정보: {}", userId);
     userRepository.deleteById(userId);
   }
 

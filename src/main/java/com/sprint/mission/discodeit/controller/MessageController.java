@@ -1,7 +1,7 @@
 package com.sprint.mission.discodeit.controller;
 
 import com.sprint.mission.discodeit.controller.api.MessageApi;
-import com.sprint.mission.discodeit.dto.data.MessageDto;
+import com.sprint.mission.discodeit.dto.data.MessageDTO;
 import com.sprint.mission.discodeit.dto.request.MessageCreateRequest;
 import com.sprint.mission.discodeit.dto.request.MessageUpdateRequest;
 import com.sprint.mission.discodeit.dto.response.PageResponse;
@@ -39,13 +39,13 @@ public class MessageController implements MessageApi {
   private final MessageService messageService;
 
   @PostMapping(consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
-  public ResponseEntity<MessageDto> create(
+  public ResponseEntity<MessageDTO> create(
       @Valid @RequestPart("messageCreateRequest") MessageCreateRequest messageCreateRequest,
       @RequestPart(value = "attachments", required = false) List<MultipartFile> attachments
   ) {
     log.info("[MessageController] 요청, 메세지 생성 - 내용: {}", messageCreateRequest.toString());
 
-    MessageDto createdMessage = messageService.create(messageCreateRequest, attachments);
+    MessageDTO createdMessage = messageService.create(messageCreateRequest, attachments);
 
     return ResponseEntity
         .status(HttpStatus.CREATED)
@@ -53,12 +53,12 @@ public class MessageController implements MessageApi {
   }
 
   @PatchMapping(path = "{messageId}")
-  public ResponseEntity<MessageDto> update(
+  public ResponseEntity<MessageDTO> update(
       @PathVariable("messageId") UUID messageId,
       @Valid @RequestBody MessageUpdateRequest request
   ) {
     log.info("[MessageController] 요청, 메세지 수정 - 대상: {}, 내용: {}", messageId, request.newContent());
-    MessageDto updatedMessage = messageService.update(messageId, request);
+    MessageDTO updatedMessage = messageService.update(messageId, request);
     return ResponseEntity
         .status(HttpStatus.OK)
         .body(updatedMessage);
@@ -74,7 +74,7 @@ public class MessageController implements MessageApi {
   }
 
   @GetMapping
-  public ResponseEntity<PageResponse<MessageDto>> findAllByChannelId(
+  public ResponseEntity<PageResponse<MessageDTO>> findAllByChannelId(
       @RequestParam("channelId") UUID channelId,
       @RequestParam(value = "cursor", required = false) Instant cursor,
       @PageableDefault(
@@ -85,7 +85,7 @@ public class MessageController implements MessageApi {
       ) Pageable pageable
   ) {
     log.info("[MessageController] 요청, 메세지 전체 - 대상: {}", channelId);
-    PageResponse<MessageDto> messages = messageService.findAllByChannelId(channelId, cursor,
+    PageResponse<MessageDTO> messages = messageService.findAllByChannelId(channelId, cursor,
         pageable);
     return ResponseEntity
         .status(HttpStatus.OK)

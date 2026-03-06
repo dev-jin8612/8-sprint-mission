@@ -1,6 +1,6 @@
 package com.sprint.mission.discodeit.storage.local;
 
-import com.sprint.mission.discodeit.dto.data.BinaryContentDto;
+import com.sprint.mission.discodeit.dto.data.BinaryContentDTO;
 import com.sprint.mission.discodeit.exception.BinaryContent.BinaryContentNotFoundException;
 import com.sprint.mission.discodeit.exception.storage.StorageAlreadyExistsException;
 import com.sprint.mission.discodeit.exception.storage.StorageNotFoundException;
@@ -79,7 +79,7 @@ public class LocalBinaryContentStorage implements BinaryContentStorage {
   }
 
   @Override
-  public ResponseEntity<Resource> download(BinaryContentDto metaData) {
+  public ResponseEntity<Resource> download(BinaryContentDTO metaData) {
     InputStream inputStream = get(metaData.id());
     Resource resource = new InputStreamResource(inputStream);
 

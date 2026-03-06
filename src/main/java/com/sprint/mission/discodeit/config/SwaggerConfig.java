@@ -18,9 +18,9 @@ public class SwaggerConfig {
             .title("Discodeit API 문서")
             .description("Discodeit 프로젝트의 Swagger API 문서입니다.")
             .version("1.2")
-        )
-        .servers(List.of(
-            new Server().url("http://localhost:8080").description("로컬 서버")
-        ));
+        ).servers(List.of(new Server().url("/").description("기본 서버")));
+//        .servers(List.of(
+//            new Server().url("http://localhost:8080").description("로컬 서버")
+//        ));
   }
 }
