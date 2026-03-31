@@ -60,4 +60,6 @@ discodeit:
 
 logging:
   level:
-    root: info
+    com.sprint.mission.discodeit: DEBUG
+    org.springframework.web: DEBUG
+    org.springframework.security: trace

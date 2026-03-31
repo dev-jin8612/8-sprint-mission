@@ -18,9 +18,10 @@ import com.sprint.mission.discodeit.dto.request.MessageCreateRequest;
 import com.sprint.mission.discodeit.dto.request.MessageUpdateRequest;
 import com.sprint.mission.discodeit.dto.request.PublicChannelCreateRequest;
 import com.sprint.mission.discodeit.dto.request.UserCreateRequest;
+import com.sprint.mission.discodeit.entity.Role;
 import com.sprint.mission.discodeit.service.ChannelService;
 import com.sprint.mission.discodeit.service.MessageService;
-import com.sprint.mission.discodeit.service.UserService;
+import com.sprint.mission.discodeit.service.user.UserService;
 import java.util.ArrayList;
 import java.util.Optional;
 import java.util.UUID;
@@ -72,7 +73,8 @@ class MessageApiIntegrationTest {
     UserCreateRequest userRequest = new UserCreateRequest(
         "messageuser",
         "messageuser@example.com",
-        "Password1!"
+        "Password1!",
+            Role.USER
     );
 
     UserDto user = userService.create(userRequest, Optional.empty());
@@ -150,7 +152,8 @@ class MessageApiIntegrationTest {
     UserCreateRequest userRequest = new UserCreateRequest(
         "messageuser",
         "messageuser@example.com",
-        "Password1!"
+        "Password1!",
+            Role.USER
     );
 
     UserDto user = userService.create(userRequest, Optional.empty());
@@ -200,7 +203,8 @@ class MessageApiIntegrationTest {
     UserCreateRequest userRequest = new UserCreateRequest(
         "messageuser",
         "messageuser@example.com",
-        "Password1!"
+        "Password1!",
+            Role.USER
     );
 
     UserDto user = userService.create(userRequest, Optional.empty());
@@ -267,7 +271,8 @@ class MessageApiIntegrationTest {
     UserCreateRequest userRequest = new UserCreateRequest(
         "messageuser",
         "messageuser@example.com",
-        "Password1!"
+        "Password1!",
+            Role.USER
     );
 
     UserDto user = userService.create(userRequest, Optional.empty());

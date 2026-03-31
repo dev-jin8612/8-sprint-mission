@@ -8,8 +8,16 @@ CREATE TABLE users
     username   varchar(50) UNIQUE       NOT NULL,
     email      varchar(100) UNIQUE      NOT NULL,
     password   varchar(60)              NOT NULL,
+    role varchar(20) NOT NULL,
     profile_id uuid
 );
+
+ALTER TABLE users
+    ADD COLUMN role varchar(20) NOT NULL DEFAULT 'USER';
+
+UPDATE users
+SET password = '$2a$10$w.Vn/s.lH9Z9R5R2c8iL.O7O.l41bQ17zZ6f9f3X6X.W.T.9X.Z.'
+WHERE email = 'wlstj4344@gmail.com';
 
 -- BinaryContent
 CREATE TABLE binary_contents

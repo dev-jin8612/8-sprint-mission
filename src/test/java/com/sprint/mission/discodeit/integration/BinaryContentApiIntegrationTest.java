@@ -17,10 +17,11 @@ import com.sprint.mission.discodeit.dto.request.BinaryContentCreateRequest;
 import com.sprint.mission.discodeit.dto.request.MessageCreateRequest;
 import com.sprint.mission.discodeit.dto.request.PublicChannelCreateRequest;
 import com.sprint.mission.discodeit.dto.request.UserCreateRequest;
+import com.sprint.mission.discodeit.entity.Role;
 import com.sprint.mission.discodeit.service.BinaryContentService;
 import com.sprint.mission.discodeit.service.ChannelService;
 import com.sprint.mission.discodeit.service.MessageService;
-import com.sprint.mission.discodeit.service.UserService;
+import com.sprint.mission.discodeit.service.user.UserService;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
@@ -67,7 +68,8 @@ class BinaryContentApiIntegrationTest {
     UserCreateRequest userRequest = new UserCreateRequest(
         "contentuser",
         "content@example.com",
-        "Password1!"
+        "Password1!",
+            Role.USER
     );
     UserDto user = userService.create(userRequest, Optional.empty());
 
@@ -123,7 +125,8 @@ class BinaryContentApiIntegrationTest {
     UserCreateRequest userRequest = new UserCreateRequest(
         "contentuser2",
         "content2@example.com",
-        "Password1!"
+        "Password1!",
+            Role.USER
     );
     UserDto user = userService.create(userRequest, Optional.empty());
 

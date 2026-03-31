@@ -18,9 +18,10 @@ import com.sprint.mission.discodeit.dto.request.PublicChannelCreateRequest;
 import com.sprint.mission.discodeit.dto.request.ReadStatusCreateRequest;
 import com.sprint.mission.discodeit.dto.request.ReadStatusUpdateRequest;
 import com.sprint.mission.discodeit.dto.request.UserCreateRequest;
+import com.sprint.mission.discodeit.entity.Role;
 import com.sprint.mission.discodeit.service.ChannelService;
 import com.sprint.mission.discodeit.service.ReadStatusService;
-import com.sprint.mission.discodeit.service.UserService;
+import com.sprint.mission.discodeit.service.user.UserService;
 import java.time.Instant;
 import java.util.Optional;
 import java.util.UUID;
@@ -63,7 +64,8 @@ class ReadStatusApiIntegrationTest {
     UserCreateRequest userRequest = new UserCreateRequest(
         "readstatususer",
         "readstatus@example.com",
-        "Password1!"
+        "Password1!",
+            Role.USER
     );
     UserDto user = userService.create(userRequest, Optional.empty());
 
@@ -103,7 +105,8 @@ class ReadStatusApiIntegrationTest {
     UserCreateRequest userRequest = new UserCreateRequest(
         "duplicateuser",
         "duplicate@example.com",
-        "Password1!"
+        "Password1!",
+            Role.USER
     );
     UserDto user = userService.create(userRequest, Optional.empty());
 
@@ -152,7 +155,8 @@ class ReadStatusApiIntegrationTest {
     UserCreateRequest userRequest = new UserCreateRequest(
         "updateuser",
         "update@example.com",
-        "Password1!"
+        "Password1!",
+            Role.USER
     );
     UserDto user = userService.create(userRequest, Optional.empty());
 
@@ -220,7 +224,8 @@ class ReadStatusApiIntegrationTest {
     UserCreateRequest userRequest = new UserCreateRequest(
         "listuser",
         "list@example.com",
-        "Password1!"
+        "Password1!",
+            Role.USER
     );
     UserDto user = userService.create(userRequest, Optional.empty());
 

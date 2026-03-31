@@ -18,8 +18,9 @@ import com.sprint.mission.discodeit.dto.request.PublicChannelCreateRequest;
 import com.sprint.mission.discodeit.dto.request.PublicChannelUpdateRequest;
 import com.sprint.mission.discodeit.dto.request.UserCreateRequest;
 import com.sprint.mission.discodeit.entity.ChannelType;
+import com.sprint.mission.discodeit.entity.Role;
 import com.sprint.mission.discodeit.service.ChannelService;
-import com.sprint.mission.discodeit.service.UserService;
+import com.sprint.mission.discodeit.service.user.UserService;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
@@ -99,13 +100,15 @@ class ChannelApiIntegrationTest {
     UserCreateRequest userRequest1 = new UserCreateRequest(
         "user1",
         "user1@example.com",
-        "Password1!"
+        "Password1!",
+            Role.USER
     );
 
     UserCreateRequest userRequest2 = new UserCreateRequest(
         "user2",
         "user2@example.com",
-        "Password1!"
+        "Password1!",
+            Role.USER
     );
 
     UserDto user1 = userService.create(userRequest1, Optional.empty());
@@ -134,7 +137,8 @@ class ChannelApiIntegrationTest {
     UserCreateRequest userRequest = new UserCreateRequest(
         "channeluser",
         "channeluser@example.com",
-        "Password1!"
+        "Password1!",
+            Role.USER
     );
 
     UserDto user = userService.create(userRequest, Optional.empty());
@@ -152,7 +156,8 @@ class ChannelApiIntegrationTest {
     UserCreateRequest otherUserRequest = new UserCreateRequest(
         "otheruser",
         "otheruser@example.com",
-        "Password1!"
+        "Password1!",
+            Role.USER
     );
 
     UserDto otherUser = userService.create(otherUserRequest, Optional.empty());
@@ -244,7 +249,8 @@ class ChannelApiIntegrationTest {
     UserCreateRequest userRequest = new UserCreateRequest(
         "testuser",
         "testuser@example.com",
-        "Password1!"
+        "Password1!",
+            Role.USER
     );
 
     UserDto user = userService.create(userRequest, Optional.empty());

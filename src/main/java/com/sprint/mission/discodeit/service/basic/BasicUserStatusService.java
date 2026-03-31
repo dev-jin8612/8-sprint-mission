@@ -11,7 +11,7 @@ import com.sprint.mission.discodeit.exception.userstatus.UserStatusNotFoundExcep
 import com.sprint.mission.discodeit.mapper.UserStatusMapper;
 import com.sprint.mission.discodeit.repository.UserRepository;
 import com.sprint.mission.discodeit.repository.UserStatusRepository;
-import com.sprint.mission.discodeit.service.UserStatusService;
+import com.sprint.mission.discodeit.service.user.UserStatusService;
 import java.time.Instant;
 import java.util.List;
 import java.util.Optional;

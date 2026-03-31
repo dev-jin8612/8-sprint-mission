@@ -1,5 +1,6 @@
 package com.sprint.mission.discodeit.dto.request;
 
+import com.sprint.mission.discodeit.entity.Role;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Pattern;
@@ -19,7 +20,13 @@ public record UserCreateRequest(
     @Size(min = 8, max = 60, message = "비밀번호는 8자 이상 60자 이하여야 합니다")
     @Pattern(regexp = "^(?=.*[0-9])(?=.*[a-zA-Z])(?=.*[!@#$%^&*]).{8,}$", 
              message = "비밀번호는 최소 8자 이상, 숫자, 문자, 특수문자를 포함해야 합니다")
-    String password
-) {
+    String password,
 
+    Role role
+) {
+    public UserCreateRequest {
+        if (role == null) {
+            role = Role.USER;
+        }
+    }
 }
