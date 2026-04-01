@@ -1,9 +1,6 @@
 package com.sprint.mission.discodeit.config;
 
-import com.sprint.mission.discodeit.exception.auth.CustomAccessDeniedHandler;
-import com.sprint.mission.discodeit.exception.auth.LoginFailureHandler;
-import com.sprint.mission.discodeit.exception.auth.LoginSuccessHandler;
-import com.sprint.mission.discodeit.exception.auth.SpaCsrfTokenRequestHandler;
+import com.sprint.mission.discodeit.exception.auth.*;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -16,6 +13,8 @@ import org.springframework.security.config.Customizer;
 import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
+import org.springframework.security.core.session.SessionRegistry;
+import org.springframework.security.core.session.SessionRegistryImpl;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
@@ -54,6 +53,8 @@ public class SecurityConfig {
     /* SecurityFilterChain 설정 */
     public SecurityFilterChain filterChain(
             HttpSecurity http,
+            SessionRegistry sessionRegistry,
+//            RememberMeServices rememberMeServices,
             LoginSuccessHandler loginSuccessHandler,
             LoginFailureHandler loginFailureHandler,
             CustomAccessDeniedHandler customAccessDeniedHandler
@@ -90,6 +91,23 @@ public class SecurityConfig {
                         .requestMatchers("/api/**").authenticated()
                         .anyRequest().authenticated()
                 )
+                // 3. 세션 관리 설정
+                .sessionManagement(session -> session
+                        .sessionFixation().migrateSession()
+                        .maximumSessions(1)
+                        .maxSessionsPreventsLogin(false)
+                        .sessionRegistry(sessionRegistry)
+                        .expiredSessionStrategy(new CustomSessionExpiredStrategy())
+                )
+                // 4. remember-me 설정
+//                .rememberMe(remember -> remember
+//                        .rememberMeServices(rememberMeServices)
+//                        .key("ohgiraffers-mission-key")         // 토큰 생성 시 사용할 키
+//                )
+                // 5. 세션 컨텍스트 저장소를 명시적으로 설정(세션 유지 위한 필수요소)
+//                .securityContext(securityContext -> securityContext
+//                        .securityContextRepository(new HttpSessionSecurityContextRepository())
+//                )
                 // 6. form 기반 로그인 활성화
                 .formLogin(Customizer.withDefaults())
                 .formLogin(login -> login
@@ -110,6 +128,8 @@ public class SecurityConfig {
                         // 커스텀 핸들러(403 에러 반환하는 예외 핸들러)로 권한 없음에 대한 에러 처리
                         .accessDeniedHandler(customAccessDeniedHandler)
                 )
+        // 10. 인증 프로바이터 설정(앞서 bean으로 정의한 DaoAuthenticationProvider 사용)
+//                .authenticationProvider(authenticationProvider)
         ;
         return http.build();
     }
@@ -125,5 +145,10 @@ public class SecurityConfig {
         DefaultMethodSecurityExpressionHandler expressionHandler = new DefaultMethodSecurityExpressionHandler();
         expressionHandler.setRoleHierarchy(roleHierarchy);
         return expressionHandler;
+    }
+
+    @Bean
+    public SessionRegistry sessionRegistry() {
+        return new SessionRegistryImpl();
     }
 }
