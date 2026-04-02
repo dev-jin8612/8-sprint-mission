@@ -1,4 +1,4 @@
-package com.sprint.mission.discodeit.exception.user;
+gitpackage com.sprint.mission.discodeit.exception.user;
 
 import java.util.UUID;
 
