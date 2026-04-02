@@ -5,9 +5,6 @@ on:
     branches:
       - "황진서-sprint8"
 
-permissions:
-  contents: read
-
 jobs:
   build-and-push:
     name: Build & Push Docker Image (Private ECR)
@@ -15,7 +12,6 @@ jobs:
 
     outputs:
       image_uri: ${{ steps.meta.outputs.image_uri }}
-      short_sha: ${{ steps.meta.outputs.short_sha }}
 
     steps:
       - name: Checkout
@@ -24,7 +20,7 @@ jobs:
       - name: Set tags
         id: meta
         run: |
-          SHORT_SHA="${GITHUB_SHA::7}"
+          SHORT_SHA="${GITHUB_SHA}"
           echo "short_sha=$SHORT_SHA" >> "$GITHUB_OUTPUT"
           echo "image_uri=${{ vars.ECR_REPOSITORY_URI }}:$SHORT_SHA" >> "$GITHUB_OUTPUT"
 
@@ -102,17 +98,22 @@ jobs:
             --output text)"
           echo "task_def_arn=${NEW_TD_ARN}" >> "$GITHUB_OUTPUT"
 
-      - name: Scale down service to 0
+      - name: Scale down service to 0 (with timeout)
         run: |
           aws ecs update-service \
             --cluster "${{ vars.ECS_CLUSTER }}" \
             --service "${{ vars.ECS_SERVICE }}" \
-            --desired-count 0
-          aws ecs wait services-stable \
-            --cluster "${{ vars.ECS_CLUSTER }}" \
-            --services "${{ vars.ECS_SERVICE }}"
+            --desired-count 0 \
+            --deployment-configuration "maximumPercent=200,minimumHealthyPercent=0"
 
-      - name: Update service to new task definition and scale up
+          # 무한대기 방지(10분). 실패 시 서비스 상태 덤프
+          timeout 600 aws ecs wait services-stable \
+            --cluster "${{ vars.ECS_CLUSTER }}" \
+            --services "${{ vars.ECS_SERVICE }}" \
+          || (echo "wait timed out; dumping service state..." && \
+              aws ecs describe-services --cluster "${{ vars.ECS_CLUSTER }}" --services "${{ vars.ECS_SERVICE }}" --output json && exit 1)
+
+      - name: Update service to new task definition and scale up (with timeout)
         run: |
           aws ecs update-service \
             --cluster "${{ vars.ECS_CLUSTER }}" \
@@ -120,14 +121,16 @@ jobs:
             --task-definition "${{ steps.register.outputs.task_def_arn }}" \
             --desired-count 1 \
             --force-new-deployment
-          aws ecs wait services-stable \
-            --cluster "${{ vars.ECS_CLUSTER }}" \
-            --services "${{ vars.ECS_SERVICE }}"
 
-      - name: Describe service (debug)
-        run: |
-          aws ecs describe-services \
+          timeout 600 aws ecs wait services-stable \
             --cluster "${{ vars.ECS_CLUSTER }}" \
             --services "${{ vars.ECS_SERVICE }}" \
-            --query "services[0].{desired:desiredCount,running:runningCount,pending:pendingCount,deployments:deployments[*].{status:status,rollout:rolloutState,reason:rolloutStateReason,desired:desiredCount,running:runningCount,failed:failedTasks},events:events[0:10]}" \
-            --output json
+          || (echo "wait timed out; dumping service state..." && \
+              aws ecs describe-services --cluster "${{ vars.ECS_CLUSTER }}" --services "${{ vars.ECS_SERVICE }}" --output json && exit 1)
+
+      - name: Restore deployment config (minHealthyPercent=100)
+        run: |
+          aws ecs update-service \
+            --cluster "${{ vars.ECS_CLUSTER }}" \
+            --service "${{ vars.ECS_SERVICE }}" \
+            --deployment-configuration "maximumPercent=200,minimumHealthyPercent=100"

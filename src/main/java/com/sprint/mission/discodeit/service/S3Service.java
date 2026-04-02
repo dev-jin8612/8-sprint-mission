@@ -1,6 +1,9 @@
 package com.sprint.mission.discodeit.service;
 
-import org.springframework.beans.factory.annotation.Value;
+import com.sprint.mission.discodeit.config.StorageProperties; // 설정 클래스 임포트
+import java.io.IOException;
+import java.util.UUID;
+import lombok.Getter;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 import software.amazon.awssdk.auth.credentials.AwsBasicCredentials;
@@ -11,33 +14,26 @@ import software.amazon.awssdk.services.s3.S3Client;
 import software.amazon.awssdk.services.s3.model.DeleteObjectRequest;
 import software.amazon.awssdk.services.s3.model.PutObjectRequest;
 
-import java.io.IOException;
-import java.util.UUID;
-
 @Service
+@Getter
 public class S3Service {
 
   private final S3Client s3Client;
   private final String bucketName;
   private final String region;
 
-  /* S3Service 생성자 - 환경변수에서 AWS 설정을 주입받는다
-   * 1. AWS 액세스 키
-   * 2. AWS 시크릿 키
-   * 3. S3 버킷 이름
-   * 4. S3 리전
-   */
-  public S3Service(@Value("${aws.credentials.access-key}") String accessKey,
-      @Value("${aws.credentials.secret-key}") String secretKey,
-      @Value("${aws.s3.bucket}") String bucketName,
-      @Value("${aws.region}") String region) {
+  public S3Service(StorageProperties props) {
+    StorageProperties.S3 s3Props = props.s3();
+    this.bucketName = s3Props.bucket();
+    this.region = s3Props.region();
 
-    this.bucketName = bucketName;
-    this.region = region;
+    AwsBasicCredentials credentials = AwsBasicCredentials.create(
+        s3Props.accessKey(),
+        s3Props.secretKey()
+    );
 
-    AwsBasicCredentials credentials = AwsBasicCredentials.create(accessKey, secretKey);
     this.s3Client = S3Client.builder()
-        .region(Region.of(region))
+        .region(Region.of(this.region))
         .credentialsProvider(StaticCredentialsProvider.create(credentials))
         .build();
   }
@@ -53,7 +49,8 @@ public class S3Service {
           .contentType(file.getContentType())
           .build();
 
-      s3Client.putObject(putRequest, RequestBody.fromInputStream(file.getInputStream(), file.getSize()));
+      s3Client.putObject(putRequest,
+          RequestBody.fromInputStream(file.getInputStream(), file.getSize()));
 
       return fileName;
     } catch (IOException e) {

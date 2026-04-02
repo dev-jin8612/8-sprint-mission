@@ -2,6 +2,7 @@ package com.sprint.mission.discodeit.storage.prod;
 
 import com.sprint.mission.discodeit.config.StorageProperties;
 import com.sprint.mission.discodeit.dto.data.BinaryContentDTO;
+import com.sprint.mission.discodeit.service.S3Service;
 import com.sprint.mission.discodeit.storage.BinaryContentStorage;
 import java.io.InputStream;
 import java.net.URI;
@@ -11,14 +12,12 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.http.ResponseEntity;
 import software.amazon.awssdk.auth.credentials.AwsBasicCredentials;
 import software.amazon.awssdk.auth.credentials.StaticCredentialsProvider;
-import software.amazon.awssdk.core.ResponseInputStream;
 import software.amazon.awssdk.core.sync.RequestBody;
 import software.amazon.awssdk.regions.Region;
 import software.amazon.awssdk.services.s3.S3Client;
 import software.amazon.awssdk.services.s3.S3ClientBuilder;
 import software.amazon.awssdk.services.s3.S3Configuration;
 import software.amazon.awssdk.services.s3.model.GetObjectRequest;
-import software.amazon.awssdk.services.s3.model.GetObjectResponse;
 import software.amazon.awssdk.services.s3.model.PutObjectRequest;
 import software.amazon.awssdk.services.s3.presigner.S3Presigner;
 import software.amazon.awssdk.services.s3.presigner.model.GetObjectPresignRequest;
@@ -33,19 +32,18 @@ public class S3BinaryContentStorage implements BinaryContentStorage {
   private final long presignedUrlExpirationSeconds;
   private final String endpoint; // optional
 
-  private final S3Client s3Client;
+  private final S3Service s3Service;
   private final S3Presigner presigner;
 
-  public S3BinaryContentStorage(StorageProperties.S3 props) {
-    this.accessKey = props.accessKey();
-    this.secretKey = props.secretKey();
+  public S3BinaryContentStorage(S3Service s3Service, StorageProperties.S3 props) {
+    this.endpoint = props.endpoint();
+    this.s3Service = s3Service;
     this.region = props.region();
     this.bucket = props.bucket();
-    this.presignedUrlExpirationSeconds = props.presignedUrlExpiration();
-    this.endpoint = props.endpoint();
-
-    this.s3Client = getS3Client();
     this.presigner = getPresigner();
+    this.accessKey = props.accessKey();
+    this.secretKey = props.secretKey();
+    this.presignedUrlExpirationSeconds = props.presignedUrlExpiration();
   }
 
   @Override
@@ -53,11 +51,11 @@ public class S3BinaryContentStorage implements BinaryContentStorage {
     String key = toKey(id);
 
     PutObjectRequest req = PutObjectRequest.builder()
-        .bucket(bucket)
+        .bucket(s3Service.getBucketName())
         .key(key)
         .build();
 
-    s3Client.putObject(req, RequestBody.fromBytes(bytes));
+    s3Service.getS3Client().putObject(req, RequestBody.fromBytes(bytes));
     return id;
   }
 
@@ -66,12 +64,11 @@ public class S3BinaryContentStorage implements BinaryContentStorage {
     String key = toKey(id);
 
     GetObjectRequest req = GetObjectRequest.builder()
-        .bucket(bucket)
+        .bucket(s3Service.getBucketName())
         .key(key)
         .build();
 
-    ResponseInputStream<GetObjectResponse> stream = s3Client.getObject(req);
-    return stream;
+    return s3Service.getS3Client().getObject(req);
   }
 
   @Override
