@@ -31,7 +31,6 @@ public class LoginSuccessHandler  implements AuthenticationSuccessHandler {
 
             String responseBody = objectMapper.writeValueAsString(user);
             response.getWriter().write(responseBody);
-            response.sendRedirect("/"); // 로그인시 메인페이지로 보내기
         } else {
             response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
             response.getWriter().write("{\"error\": \"인증 정보 처리 불가\"}");

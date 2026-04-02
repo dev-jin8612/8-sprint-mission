@@ -32,6 +32,7 @@ import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMock
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.MediaType;
 import org.springframework.mock.web.MockMultipartFile;
+import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.transaction.annotation.Transactional;
@@ -58,6 +59,7 @@ class MessageApiIntegrationTest {
   private UserService userService;
 
   @Test
+  @WithMockUser
   @DisplayName("메시지 생성 API 통합 테스트")
   void createMessage_Success() throws Exception {
     // Given
@@ -114,6 +116,7 @@ class MessageApiIntegrationTest {
   }
 
   @Test
+  @WithMockUser
   @DisplayName("메시지 생성 실패 API 통합 테스트 - 유효하지 않은 요청")
   void createMessage_Failure_InvalidRequest() throws Exception {
     // Given
@@ -137,6 +140,7 @@ class MessageApiIntegrationTest {
   }
 
   @Test
+  @WithMockUser
   @DisplayName("채널별 메시지 목록 조회 API 통합 테스트")
   void findAllMessagesByChannelId_Success() throws Exception {
     // Given
@@ -188,6 +192,7 @@ class MessageApiIntegrationTest {
   }
 
   @Test
+  @WithMockUser
   @DisplayName("메시지 업데이트 API 통합 테스트")
   void updateMessage_Success() throws Exception {
     // Given
@@ -237,6 +242,7 @@ class MessageApiIntegrationTest {
   }
 
   @Test
+  @WithMockUser
   @DisplayName("메시지 업데이트 실패 API 통합 테스트 - 존재하지 않는 메시지")
   void updateMessage_Failure_MessageNotFound() throws Exception {
     // Given
@@ -256,6 +262,7 @@ class MessageApiIntegrationTest {
   }
 
   @Test
+  @WithMockUser
   @DisplayName("메시지 삭제 API 통합 테스트")
   void deleteMessage_Success() throws Exception {
     // Given
@@ -300,6 +307,7 @@ class MessageApiIntegrationTest {
   }
 
   @Test
+  @WithMockUser
   @DisplayName("메시지 삭제 실패 API 통합 테스트 - 존재하지 않는 메시지")
   void deleteMessage_Failure_MessageNotFound() throws Exception {
     // Given

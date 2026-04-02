@@ -1,6 +1,7 @@
 package com.sprint.mission.discodeit.config;
 
 import com.sprint.mission.discodeit.exception.auth.*;
+import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -9,19 +10,28 @@ import org.springframework.security.access.expression.method.DefaultMethodSecuri
 import org.springframework.security.access.expression.method.MethodSecurityExpressionHandler;
 import org.springframework.security.access.hierarchicalroles.RoleHierarchy;
 import org.springframework.security.access.hierarchicalroles.RoleHierarchyImpl;
-import org.springframework.security.config.Customizer;
+import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.dao.DaoAuthenticationProvider;
+import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
 import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
+import org.springframework.security.config.annotation.web.configuration.WebSecurityCustomizer;
 import org.springframework.security.core.session.SessionRegistry;
 import org.springframework.security.core.session.SessionRegistryImpl;
+import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
+import org.springframework.security.web.authentication.RememberMeServices;
 import org.springframework.security.web.authentication.logout.HttpStatusReturningLogoutSuccessHandler;
+import org.springframework.security.web.authentication.rememberme.JdbcTokenRepositoryImpl;
+import org.springframework.security.web.authentication.rememberme.PersistentTokenBasedRememberMeServices;
+import org.springframework.security.web.context.HttpSessionSecurityContextRepository;
 import org.springframework.security.web.csrf.CookieCsrfTokenRepository;
 import org.springframework.security.web.session.HttpSessionEventPublisher;
 
+import javax.sql.DataSource;
 import java.util.List;
 import java.util.stream.IntStream;
 
@@ -34,7 +44,6 @@ public class SecurityConfig {
         return new BCryptPasswordEncoder();
     }
 
-    /* 설명 - 필터 체인 디버깅 Bean 설정 */
     @Bean
     public CommandLineRunner debugFilterChain(SecurityFilterChain filterChain) {
         return args -> {
@@ -51,25 +60,23 @@ public class SecurityConfig {
     }
 
     @Bean
-    /* SecurityFilterChain 설정 */
     public SecurityFilterChain filterChain(
             HttpSecurity http,
             SessionRegistry sessionRegistry,
-//            RememberMeServices rememberMeServices,
+            RememberMeServices rememberMeServices,
             LoginSuccessHandler loginSuccessHandler,
             LoginFailureHandler loginFailureHandler,
+            DaoAuthenticationProvider authenticationProvider,
             CustomAccessDeniedHandler customAccessDeniedHandler
     ) throws Exception {
         http
-                // 1. CSRF 설정: 쿠키 기반 CSRF 토큰 사용
                 .csrf(csrf -> csrf
                         .csrfTokenRepository(CookieCsrfTokenRepository.withHttpOnlyFalse())
                         .csrfTokenRequestHandler(new SpaCsrfTokenRequestHandler())
                 )
-                // 2. HTTP 요청 권한 설정
                 .authorizeHttpRequests(auth -> auth
                         // 문서 관련
-                        .requestMatchers("/").permitAll()
+                        .requestMatchers("/","/index.html").permitAll()
                         .requestMatchers("/swagger-ui/**", "/v3/api-docs/**").permitAll()
                         .requestMatchers("/actuator/**").permitAll()
 
@@ -92,7 +99,6 @@ public class SecurityConfig {
                         .requestMatchers("/api/**").authenticated()
                         .anyRequest().authenticated()
                 )
-                // 3. 세션 관리 설정
                 .sessionManagement(session -> session
                         .sessionFixation().migrateSession()
                         .maximumSessions(1)
@@ -100,37 +106,31 @@ public class SecurityConfig {
                         .sessionRegistry(sessionRegistry)
                         .expiredSessionStrategy(new CustomSessionExpiredStrategy())
                 )
-                // 4. remember-me 설정
-//                .rememberMe(remember -> remember
-//                        .rememberMeServices(rememberMeServices)
-//                        .key("ohgiraffers-mission-key")         // 토큰 생성 시 사용할 키
-//                )
-                // 5. 세션 컨텍스트 저장소를 명시적으로 설정(세션 유지 위한 필수요소)
-//                .securityContext(securityContext -> securityContext
-//                        .securityContextRepository(new HttpSessionSecurityContextRepository())
-//                )
-                // 6. form 기반 로그인 활성화
-                .formLogin(Customizer.withDefaults())
+                .rememberMe(remember -> remember
+                        .rememberMeServices(rememberMeServices)
+                        .key("ohgiraffers-mission-key")
+                )
+                .securityContext(securityContext -> securityContext
+                        .securityContextRepository(new HttpSessionSecurityContextRepository())
+                )
                 .formLogin(login -> login
                         .loginProcessingUrl("/api/auth/login")
                         .successHandler(loginSuccessHandler)
                         .failureHandler(loginFailureHandler)
                         .permitAll()
                 )
-                // 7. Http Basic Authentication(기본 인증) 비활성화(보안상 위험해 안쓸 예정)
                 .httpBasic(basic -> basic.disable())
-                // 8. 로그아웃 설정
                 .logout(logout -> logout
                         .logoutUrl("/api/auth/logout")
                         .logoutSuccessHandler(new HttpStatusReturningLogoutSuccessHandler())
                         .permitAll())
-                // 9. 예외 처리 설정
                 .exceptionHandling(exception -> exception
-                        // 커스텀 핸들러(403 에러 반환하는 예외 핸들러)로 권한 없음에 대한 에러 처리
+                        .authenticationEntryPoint((request, response, authException) -> {
+                            response.sendError(HttpServletResponse.SC_UNAUTHORIZED, "Unauthorized");
+                        })
                         .accessDeniedHandler(customAccessDeniedHandler)
                 )
-        // 10. 인증 프로바이터 설정(앞서 bean으로 정의한 DaoAuthenticationProvider 사용)
-//                .authenticationProvider(authenticationProvider)
+                .authenticationProvider(authenticationProvider)
         ;
         return http.build();
     }
@@ -156,5 +156,49 @@ public class SecurityConfig {
     @Bean
     public HttpSessionEventPublisher httpSessionEventPublisher() {
         return new HttpSessionEventPublisher();
+    }
+
+    @Bean
+    public WebSecurityCustomizer webSecurityCustomizer() {
+        return (web) -> web.ignoring()
+                .requestMatchers("/favicon.ico", "/error", "/assets/**")
+                .requestMatchers("/static/**", "/css/**", "/js/**", "/images/**", "/*.js", "/*.css");
+    }
+
+    @Bean
+    public JdbcTokenRepositoryImpl tokenRepository(DataSource dataSource) {
+        JdbcTokenRepositoryImpl tokenRepository = new JdbcTokenRepositoryImpl();
+        tokenRepository.setDataSource(dataSource);
+        return tokenRepository;
+    }
+
+    @Bean
+    public PersistentTokenBasedRememberMeServices rememberMeServices(
+            UserDetailsService userDetailsService,
+            JdbcTokenRepositoryImpl tokenRepository
+    ) {
+        PersistentTokenBasedRememberMeServices rememberMeServices =
+                new PersistentTokenBasedRememberMeServices(
+                        "ohgiraffers-mission-key",
+                        userDetailsService,
+                        tokenRepository);
+
+        rememberMeServices.setTokenValiditySeconds(600);
+        rememberMeServices.setCookieName("remember-me");
+        rememberMeServices.setParameter("remember-me");
+        return rememberMeServices;
+    }
+
+    @Bean
+    public DaoAuthenticationProvider authenticationProvider(UserDetailsService userDetailsService) {
+        DaoAuthenticationProvider authProvider = new DaoAuthenticationProvider();
+        authProvider.setUserDetailsService(userDetailsService);
+        authProvider.setPasswordEncoder(passwordEncoder());
+        return authProvider;
+    }
+
+    @Bean
+    public AuthenticationManager authenticationManager(AuthenticationConfiguration config) throws Exception {
+        return config.getAuthenticationManager();
     }
 }

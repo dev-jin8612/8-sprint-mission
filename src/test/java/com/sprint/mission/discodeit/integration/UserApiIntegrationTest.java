@@ -14,6 +14,7 @@ import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMock
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.MediaType;
 import org.springframework.mock.web.MockMultipartFile;
+import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.transaction.annotation.Transactional;
@@ -42,8 +43,8 @@ class UserApiIntegrationTest {
     @Autowired
     private UserService userService;
 
-
     @Test
+    @WithMockUser
     @DisplayName("사용자 생성 API 통합 테스트")
     void createUser_Success() throws Exception {
         // Given
@@ -82,6 +83,7 @@ class UserApiIntegrationTest {
     }
 
     @Test
+    @WithMockUser
     @DisplayName("사용자 생성 실패 API 통합 테스트 - 유효하지 않은 요청")
     void createUser_Failure_InvalidRequest() throws Exception {
         // Given
@@ -107,6 +109,7 @@ class UserApiIntegrationTest {
     }
 
     @Test
+    @WithMockUser
     @DisplayName("모든 사용자 조회 API 통합 테스트")
     void findAllUsers_Success() throws Exception {
         // Given
@@ -140,6 +143,7 @@ class UserApiIntegrationTest {
     }
 
     @Test
+    @WithMockUser
     @DisplayName("사용자 업데이트 API 통합 테스트")
     void updateUser_Success() throws Exception {
         // Given
@@ -191,6 +195,7 @@ class UserApiIntegrationTest {
     }
 
     @Test
+    @WithMockUser
     @DisplayName("사용자 업데이트 실패 API 통합 테스트 - 존재하지 않는 사용자")
     void updateUser_Failure_UserNotFound() throws Exception {
         // Given
@@ -220,6 +225,7 @@ class UserApiIntegrationTest {
     }
 
     @Test
+    @WithMockUser
     @DisplayName("사용자 삭제 API 통합 테스트")
     void deleteUser_Success() throws Exception {
         // Given
@@ -245,6 +251,7 @@ class UserApiIntegrationTest {
     }
 
     @Test
+    @WithMockUser
     @DisplayName("사용자 삭제 실패 API 통합 테스트 - 존재하지 않는 사용자")
     void deleteUser_Failure_UserNotFound() throws Exception {
         // Given
@@ -256,6 +263,7 @@ class UserApiIntegrationTest {
     }
 
     @Test
+    @WithMockUser
     @DisplayName("사용자 상태 업데이트 API 통합 테스트")
     void updateUserStatus_Success() throws Exception {
         // Given
@@ -285,6 +293,7 @@ class UserApiIntegrationTest {
     }
 
     @Test
+    @WithMockUser
     @DisplayName("사용자 상태 업데이트 실패 API 통합 테스트 - 존재하지 않는 사용자")
     void updateUserStatus_Failure_UserNotFound() throws Exception {
         // Given

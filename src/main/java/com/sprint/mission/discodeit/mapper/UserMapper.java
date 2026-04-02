@@ -5,18 +5,22 @@ import com.sprint.mission.discodeit.entity.User;
 import lombok.RequiredArgsConstructor;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.session.SessionRegistry;
 import org.springframework.security.core.userdetails.UserDetails;
 
 @Mapper(componentModel = "spring", uses = {BinaryContentMapper.class})
-@RequiredArgsConstructor
 public abstract class UserMapper {
+    @Autowired
     protected SessionRegistry sessionRegistry;
 
     @Mapping(target = "online", expression = "java(checkOnlineStatus(user))")
     public abstract UserDto toDto(User user);
 
     protected Boolean checkOnlineStatus(User user) {
+        if (user == null || user.getUsername() == null) {
+            return false;
+        }
         return sessionRegistry.getAllPrincipals().stream()
                 .anyMatch(principal -> {
                     String sessionUsername = "";

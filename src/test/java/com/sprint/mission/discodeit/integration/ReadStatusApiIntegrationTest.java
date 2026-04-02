@@ -31,6 +31,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.MediaType;
+import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.transaction.annotation.Transactional;
@@ -57,6 +58,7 @@ class ReadStatusApiIntegrationTest {
   private ChannelService channelService;
 
   @Test
+  @WithMockUser
   @DisplayName("읽음 상태 생성 API 통합 테스트")
   void createReadStatus_Success() throws Exception {
     // Given
@@ -98,6 +100,7 @@ class ReadStatusApiIntegrationTest {
   }
 
   @Test
+  @WithMockUser
   @DisplayName("읽음 상태 생성 실패 API 통합 테스트 - 중복 생성")
   void createReadStatus_Failure_Duplicate() throws Exception {
     // Given
@@ -148,6 +151,7 @@ class ReadStatusApiIntegrationTest {
   }
 
   @Test
+  @WithMockUser
   @DisplayName("읽음 상태 업데이트 API 통합 테스트")
   void updateReadStatus_Success() throws Exception {
     // Given
@@ -198,6 +202,7 @@ class ReadStatusApiIntegrationTest {
   }
 
   @Test
+  @WithMockUser
   @DisplayName("읽음 상태 업데이트 실패 API 통합 테스트 - 존재하지 않는 읽음 상태")
   void updateReadStatus_Failure_NotFound() throws Exception {
     // Given
@@ -217,6 +222,7 @@ class ReadStatusApiIntegrationTest {
   }
 
   @Test
+  @WithMockUser
   @DisplayName("사용자별 읽음 상태 목록 조회 API 통합 테스트")
   void findAllReadStatusesByUserId_Success() throws Exception {
     // Given

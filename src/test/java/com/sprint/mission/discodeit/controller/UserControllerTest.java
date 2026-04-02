@@ -12,6 +12,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.http.MediaType;
 import org.springframework.mock.web.MockMultipartFile;
+import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.servlet.MockMvc;
 
@@ -21,6 +22,7 @@ import java.util.UUID;
 
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.BDDMockito.given;
+import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.csrf;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.multipart;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
@@ -39,6 +41,7 @@ class UserControllerTest {
     private UserService userService;
 
     @Test
+    @WithMockUser
     @DisplayName("사용자 생성 성공 테스트")
     void createUser_Success() throws Exception {
         // Given
@@ -87,6 +90,7 @@ class UserControllerTest {
         mockMvc.perform(multipart("/api/users")
                         .file(userCreateRequestPart)
                         .file(profilePart)
+                        .with(csrf())
                         .contentType(MediaType.MULTIPART_FORM_DATA_VALUE))
                 .andExpect(status().isCreated())
                 .andExpect(jsonPath("$.id").value(userId.toString()))
@@ -97,14 +101,15 @@ class UserControllerTest {
     }
 
     @Test
+    @WithMockUser
     @DisplayName("사용자 생성 실패 테스트 - 유효하지 않은 요청")
     void createUser_Failure_InvalidRequest() throws Exception {
         // Given
         UserCreateRequest invalidRequest = new UserCreateRequest(
-                "t", // 최소 길이 위반
-                "invalid-email", // 이메일 형식 위반
-                "short", // 비밀번호 정책 위반
-                Role.USER // 유효하지 않은 역할
+                "t",
+                "invalid-email",
+                "short",
+                Role.USER
         );
 
         MockMultipartFile userCreateRequestPart = new MockMultipartFile(
@@ -117,11 +122,13 @@ class UserControllerTest {
         // When & Then
         mockMvc.perform(multipart("/api/users")
                         .file(userCreateRequestPart)
+                        .with(csrf())
                         .contentType(MediaType.MULTIPART_FORM_DATA_VALUE))
                 .andExpect(status().isBadRequest());
     }
 
     @Test
+    @WithMockUser
     @DisplayName("사용자 조회 성공 테스트")
     void findAllUsers_Success() throws Exception {
         // Given
@@ -161,4 +168,4 @@ class UserControllerTest {
                 .andExpect(jsonPath("$[1].username").value("user2"))
                 .andExpect(jsonPath("$[1].online").value(false));
     }
-} 
+}

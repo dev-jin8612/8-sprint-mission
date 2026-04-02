@@ -19,8 +19,6 @@ public class DiscodeitUserDetailsService implements UserDetailsService {
 
     @Override
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
-        log.info("loadUserByUsername() 메서드 호출됨");
-
         return userRepository.findByUsername(username)
                 .map(user -> {
                     UserDto userDto = userMapper.toDto(user);
