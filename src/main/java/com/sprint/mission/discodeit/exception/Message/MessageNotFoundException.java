@@ -1,11 +1,17 @@
-package com.sprint.mission.discodeit.exception.Message;
+package com.sprint.mission.discodeit.exception.message;
 
 import com.sprint.mission.discodeit.exception.ErrorCode;
-import java.util.Map;
+
+import java.util.UUID;
 
 public class MessageNotFoundException extends MessageException {
-
-  public MessageNotFoundException(Object details) {
-    super(ErrorCode.MESSAGE_NOT_FOUND, Map.of("메세지가 없습니다. : ",details));
-  }
-}
+    public MessageNotFoundException() {
+        super(ErrorCode.MESSAGE_NOT_FOUND);
+    }
+    
+    public static MessageNotFoundException withId(UUID messageId) {
+        MessageNotFoundException exception = new MessageNotFoundException();
+        exception.addDetail("messageId", messageId);
+        return exception;
+    }
+} 

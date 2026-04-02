@@ -3,15 +3,9 @@ build/
 !gradle/wrapper/gradle-wrapper.jar
 !**/src/main/**/build/
 !**/src/test/**/build/
-.kotlin
 
 ### IntelliJ IDEA ###
-.idea/modules.xml
-.idea/jarRepositories.xml
-.idea/compiler.xml
-.idea/libraries/
 .idea
-.idea/
 *.iws
 *.iml
 *.ipr
@@ -44,34 +38,13 @@ bin/
 ### Mac OS ###
 .DS_Store
 
-### data ###
+### Discodeit ###
 .discodeit
 
-# local file storage
-/storage/
-
-#logs
-logs
+### 숨김 파일 ###
+.*
+!.gitignore
 
 
-# 환경변수 파일 (보안상 중요 정보 포함)
-.env
-*.env
-.env.*
-!.env.example
-application-*.yml
-!application-local.yml
-!application-aws.yml
-
-
-### AWS 관련 민감 파일들 ###
-*.pem
-*.key
-aws-credentials.txt
-.aws/
-credentials
-
-
-### Docker 관련 ###
-.dockerignore
-*.log
+### Github Actions ###
+!.github/

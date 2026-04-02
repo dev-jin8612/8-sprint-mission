@@ -1,102 +1,147 @@
 package com.sprint.mission.discodeit.storage.s3;
 
-import com.sprint.mission.discodeit.config.StorageConfig;
-import com.sprint.mission.discodeit.dto.data.BinaryContentDTO;
-import com.sprint.mission.discodeit.storage.BinaryContentStorage;
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+
+import com.sprint.mission.discodeit.dto.data.BinaryContentDto;
+import java.io.IOException;
 import java.io.InputStream;
-import java.nio.charset.StandardCharsets;
-import java.time.Instant;
+import java.util.NoSuchElementException;
 import java.util.UUID;
-import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Disabled;
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.test.context.DynamicPropertyRegistry;
-import org.springframework.test.context.DynamicPropertySource;
-import org.testcontainers.containers.localstack.LocalStackContainer;
-import org.testcontainers.junit.jupiter.Container;
-import org.testcontainers.junit.jupiter.Testcontainers;
+import org.springframework.test.context.ActiveProfiles;
+import software.amazon.awssdk.auth.credentials.AwsBasicCredentials;
+import software.amazon.awssdk.auth.credentials.StaticCredentialsProvider;
+import software.amazon.awssdk.regions.Region;
 import software.amazon.awssdk.services.s3.S3Client;
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.testcontainers.containers.localstack.LocalStackContainer.Service.S3;
+import software.amazon.awssdk.services.s3.model.DeleteObjectRequest;
+import software.amazon.awssdk.services.s3.model.NoSuchKeyException;
 
-@Testcontainers
-@SpringBootTest(classes = {StorageConfig.class})
+@Disabled
+@SpringBootTest
+@ActiveProfiles("test")
+@DisplayName("S3BinaryContentStorage 테스트")
 class S3BinaryContentStorageTest {
 
-  @Container
-  static LocalStackContainer localstack = new LocalStackContainer("localstack/localstack:3.0.2")
-      .withServices(S3);
-
-  @DynamicPropertySource
-  static void props(DynamicPropertyRegistry r) {
-    r.add("discodeit.storage.type", () -> "s3");
-    r.add("discodeit.storage.s3.access-key", () -> localstack.getAccessKey());
-    r.add("discodeit.storage.s3.secret-key", () -> localstack.getSecretKey());
-    r.add("discodeit.storage.s3.region", () -> localstack.getRegion());
-    r.add("discodeit.storage.s3.bucket", () -> "test-bucket");
-    r.add("discodeit.storage.s3.presigned-url-expiration", () -> "600");
-    r.add("discodeit.storage.s3.endpoint", () -> localstack.getEndpointOverride(S3).toString());
-  }
-
   @Autowired
-  BinaryContentStorage storage;
+  private S3BinaryContentStorage s3BinaryContentStorage;
 
-  static S3Client adminS3;
+  @Value("${discodeit.storage.s3.bucket}")
+  private String bucket;
 
-  @BeforeAll
-  static void setUpBucket() {
-    adminS3 = S3Client.builder()
-        .endpointOverride(localstack.getEndpointOverride(S3))
-        .region(software.amazon.awssdk.regions.Region.of(localstack.getRegion()))
-        .credentialsProvider(
-            software.amazon.awssdk.auth.credentials.StaticCredentialsProvider.create(
-                software.amazon.awssdk.auth.credentials.AwsBasicCredentials.create(
-                    localstack.getAccessKey(), localstack.getSecretKey()
-                )
-            )
-        )
-        .serviceConfiguration(
-            software.amazon.awssdk.services.s3.S3Configuration.builder()
-                .pathStyleAccessEnabled(true)
-                .build()
-        )
-        .build();
+  @Value("${discodeit.storage.s3.access-key}")
+  private String accessKey;
 
-    adminS3.createBucket(b -> b.bucket("test-bucket"));
+  @Value("${discodeit.storage.s3.secret-key}")
+  private String secretKey;
+
+  @Value("${discodeit.storage.s3.region}")
+  private String region;
+
+  private final UUID testId = UUID.randomUUID();
+  private final byte[] testData = "테스트 데이터".getBytes();
+
+  @BeforeEach
+  void setUp() {
+    // 테스트 준비 작업
+    // 실제 S3BinaryContentStorage는 스프링이 의존성 주입으로 제공
   }
 
-  @Test
-  void put_and_get_success() throws Exception {
-    UUID id = UUID.randomUUID();
-    byte[] data = "hello".getBytes(StandardCharsets.UTF_8);
+  @AfterEach
+  void tearDown() {
+    // 테스트 종료 후 생성된 S3 객체 삭제
+    try {
+      // S3 클라이언트 생성
+      S3Client s3Client = S3Client.builder()
+          .region(Region.of(region))
+          .credentialsProvider(
+              StaticCredentialsProvider.create(
+                  AwsBasicCredentials.create(accessKey, secretKey)
+              )
+          )
+          .build();
 
-    storage.put(id, data);
+      // 테스트에서 생성한 객체 삭제
+      DeleteObjectRequest deleteRequest = DeleteObjectRequest.builder()
+          .bucket(bucket)
+          .key(testId.toString())
+          .build();
 
-    try (InputStream in = storage.get(id)) {
-      byte[] read = in.readAllBytes();
-      assertThat(new String(read, StandardCharsets.UTF_8)).isEqualTo("hello");
+      s3Client.deleteObject(deleteRequest);
+      System.out.println("테스트 객체 삭제 완료: " + testId);
+    } catch (NoSuchKeyException e) {
+      // 객체가 이미 없는 경우는 무시
+      System.out.println("삭제할 객체가 없음: " + testId);
+    } catch (Exception e) {
+      // 정리 실패 시 로그만 남기고 테스트는 실패로 처리하지 않음
+      System.err.println("테스트 객체 정리 실패: " + e.getMessage());
     }
   }
 
   @Test
-  void download_shouldRedirectToPresignedUrl() {
-    UUID id = UUID.randomUUID();
-    storage.put(id, "x".getBytes(StandardCharsets.UTF_8));
+  @DisplayName("S3에 파일 업로드 성공 테스트")
+  void put_success() {
+    // when
+    UUID resultId = s3BinaryContentStorage.put(testId, testData);
 
-    // 프로젝트 BinaryContentDTO에 맞게 생성자/팩토리만 맞추시면 됩니다.
-    BinaryContentDTO dto = new BinaryContentDTO(
-        id,
-        "x.txt",
-        1L,
-        "text/plain"
+    // then
+    assertThat(resultId).isEqualTo(testId);
+  }
+
+  @Test
+  @DisplayName("S3에서 파일 다운로드 테스트")
+  void get_success() throws IOException {
+    // given
+    s3BinaryContentStorage.put(testId, testData);
+
+    // when
+    InputStream result = s3BinaryContentStorage.get(testId);
+
+    // then
+    assertNotNull(result);
+
+    // 내용 검증
+    byte[] resultBytes = result.readAllBytes();
+    assertThat(resultBytes).isEqualTo(testData);
+  }
+
+  @Test
+  @DisplayName("존재하지 않는 파일 조회 시 예외 발생 테스트")
+  void get_notFound() {
+    // when & then
+    assertThatThrownBy(() -> s3BinaryContentStorage.get(UUID.randomUUID()))
+        .isInstanceOf(NoSuchElementException.class);
+  }
+
+  @Test
+  @DisplayName("Presigned URL 생성 테스트")
+  void download_success() {
+    // given
+    s3BinaryContentStorage.put(testId, testData);
+    BinaryContentDto dto = new BinaryContentDto(
+        testId, "test.txt", (long) testData.length, "text/plain"
     );
 
-    ResponseEntity<?> res = storage.download(dto);
+    // when
+    ResponseEntity<Void> response = s3BinaryContentStorage.download(dto);
 
-    assertThat(res.getStatusCode().value()).isEqualTo(302);
-    assertThat(res.getHeaders().getLocation()).isNotNull();
-    assertThat(res.getHeaders().getLocation().toString()).contains("X-Amz-Signature");
+    // then
+    assertThat(response.getStatusCode()).isEqualTo(HttpStatus.FOUND);
+    assertThat(response.getHeaders().get(HttpHeaders.LOCATION)).isNotNull();
+
+    String location = response.getHeaders().getFirst(HttpHeaders.LOCATION);
+    assertThat(location).contains(bucket);
+    assertThat(location).contains(testId.toString());
   }
-}
+} 

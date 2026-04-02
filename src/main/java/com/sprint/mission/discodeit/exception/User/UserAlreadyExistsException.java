@@ -1,11 +1,21 @@
-package com.sprint.mission.discodeit.exception.User;
+package com.sprint.mission.discodeit.exception.user;
 
 import com.sprint.mission.discodeit.exception.ErrorCode;
-import java.util.Map;
 
 public class UserAlreadyExistsException extends UserException {
-
-  public UserAlreadyExistsException(Object details) {
-    super(ErrorCode.DUPLICATE_USER, Map.of("이미 존재하는 유저 값: ",details));
-  }
-}
+    public UserAlreadyExistsException() {
+        super(ErrorCode.DUPLICATE_USER);
+    }
+    
+    public static UserAlreadyExistsException withEmail(String email) {
+        UserAlreadyExistsException exception = new UserAlreadyExistsException();
+        exception.addDetail("email", email);
+        return exception;
+    }
+    
+    public static UserAlreadyExistsException withUsername(String username) {
+        UserAlreadyExistsException exception = new UserAlreadyExistsException();
+        exception.addDetail("username", username);
+        return exception;
+    }
+} 

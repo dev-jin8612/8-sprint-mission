@@ -2,49 +2,24 @@ server:
   port: 80
 
 spring:
-  application:
-    name: discodeit
   datasource:
-    driver-class-name: org.postgresql.Driver
-    url: jdbc:postgresql://${RDS_ENDPOINT}/${RDS_DATABASE}
-    username: ${RDS_USERNAME}
-    password: ${RDS_PASSWORD}
-
-  sql:
-    init:
-      data-locations: classpath:schema.sql
-
+    url: ${SPRING_DATASOURCE_URL}
+    username: ${SPRING_DATASOURCE_USERNAME}
+    password: ${SPRING_DATASOURCE_PASSWORD}
   jpa:
-    hibernate:
-      ddl-auto: update
-    show-sql: true
     properties:
       hibernate:
-        format_sql: true
-        dialect: org.hibernate.dialect.PostgreSQLDialect
-    open-in-view: false
-
-  boot:
-    admin:
-      client:
-        url: ${SPRING_BOOT_ADMIN_CLIENT_URL}
+        format_sql: false
 
 logging:
   level:
-    org.hibernate.SQL: INFO
-    org.hibernate.orm.jdbc.bind: INFO
+    com.sprint.mission.discodeit: info
+    org.hibernate.SQL: info
 
-file:
-  upload-dir: s3
-  base-url: https://${aws.s3.bucket}.s3.${aws.region}.amazonaws.com/
-
-discodeit:
-  storage:
-    type: s3
-    s3:
-      access-key: ${AWS_ACCESS_KEY_ID}
-      secret-key: ${AWS_SECRET_ACCESS_KEY}
-      region: ap-northeast-2
-      bucket: ${AWS_S3_BUCKET:menudb}
-      presigned-url-expiration: 300
-      endpoint: ${RDS_ENDPOINT}
+management:
+  endpoint:
+    health:
+      show-details: never
+  info:
+    env:
+      enabled: false

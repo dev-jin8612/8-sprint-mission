@@ -1,11 +1,23 @@
-package com.sprint.mission.discodeit.exception.User;
+package com.sprint.mission.discodeit.exception.user;
+
+import java.util.UUID;
 
 import com.sprint.mission.discodeit.exception.ErrorCode;
-import java.util.Map;
 
 public class UserNotFoundException extends UserException {
-
-  public UserNotFoundException(Object args) {
-    super(ErrorCode.USER_NOT_FOUND, Map.of("유저를 찾을 수 없습니다. : ",args));
-  }
-}
+    public UserNotFoundException() {
+        super(ErrorCode.USER_NOT_FOUND);
+    }
+    
+    public static UserNotFoundException withId(UUID userId) {
+        UserNotFoundException exception = new UserNotFoundException();
+        exception.addDetail("userId", userId);
+        return exception;
+    }
+    
+    public static UserNotFoundException withUsername(String username) {
+        UserNotFoundException exception = new UserNotFoundException();
+        exception.addDetail("username", username);
+        return exception;
+    }
+} 
