@@ -1,6 +1,6 @@
 package com.sprint.mission.discodeit.mapper;
 
-import com.sprint.mission.discodeit.dto.data.UserDto;
+import com.sprint.mission.discodeit.dto.data.UserDTO;
 import com.sprint.mission.discodeit.entity.User;
 import lombok.RequiredArgsConstructor;
 import org.mapstruct.Mapper;
@@ -15,7 +15,7 @@ public abstract class UserMapper {
     protected SessionRegistry sessionRegistry;
 
     @Mapping(target = "online", expression = "java(checkOnlineStatus(user))")
-    public abstract UserDto toDto(User user);
+    public abstract UserDTO toDTO(User user);
 
     protected Boolean checkOnlineStatus(User user) {
         if (user == null || user.getUsername() == null) {

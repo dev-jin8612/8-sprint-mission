@@ -1,6 +1,6 @@
 package com.sprint.mission.discodeit.controller;
 
-import com.sprint.mission.discodeit.dto.data.BinaryContentDto;
+import com.sprint.mission.discodeit.dto.data.BinaryContentDTO;
 import com.sprint.mission.discodeit.exception.binarycontent.BinaryContentNotFoundException;
 import com.sprint.mission.discodeit.service.BinaryContentService;
 import com.sprint.mission.discodeit.storage.BinaryContentStorage;
@@ -43,7 +43,7 @@ class BinaryContentControllerTest {
     void find_Success() throws Exception {
         // Given
         UUID binaryContentId = UUID.randomUUID();
-        BinaryContentDto binaryContent = new BinaryContentDto(
+        BinaryContentDTO binaryContent = new BinaryContentDTO(
                 binaryContentId,
                 "test.jpg",
                 10240L,
@@ -88,9 +88,9 @@ class BinaryContentControllerTest {
 
         List<UUID> binaryContentIds = List.of(id1, id2);
 
-        List<BinaryContentDto> binaryContents = List.of(
-                new BinaryContentDto(id1, "test1.jpg", 10240L, MediaType.IMAGE_JPEG_VALUE),
-                new BinaryContentDto(id2, "test2.pdf", 20480L, MediaType.APPLICATION_PDF_VALUE)
+        List<BinaryContentDTO> binaryContents = List.of(
+                new BinaryContentDTO(id1, "test1.jpg", 10240L, MediaType.IMAGE_JPEG_VALUE),
+                new BinaryContentDTO(id2, "test2.pdf", 20480L, MediaType.APPLICATION_PDF_VALUE)
         );
 
         given(binaryContentService.findAllByIdIn(binaryContentIds)).willReturn(binaryContents);
@@ -112,7 +112,7 @@ class BinaryContentControllerTest {
     void download_Success() throws Exception {
         // Given
         UUID binaryContentId = UUID.randomUUID();
-        BinaryContentDto binaryContent = new BinaryContentDto(
+        BinaryContentDTO binaryContent = new BinaryContentDTO(
                 binaryContentId,
                 "test.jpg",
                 10240L,
@@ -127,7 +127,7 @@ class BinaryContentControllerTest {
                 .header(HttpHeaders.CONTENT_TYPE, MediaType.IMAGE_JPEG_VALUE)
                 .body(new ByteArrayResource("test data".getBytes()));
 
-        doReturn(mockResponse).when(binaryContentStorage).download(any(BinaryContentDto.class));
+        doReturn(mockResponse).when(binaryContentStorage).download(any(BinaryContentDTO.class));
 
         // When & Then
         mockMvc.perform(get("/api/binaryContents/{binaryContentId}/download", binaryContentId))

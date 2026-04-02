@@ -1,7 +1,7 @@
 package com.sprint.mission.discodeit.controller;
 
 import com.sprint.mission.discodeit.controller.api.ChannelApi;
-import com.sprint.mission.discodeit.dto.data.ChannelDto;
+import com.sprint.mission.discodeit.dto.data.ChannelDTO;
 import com.sprint.mission.discodeit.dto.request.PrivateChannelCreateRequest;
 import com.sprint.mission.discodeit.dto.request.PublicChannelCreateRequest;
 import com.sprint.mission.discodeit.dto.request.PublicChannelUpdateRequest;
@@ -32,9 +32,9 @@ public class ChannelController implements ChannelApi {
   private final ChannelService channelService;
 
   @PostMapping(path = "public")
-  public ResponseEntity<ChannelDto> create(@RequestBody @Valid PublicChannelCreateRequest request) {
+  public ResponseEntity<ChannelDTO> create(@RequestBody @Valid PublicChannelCreateRequest request) {
     log.info("공개 채널 생성 요청: {}", request);
-    ChannelDto createdChannel = channelService.create(request);
+    ChannelDTO createdChannel = channelService.create(request);
     log.debug("공개 채널 생성 응답: {}", createdChannel);
     return ResponseEntity
         .status(HttpStatus.CREATED)
@@ -42,9 +42,9 @@ public class ChannelController implements ChannelApi {
   }
 
   @PostMapping(path = "private")
-  public ResponseEntity<ChannelDto> create(@RequestBody @Valid PrivateChannelCreateRequest request) {
+  public ResponseEntity<ChannelDTO> create(@RequestBody @Valid PrivateChannelCreateRequest request) {
     log.info("비공개 채널 생성 요청: {}", request);
-    ChannelDto createdChannel = channelService.create(request);
+    ChannelDTO createdChannel = channelService.create(request);
     log.debug("비공개 채널 생성 응답: {}", createdChannel);
     return ResponseEntity
         .status(HttpStatus.CREATED)
@@ -52,11 +52,11 @@ public class ChannelController implements ChannelApi {
   }
 
   @PatchMapping(path = "{channelId}")
-  public ResponseEntity<ChannelDto> update(
+  public ResponseEntity<ChannelDTO> update(
       @PathVariable("channelId") UUID channelId,
       @RequestBody @Valid PublicChannelUpdateRequest request) {
     log.info("채널 수정 요청: id={}, request={}", channelId, request);
-    ChannelDto updatedChannel = channelService.update(channelId, request);
+    ChannelDTO updatedChannel = channelService.update(channelId, request);
     log.debug("채널 수정 응답: {}", updatedChannel);
     return ResponseEntity
         .status(HttpStatus.OK)
@@ -74,9 +74,9 @@ public class ChannelController implements ChannelApi {
   }
 
   @GetMapping
-  public ResponseEntity<List<ChannelDto>> findAll(@RequestParam("userId") UUID userId) {
+  public ResponseEntity<List<ChannelDTO>> findAll(@RequestParam("userId") UUID userId) {
     log.info("사용자별 채널 목록 조회 요청: userId={}", userId);
-    List<ChannelDto> channels = channelService.findAllByUserId(userId);
+    List<ChannelDTO> channels = channelService.findAllByUserId(userId);
     log.debug("사용자별 채널 목록 조회 응답: count={}", channels.size());
     return ResponseEntity
         .status(HttpStatus.OK)

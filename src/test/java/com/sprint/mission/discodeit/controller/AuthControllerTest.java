@@ -1,7 +1,7 @@
 package com.sprint.mission.discodeit.controller;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.sprint.mission.discodeit.dto.data.UserDto;
+import com.sprint.mission.discodeit.dto.data.UserDTO;
 import com.sprint.mission.discodeit.dto.request.UserRoleUpdateRequest;
 import com.sprint.mission.discodeit.entity.Role;
 import com.sprint.mission.discodeit.service.AuthService;
@@ -51,7 +51,7 @@ class AuthControllerTest {
     void getCurrentUser_Success() throws Exception {
         // Given
         UUID userId = UUID.randomUUID();
-        UserDto userDto = new UserDto(
+        UserDTO userDTO = new UserDTO(
                 userId,
                 "testuser",
                 "test@example.com",
@@ -59,7 +59,7 @@ class AuthControllerTest {
                 null,
                 true);
 
-        given(authService.getCurrentUserInfo(any(UserDetails.class))).willReturn(userDto);
+        given(authService.getCurrentUserInfo(any(UserDetails.class))).willReturn(userDTO);
 
         // When & Then
         mockMvc.perform(get("/api/auth/me").accept(MediaType.APPLICATION_JSON))
@@ -84,14 +84,14 @@ class AuthControllerTest {
         // Given
         UUID targetUserId = UUID.randomUUID();
         UserRoleUpdateRequest request = new UserRoleUpdateRequest(targetUserId, Role.CHANNEL_MANAGER);
-        UserDto updatedUserDto = new UserDto(
+        UserDTO updatedUserDTO = new UserDTO(
                 targetUserId,
                 "targetuser",
                 "target@example.com",
                 Role.CHANNEL_MANAGER,
                 null, true);
 
-        given(authService.updateRole(any(UserRoleUpdateRequest.class))).willReturn(updatedUserDto);
+        given(authService.updateRole(any(UserRoleUpdateRequest.class))).willReturn(updatedUserDTO);
         String requestBody = objectMapper.writeValueAsString(request);
 
         // When & Then

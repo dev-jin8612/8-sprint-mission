@@ -1,9 +1,9 @@
 package com.sprint.mission.discodeit.controller;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.sprint.mission.discodeit.dto.data.BinaryContentDto;
-import com.sprint.mission.discodeit.dto.data.MessageDto;
-import com.sprint.mission.discodeit.dto.data.UserDto;
+import com.sprint.mission.discodeit.dto.data.BinaryContentDTO;
+import com.sprint.mission.discodeit.dto.data.MessageDTO;
+import com.sprint.mission.discodeit.dto.data.UserDTO;
 import com.sprint.mission.discodeit.dto.request.MessageCreateRequest;
 import com.sprint.mission.discodeit.dto.request.MessageUpdateRequest;
 import com.sprint.mission.discodeit.dto.response.PageResponse;
@@ -77,7 +77,7 @@ class MessageControllerTest {
         UUID messageId = UUID.randomUUID();
         Instant now = Instant.now();
 
-        UserDto author = new UserDto(
+        UserDTO author = new UserDTO(
                 authorId,
                 "testuser",
                 "test@example.com",
@@ -86,21 +86,21 @@ class MessageControllerTest {
                 true
         );
 
-        BinaryContentDto attachmentDto = new BinaryContentDto(
+        BinaryContentDTO attachmentDTO = new BinaryContentDTO(
                 UUID.randomUUID(),
                 "test.jpg",
                 10L,
                 MediaType.IMAGE_JPEG_VALUE
         );
 
-        MessageDto createdMessage = new MessageDto(
+        MessageDTO createdMessage = new MessageDTO(
                 messageId,
                 now,
                 now,
                 "안녕하세요, 테스트 메시지입니다.",
                 channelId,
                 author,
-                List.of(attachmentDto)
+                List.of(attachmentDTO)
         );
 
         given(messageService.create(any(MessageCreateRequest.class), any(List.class)))
@@ -161,7 +161,7 @@ class MessageControllerTest {
 
         Instant now = Instant.now();
 
-        UserDto author = new UserDto(
+        UserDTO author = new UserDTO(
                 authorId,
                 "testuser",
                 "test@example.com",
@@ -170,7 +170,7 @@ class MessageControllerTest {
                 true
         );
 
-        MessageDto updatedMessage = new MessageDto(
+        MessageDTO updatedMessage = new MessageDTO(
                 messageId,
                 now.minusSeconds(60),
                 now,
@@ -258,7 +258,7 @@ class MessageControllerTest {
         Instant cursor = Instant.now();
         Pageable pageable = PageRequest.of(0, 50, Sort.Direction.DESC, "createdAt");
 
-        UserDto author = new UserDto(
+        UserDTO author = new UserDTO(
                 authorId,
                 "testuser",
                 "test@example.com",
@@ -267,8 +267,8 @@ class MessageControllerTest {
                 true
         );
 
-        List<MessageDto> messages = List.of(
-                new MessageDto(
+        List<MessageDTO> messages = List.of(
+                new MessageDTO(
                         UUID.randomUUID(),
                         cursor.minusSeconds(10),
                         cursor.minusSeconds(10),
@@ -277,7 +277,7 @@ class MessageControllerTest {
                         author,
                         new ArrayList<>()
                 ),
-                new MessageDto(
+                new MessageDTO(
                         UUID.randomUUID(),
                         cursor.minusSeconds(20),
                         cursor.minusSeconds(20),
@@ -288,7 +288,7 @@ class MessageControllerTest {
                 )
         );
 
-        PageResponse<MessageDto> pageResponse = new PageResponse<>(
+        PageResponse<MessageDTO> pageResponse = new PageResponse<>(
                 messages,
                 cursor.minusSeconds(30),
                 pageable.getPageSize(),

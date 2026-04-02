@@ -1,7 +1,7 @@
 package com.sprint.mission.discodeit.controller;
 
 import com.sprint.mission.discodeit.controller.api.BinaryContentApi;
-import com.sprint.mission.discodeit.dto.data.BinaryContentDto;
+import com.sprint.mission.discodeit.dto.data.BinaryContentDTO;
 import com.sprint.mission.discodeit.service.BinaryContentService;
 import com.sprint.mission.discodeit.storage.BinaryContentStorage;
 import java.util.List;
@@ -26,10 +26,10 @@ public class BinaryContentController implements BinaryContentApi {
   private final BinaryContentStorage binaryContentStorage;
 
   @GetMapping(path = "{binaryContentId}")
-  public ResponseEntity<BinaryContentDto> find(
+  public ResponseEntity<BinaryContentDTO> find(
       @PathVariable("binaryContentId") UUID binaryContentId) {
     log.info("바이너리 컨텐츠 조회 요청: id={}", binaryContentId);
-    BinaryContentDto binaryContent = binaryContentService.find(binaryContentId);
+    BinaryContentDTO binaryContent = binaryContentService.find(binaryContentId);
     log.debug("바이너리 컨텐츠 조회 응답: {}", binaryContent);
     return ResponseEntity
         .status(HttpStatus.OK)
@@ -37,10 +37,10 @@ public class BinaryContentController implements BinaryContentApi {
   }
 
   @GetMapping
-  public ResponseEntity<List<BinaryContentDto>> findAllByIdIn(
+  public ResponseEntity<List<BinaryContentDTO>> findAllByIdIn(
       @RequestParam("binaryContentIds") List<UUID> binaryContentIds) {
     log.info("바이너리 컨텐츠 목록 조회 요청: ids={}", binaryContentIds);
-    List<BinaryContentDto> binaryContents = binaryContentService.findAllByIdIn(binaryContentIds);
+    List<BinaryContentDTO> binaryContents = binaryContentService.findAllByIdIn(binaryContentIds);
     log.debug("바이너리 컨텐츠 목록 조회 응답: count={}", binaryContents.size());
     return ResponseEntity
         .status(HttpStatus.OK)
@@ -51,8 +51,8 @@ public class BinaryContentController implements BinaryContentApi {
   public ResponseEntity<?> download(
       @PathVariable("binaryContentId") UUID binaryContentId) {
     log.info("바이너리 컨텐츠 다운로드 요청: id={}", binaryContentId);
-    BinaryContentDto binaryContentDto = binaryContentService.find(binaryContentId);
-    ResponseEntity<?> response = binaryContentStorage.download(binaryContentDto);
+    BinaryContentDTO binaryContentDTO = binaryContentService.find(binaryContentId);
+    ResponseEntity<?> response = binaryContentStorage.download(binaryContentDTO);
     log.debug("바이너리 컨텐츠 다운로드 응답: contentType={}, contentLength={}", 
         response.getHeaders().getContentType(), response.getHeaders().getContentLength());
     return response;

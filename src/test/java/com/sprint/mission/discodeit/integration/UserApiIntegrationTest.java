@@ -1,7 +1,7 @@
 package com.sprint.mission.discodeit.integration;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.sprint.mission.discodeit.dto.data.UserDto;
+import com.sprint.mission.discodeit.dto.data.UserDTO;
 import com.sprint.mission.discodeit.dto.request.UserCreateRequest;
 import com.sprint.mission.discodeit.dto.request.UserStatusUpdateRequest;
 import com.sprint.mission.discodeit.dto.request.UserUpdateRequest;
@@ -155,7 +155,7 @@ class UserApiIntegrationTest {
                 Role.USER
         );
 
-        UserDto createdUser = userService.create(createRequest, Optional.empty());
+        UserDTO createdUser = userService.create(createRequest, Optional.empty());
         UUID userId = createdUser.id();
 
         UserUpdateRequest updateRequest = new UserUpdateRequest(
@@ -237,7 +237,7 @@ class UserApiIntegrationTest {
                 Role.USER
         );
 
-        UserDto createdUser = userService.create(createRequest, Optional.empty());
+        UserDTO createdUser = userService.create(createRequest, Optional.empty());
         UUID userId = createdUser.id();
 
         // When & Then
@@ -275,7 +275,7 @@ class UserApiIntegrationTest {
                 Role.USER
         );
 
-        UserDto createdUser = userService.create(createRequest, Optional.empty());
+        UserDTO createdUser = userService.create(createRequest, Optional.empty());
         UUID userId = createdUser.id();
 
         Instant newLastActiveAt = Instant.now();

@@ -53,7 +53,7 @@
                 "schema": {
                   "type": "array",
                   "items": {
-                    "$ref": "#/components/schemas/UserDto"
+                    "$ref": "#/components/schemas/UserDTO"
                   }
                 }
               }
@@ -95,7 +95,7 @@
             "content": {
               "*/*": {
                 "schema": {
-                  "$ref": "#/components/schemas/UserDto"
+                  "$ref": "#/components/schemas/UserDTO"
                 }
               }
             }
@@ -138,7 +138,7 @@
                 "schema": {
                   "type": "array",
                   "items": {
-                    "$ref": "#/components/schemas/ReadStatusDto"
+                    "$ref": "#/components/schemas/ReadStatusDTO"
                   }
                 }
               }
@@ -176,7 +176,7 @@
             "content": {
               "*/*": {
                 "schema": {
-                  "$ref": "#/components/schemas/ReadStatusDto"
+                  "$ref": "#/components/schemas/ReadStatusDTO"
                 }
               }
             }
@@ -284,7 +284,7 @@
             "content": {
               "*/*": {
                 "schema": {
-                  "$ref": "#/components/schemas/MessageDto"
+                  "$ref": "#/components/schemas/MessageDTO"
                 }
               }
             }
@@ -323,7 +323,7 @@
             "content": {
               "*/*": {
                 "schema": {
-                  "$ref": "#/components/schemas/ChannelDto"
+                  "$ref": "#/components/schemas/ChannelDTO"
                 }
               }
             }
@@ -354,7 +354,7 @@
             "content": {
               "*/*": {
                 "schema": {
-                  "$ref": "#/components/schemas/ChannelDto"
+                  "$ref": "#/components/schemas/ChannelDTO"
                 }
               }
             }
@@ -385,7 +385,7 @@
             "content": {
               "*/*": {
                 "schema": {
-                  "$ref": "#/components/schemas/UserDto"
+                  "$ref": "#/components/schemas/UserDTO"
                 }
               }
             }
@@ -496,7 +496,7 @@
             "content": {
               "*/*": {
                 "schema": {
-                  "$ref": "#/components/schemas/UserDto"
+                  "$ref": "#/components/schemas/UserDTO"
                 }
               }
             }
@@ -555,7 +555,7 @@
             "content": {
               "*/*": {
                 "schema": {
-                  "$ref": "#/components/schemas/UserStatusDto"
+                  "$ref": "#/components/schemas/UserStatusDTO"
                 }
               }
             }
@@ -606,7 +606,7 @@
             "content": {
               "*/*": {
                 "schema": {
-                  "$ref": "#/components/schemas/ReadStatusDto"
+                  "$ref": "#/components/schemas/ReadStatusDTO"
                 }
               }
             }
@@ -689,7 +689,7 @@
             "content": {
               "*/*": {
                 "schema": {
-                  "$ref": "#/components/schemas/MessageDto"
+                  "$ref": "#/components/schemas/MessageDTO"
                 }
               }
             }
@@ -780,7 +780,7 @@
             "content": {
               "*/*": {
                 "schema": {
-                  "$ref": "#/components/schemas/ChannelDto"
+                  "$ref": "#/components/schemas/ChannelDTO"
                 }
               }
             }
@@ -815,7 +815,7 @@
                 "schema": {
                   "type": "array",
                   "items": {
-                    "$ref": "#/components/schemas/ChannelDto"
+                    "$ref": "#/components/schemas/ChannelDTO"
                   }
                 }
               }
@@ -854,7 +854,7 @@
                 "schema": {
                   "type": "array",
                   "items": {
-                    "$ref": "#/components/schemas/BinaryContentDto"
+                    "$ref": "#/components/schemas/BinaryContentDTO"
                   }
                 }
               }
@@ -888,7 +888,7 @@
             "content": {
               "*/*": {
                 "schema": {
-                  "$ref": "#/components/schemas/BinaryContentDto"
+                  "$ref": "#/components/schemas/BinaryContentDTO"
                 }
               }
             }
@@ -956,7 +956,7 @@
           }
         }
       },
-      "BinaryContentDto": {
+      "BinaryContentDTO": {
         "type": "object",
         "properties": {
           "id": {
@@ -975,7 +975,7 @@
           }
         }
       },
-      "UserDto": {
+      "UserDTO": {
         "type": "object",
         "properties": {
           "id": {
@@ -989,7 +989,7 @@
             "type": "string"
           },
           "profile": {
-            "$ref": "#/components/schemas/BinaryContentDto"
+            "$ref": "#/components/schemas/BinaryContentDTO"
           },
           "online": {
             "type": "boolean"
@@ -1014,7 +1014,7 @@
           }
         }
       },
-      "ReadStatusDto": {
+      "ReadStatusDTO": {
         "type": "object",
         "properties": {
           "id": {
@@ -1052,7 +1052,7 @@
           }
         }
       },
-      "MessageDto": {
+      "MessageDTO": {
         "type": "object",
         "properties": {
           "id": {
@@ -1075,12 +1075,12 @@
             "format": "uuid"
           },
           "author": {
-            "$ref": "#/components/schemas/UserDto"
+            "$ref": "#/components/schemas/UserDTO"
           },
           "attachments": {
             "type": "array",
             "items": {
-              "$ref": "#/components/schemas/BinaryContentDto"
+              "$ref": "#/components/schemas/BinaryContentDTO"
             }
           }
         }
@@ -1097,7 +1097,7 @@
           }
         }
       },
-      "ChannelDto": {
+      "ChannelDTO": {
         "type": "object",
         "properties": {
           "id": {
@@ -1120,7 +1120,7 @@
           "participants": {
             "type": "array",
             "items": {
-              "$ref": "#/components/schemas/UserDto"
+              "$ref": "#/components/schemas/UserDTO"
             }
           },
           "lastMessageAt": {
@@ -1179,7 +1179,7 @@
           }
         }
       },
-      "UserStatusDto": {
+      "UserStatusDTO": {
         "type": "object",
         "properties": {
           "id": {

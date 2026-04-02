@@ -1,6 +1,6 @@
 package com.sprint.mission.discodeit.service.basic;
 
-import com.sprint.mission.discodeit.dto.data.UserDto;
+import com.sprint.mission.discodeit.dto.data.UserDTO;
 import com.sprint.mission.discodeit.dto.request.UserRoleUpdateRequest;
 import com.sprint.mission.discodeit.entity.User;
 import com.sprint.mission.discodeit.mapper.UserMapper;
@@ -26,7 +26,7 @@ public class BasicAuthService implements AuthService {
 
     @Override
     @Transactional(readOnly = true)
-    public UserDto getCurrentUserInfo(UserDetails userDetails) {
+    public UserDTO getCurrentUserInfo(UserDetails userDetails) {
         if (userDetails == null) {
             return null;
         }
@@ -35,13 +35,13 @@ public class BasicAuthService implements AuthService {
         User user = userRepository.findByUsername(username)
                 .orElseThrow(() -> new IllegalArgumentException("사용자를 찾을 수 없습니다."));
 
-        UserDto userDto = userMapper.toDto(user);
-        return userDto;
+        UserDTO userDTO = userMapper.toDTO(user);
+        return userDTO;
     }
 
     @Override
     @Transactional
-    public UserDto updateRole(UserRoleUpdateRequest userRoleUpdateRequest) {
+    public UserDTO updateRole(UserRoleUpdateRequest userRoleUpdateRequest) {
         User user = userRepository.findById(userRoleUpdateRequest.userId())
                 .orElseThrow(()-> new IllegalArgumentException("사용자를 찾을 수 없습니다."));
 
@@ -49,8 +49,8 @@ public class BasicAuthService implements AuthService {
         User updatedUser = userRepository.save(user);
         invalidateUserSessions(updatedUser.getUsername());
 
-        UserDto userDto = userMapper.toDto(updatedUser);
-        return userDto;
+        UserDTO userDTO = userMapper.toDTO(updatedUser);
+        return userDTO;
     }
 
     private void invalidateUserSessions(String username) {

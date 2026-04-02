@@ -4,12 +4,12 @@ import com.sprint.mission.discodeit.entity.Role;
 
 import java.util.UUID;
 
-public record UserDto(
+public record UserDTO(
     UUID id,
     String username,
     String email,
     Role role,
-    BinaryContentDto profile,
+    BinaryContentDTO profile,
     Boolean online
 ) {
 

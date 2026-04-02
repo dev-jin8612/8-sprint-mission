@@ -3,9 +3,11 @@ package com.sprint.mission.discodeit.dto.data;
 import java.time.Instant;
 import java.util.UUID;
 
-public record UserStatusDto(
+public record ReadStatusDTO(
     UUID id,
     UUID userId,
-    Instant lastActiveAt) {
+    UUID channelId,
+    Instant lastReadAt
+) {
 
 }

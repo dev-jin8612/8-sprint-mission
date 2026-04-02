@@ -14,8 +14,8 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.sprint.mission.discodeit.dto.data.ChannelDto;
-import com.sprint.mission.discodeit.dto.data.UserDto;
+import com.sprint.mission.discodeit.dto.data.ChannelDTO;
+import com.sprint.mission.discodeit.dto.data.UserDTO;
 import com.sprint.mission.discodeit.dto.request.PrivateChannelCreateRequest;
 import com.sprint.mission.discodeit.dto.request.PublicChannelCreateRequest;
 import com.sprint.mission.discodeit.dto.request.PublicChannelUpdateRequest;
@@ -59,7 +59,7 @@ class ChannelControllerTest {
     );
 
     UUID channelId = UUID.randomUUID();
-    ChannelDto createdChannel = new ChannelDto(
+    ChannelDTO createdChannel = new ChannelDTO(
             channelId,
             ChannelType.PUBLIC,
             "test-channel",
@@ -110,15 +110,15 @@ class ChannelControllerTest {
     PrivateChannelCreateRequest createRequest = new PrivateChannelCreateRequest(participantIds);
 
     UUID channelId = UUID.randomUUID();
-    List<UserDto> participants = new ArrayList<>();
+    List<UserDTO> participants = new ArrayList<>();
     for (UUID userId : participantIds) {
-      participants.add(new UserDto(userId,
+      participants.add(new UserDTO(userId,
               "user-" + userId.toString().substring(0, 5),
               "user" + userId.toString().substring(0, 5) + "@example.com",
               Role.USER, null, true));
     }
 
-    ChannelDto createdChannel = new ChannelDto(
+    ChannelDTO createdChannel = new ChannelDTO(
             channelId,
             ChannelType.PRIVATE,
             null,
@@ -153,7 +153,7 @@ class ChannelControllerTest {
             "업데이트된 채널 설명입니다."
     );
 
-    ChannelDto updatedChannel = new ChannelDto(
+    ChannelDTO updatedChannel = new ChannelDTO(
             channelId,
             ChannelType.PUBLIC,
             "updated-channel",
@@ -260,8 +260,8 @@ class ChannelControllerTest {
     UUID channelId1 = UUID.randomUUID();
     UUID channelId2 = UUID.randomUUID();
 
-    List<ChannelDto> channels = List.of(
-            new ChannelDto(
+    List<ChannelDTO> channels = List.of(
+            new ChannelDTO(
                     channelId1,
                     ChannelType.PUBLIC,
                     "public-channel",
@@ -269,12 +269,12 @@ class ChannelControllerTest {
                     new ArrayList<>(),
                     Instant.now()
             ),
-            new ChannelDto(
+            new ChannelDTO(
                     channelId2,
                     ChannelType.PRIVATE,
                     null,
                     null,
-                    List.of(new UserDto(userId, "user1", "user1@example.com", Role.USER, null, true)),
+                    List.of(new UserDTO(userId, "user1", "user1@example.com", Role.USER, null, true)),
                     Instant.now().minusSeconds(3600)
             )
     );
