@@ -1,7 +1,7 @@
 package com.sprint.mission.discodeit.controller;
 
 import com.sprint.mission.discodeit.controller.api.AuthApi;
-import com.sprint.mission.discodeit.dto.data.UserDTO;
+import com.sprint.mission.discodeit.dto.data.UserDto;
 import com.sprint.mission.discodeit.dto.request.UserRoleUpdateRequest;
 import com.sprint.mission.discodeit.service.AuthService;
 import lombok.RequiredArgsConstructor;
@@ -27,7 +27,7 @@ public class AuthController implements AuthApi {
     }
 
     @GetMapping("/me")
-    public ResponseEntity<UserDTO> getCurrentUser(@AuthenticationPrincipal UserDetails userDetails) {
+    public ResponseEntity<UserDto> getCurrentUser(@AuthenticationPrincipal UserDetails userDetails) {
         if (userDetails == null) {
             log.info("비 인증 사용자");
             return ResponseEntity
@@ -35,24 +35,24 @@ public class AuthController implements AuthApi {
                     .body(null);
         }
 
-        UserDTO userDTO = authService.getCurrentUserInfo(userDetails);
+        UserDto userDto = authService.getCurrentUserInfo(userDetails);
 
-        if(userDTO ==null){
+        if(userDto ==null){
             log.info("비 인증 사용자");
             return ResponseEntity
                     .status(HttpStatus.UNAUTHORIZED)
                     .body(null);
         }
 
-        log.info("[AuthController] 현재 사용자 정보 조회 완료: "+userDTO);
-        return ResponseEntity.ok(userDTO);
+        log.info("[AuthController] 현재 사용자 정보 조회 완료: "+userDto);
+        return ResponseEntity.ok(userDto);
     }
 
     @PutMapping("/role")
-    public ResponseEntity<UserDTO> updateRole(
+    public ResponseEntity<UserDto> updateRole(
             @RequestBody UserRoleUpdateRequest userRoleUpdateRequest
     ) {
-        UserDTO userDTO = authService.updateRole(userRoleUpdateRequest);
-        return ResponseEntity.ok(userDTO);
+        UserDto userDto = authService.updateRole(userRoleUpdateRequest);
+        return ResponseEntity.ok(userDto);
     }
 }

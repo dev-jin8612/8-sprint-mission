@@ -1,6 +1,6 @@
 package com.sprint.mission.discodeit.storage.s3;
 
-import com.sprint.mission.discodeit.dto.data.BinaryContentDTO;
+import com.sprint.mission.discodeit.dto.data.BinaryContentDto;
 import com.sprint.mission.discodeit.storage.BinaryContentStorage;
 import java.io.ByteArrayInputStream;
 import java.io.InputStream;
@@ -103,7 +103,7 @@ public class S3BinaryContentStorage implements BinaryContentStorage {
   }
 
   @Override
-  public ResponseEntity<Void> download(BinaryContentDTO metaData) {
+  public ResponseEntity<Void> download(BinaryContentDto metaData) {
     try {
       String key = metaData.id().toString();
       String presignedUrl = generatePresignedUrl(key, metaData.contentType());

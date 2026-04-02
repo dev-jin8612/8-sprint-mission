@@ -1,6 +1,6 @@
 package com.sprint.mission.discodeit.service.basic;
 
-import com.sprint.mission.discodeit.dto.data.ChannelDTO;
+import com.sprint.mission.discodeit.dto.data.ChannelDto;
 import com.sprint.mission.discodeit.dto.request.PrivateChannelCreateRequest;
 import com.sprint.mission.discodeit.dto.request.PublicChannelCreateRequest;
 import com.sprint.mission.discodeit.dto.request.PublicChannelUpdateRequest;
@@ -36,7 +36,7 @@ public class BasicChannelService implements ChannelService {
 
   @Transactional
   @Override
-  public ChannelDTO create(PublicChannelCreateRequest request) {
+  public ChannelDto create(PublicChannelCreateRequest request) {
     log.debug("채널 생성 시작: {}", request);
     String name = request.name();
     String description = request.description();
@@ -44,12 +44,12 @@ public class BasicChannelService implements ChannelService {
 
     channelRepository.save(channel);
     log.info("채널 생성 완료: id={}, name={}", channel.getId(), channel.getName());
-    return channelMapper.toDTO(channel);
+    return channelMapper.toDto(channel);
   }
 
   @Transactional
   @Override
-  public ChannelDTO create(PrivateChannelCreateRequest request) {
+  public ChannelDto create(PrivateChannelCreateRequest request) {
     log.debug("채널 생성 시작: {}", request);
     Channel channel = new Channel(ChannelType.PRIVATE, null, null);
     channelRepository.save(channel);
@@ -60,20 +60,20 @@ public class BasicChannelService implements ChannelService {
     readStatusRepository.saveAll(readStatuses);
 
     log.info("채널 생성 완료: id={}, name={}", channel.getId(), channel.getName());
-    return channelMapper.toDTO(channel);
+    return channelMapper.toDto(channel);
   }
 
   @Transactional(readOnly = true)
   @Override
-  public ChannelDTO find(UUID channelId) {
+  public ChannelDto find(UUID channelId) {
     return channelRepository.findById(channelId)
-        .map(channelMapper::toDTO)
+        .map(channelMapper::toDto)
         .orElseThrow(() -> ChannelNotFoundException.withId(channelId));
   }
 
   @Transactional(readOnly = true)
   @Override
-  public List<ChannelDTO> findAllByUserId(UUID userId) {
+  public List<ChannelDto> findAllByUserId(UUID userId) {
     List<UUID> mySubscribedChannelIds = readStatusRepository.findAllByUserId(userId).stream()
         .map(ReadStatus::getChannel)
         .map(Channel::getId)
@@ -81,13 +81,13 @@ public class BasicChannelService implements ChannelService {
 
     return channelRepository.findAllByTypeOrIdIn(ChannelType.PUBLIC, mySubscribedChannelIds)
         .stream()
-        .map(channelMapper::toDTO)
+        .map(channelMapper::toDto)
         .toList();
   }
 
   @Transactional
   @Override
-  public ChannelDTO update(UUID channelId, PublicChannelUpdateRequest request) {
+  public ChannelDto update(UUID channelId, PublicChannelUpdateRequest request) {
     log.debug("채널 수정 시작: id={}, request={}", channelId, request);
     String newName = request.newName();
     String newDescription = request.newDescription();
@@ -98,7 +98,7 @@ public class BasicChannelService implements ChannelService {
     }
     channel.update(newName, newDescription);
     log.info("채널 수정 완료: id={}, name={}", channelId, channel.getName());
-    return channelMapper.toDTO(channel);
+    return channelMapper.toDto(channel);
   }
 
   @Transactional

@@ -1,8 +1,8 @@
 package com.sprint.mission.discodeit.integration;
 
-import com.sprint.mission.discodeit.dto.data.BinaryContentDTO;
-import com.sprint.mission.discodeit.dto.data.MessageDTO;
-import com.sprint.mission.discodeit.dto.data.UserDTO;
+import com.sprint.mission.discodeit.dto.data.BinaryContentDto;
+import com.sprint.mission.discodeit.dto.data.MessageDto;
+import com.sprint.mission.discodeit.dto.data.UserDto;
 import com.sprint.mission.discodeit.dto.request.BinaryContentCreateRequest;
 import com.sprint.mission.discodeit.dto.request.MessageCreateRequest;
 import com.sprint.mission.discodeit.dto.request.PublicChannelCreateRequest;
@@ -64,7 +64,7 @@ class BinaryContentApiIntegrationTest {
                 "Password1!",
                 Role.USER
         );
-        UserDTO user = userService.create(userRequest, Optional.empty());
+        UserDto user = userService.create(userRequest, Optional.empty());
 
         // 채널 생성
         PublicChannelCreateRequest channelRequest = new PublicChannelCreateRequest(
@@ -87,7 +87,7 @@ class BinaryContentApiIntegrationTest {
                 fileContent
         );
 
-        MessageDTO message = messageService.create(messageRequest, List.of(attachmentRequest));
+        MessageDto message = messageService.create(messageRequest, List.of(attachmentRequest));
         UUID binaryContentId = message.attachments().get(0).id();
 
         // When & Then
@@ -123,7 +123,7 @@ class BinaryContentApiIntegrationTest {
                 "Password1!",
                 Role.USER
         );
-        UserDTO user = userService.create(userRequest, Optional.empty());
+        UserDto user = userService.create(userRequest, Optional.empty());
 
         PublicChannelCreateRequest channelRequest = new PublicChannelCreateRequest(
                 "테스트 채널2",
@@ -152,13 +152,13 @@ class BinaryContentApiIntegrationTest {
         );
 
         // 첨부파일 두 개를 가진 메시지 생성
-        MessageDTO message = messageService.create(
+        MessageDto message = messageService.create(
                 messageRequest,
                 List.of(attachmentRequest1, attachmentRequest2)
         );
 
         List<UUID> binaryContentIds = message.attachments().stream()
-                .map(BinaryContentDTO::id)
+                .map(BinaryContentDto::id)
                 .toList();
 
         // When & Then
@@ -182,7 +182,7 @@ class BinaryContentApiIntegrationTest {
                 fileContent.getBytes()
         );
 
-        BinaryContentDTO binaryContent = binaryContentService.create(createRequest);
+        BinaryContentDto binaryContent = binaryContentService.create(createRequest);
         UUID binaryContentId = binaryContent.id();
 
         // When & Then

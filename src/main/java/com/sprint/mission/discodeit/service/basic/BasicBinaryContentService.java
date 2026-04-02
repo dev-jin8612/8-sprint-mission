@@ -1,6 +1,6 @@
 package com.sprint.mission.discodeit.service.basic;
 
-import com.sprint.mission.discodeit.dto.data.BinaryContentDTO;
+import com.sprint.mission.discodeit.dto.data.BinaryContentDto;
 import com.sprint.mission.discodeit.dto.request.BinaryContentCreateRequest;
 import com.sprint.mission.discodeit.entity.BinaryContent;
 import com.sprint.mission.discodeit.exception.binarycontent.BinaryContentNotFoundException;
@@ -26,7 +26,7 @@ public class BasicBinaryContentService implements BinaryContentService {
 
   @Transactional
   @Override
-  public BinaryContentDTO create(BinaryContentCreateRequest request) {
+  public BinaryContentDto create(BinaryContentCreateRequest request) {
     log.debug("바이너리 컨텐츠 생성 시작: fileName={}, size={}, contentType={}", 
         request.fileName(), request.bytes().length, request.contentType());
 
@@ -43,14 +43,14 @@ public class BasicBinaryContentService implements BinaryContentService {
 
     log.info("바이너리 컨텐츠 생성 완료: id={}, fileName={}, size={}", 
         binaryContent.getId(), fileName, bytes.length);
-    return binaryContentMapper.toDTO(binaryContent);
+    return binaryContentMapper.toDto(binaryContent);
   }
 
   @Override
-  public BinaryContentDTO find(UUID binaryContentId) {
+  public BinaryContentDto find(UUID binaryContentId) {
     log.debug("바이너리 컨텐츠 조회 시작: id={}", binaryContentId);
-    BinaryContentDTO dto = binaryContentRepository.findById(binaryContentId)
-        .map(binaryContentMapper::toDTO)
+    BinaryContentDto dto = binaryContentRepository.findById(binaryContentId)
+        .map(binaryContentMapper::toDto)
         .orElseThrow(() -> BinaryContentNotFoundException.withId(binaryContentId));
     log.info("바이너리 컨텐츠 조회 완료: id={}, fileName={}", 
         dto.id(), dto.fileName());
@@ -58,10 +58,10 @@ public class BasicBinaryContentService implements BinaryContentService {
   }
 
   @Override
-  public List<BinaryContentDTO> findAllByIdIn(List<UUID> binaryContentIds) {
+  public List<BinaryContentDto> findAllByIdIn(List<UUID> binaryContentIds) {
     log.debug("바이너리 컨텐츠 목록 조회 시작: ids={}", binaryContentIds);
-    List<BinaryContentDTO> dtos = binaryContentRepository.findAllById(binaryContentIds).stream()
-        .map(binaryContentMapper::toDTO)
+    List<BinaryContentDto> dtos = binaryContentRepository.findAllById(binaryContentIds).stream()
+        .map(binaryContentMapper::toDto)
         .toList();
     log.info("바이너리 컨텐츠 목록 조회 완료: 조회된 항목 수={}", dtos.size());
     return dtos;

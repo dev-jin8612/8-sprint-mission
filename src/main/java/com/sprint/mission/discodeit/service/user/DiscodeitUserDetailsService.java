@@ -1,6 +1,6 @@
 package com.sprint.mission.discodeit.service.user;
 
-import com.sprint.mission.discodeit.dto.data.UserDTO;
+import com.sprint.mission.discodeit.dto.data.UserDto;
 import com.sprint.mission.discodeit.mapper.UserMapper;
 import com.sprint.mission.discodeit.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
@@ -21,8 +21,8 @@ public class DiscodeitUserDetailsService implements UserDetailsService {
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
         return userRepository.findByUsername(username)
                 .map(user -> {
-                    UserDTO userDTO = userMapper.toDTO(user);
-                    return new DiscodeitUserDetails(userDTO, user.getPassword());
+                    UserDto userDto = userMapper.toDto(user);
+                    return new DiscodeitUserDetails(userDto, user.getPassword());
                 })
                 .orElseThrow(() -> new UsernameNotFoundException("사용자를 찾을 수 없습니다."));
     }

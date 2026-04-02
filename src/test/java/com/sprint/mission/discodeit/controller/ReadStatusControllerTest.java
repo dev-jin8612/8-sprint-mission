@@ -12,7 +12,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.sprint.mission.discodeit.dto.data.ReadStatusDTO;
+import com.sprint.mission.discodeit.dto.data.ReadStatusDto;
 import com.sprint.mission.discodeit.dto.request.ReadStatusCreateRequest;
 import com.sprint.mission.discodeit.dto.request.ReadStatusUpdateRequest;
 import com.sprint.mission.discodeit.exception.readstatus.ReadStatusNotFoundException;
@@ -57,7 +57,7 @@ class ReadStatusControllerTest {
     );
 
     UUID readStatusId = UUID.randomUUID();
-    ReadStatusDTO createdReadStatus = new ReadStatusDTO(
+    ReadStatusDto createdReadStatus = new ReadStatusDto(
             readStatusId,
             userId,
             channelId,
@@ -110,7 +110,7 @@ class ReadStatusControllerTest {
 
     ReadStatusUpdateRequest updateRequest = new ReadStatusUpdateRequest(newLastReadAt);
 
-    ReadStatusDTO updatedReadStatus = new ReadStatusDTO(
+    ReadStatusDto updatedReadStatus = new ReadStatusDto(
             readStatusId,
             userId,
             channelId,
@@ -163,9 +163,9 @@ class ReadStatusControllerTest {
     UUID channelId2 = UUID.randomUUID();
     Instant now = Instant.now();
 
-    List<ReadStatusDTO> readStatuses = List.of(
-            new ReadStatusDTO(UUID.randomUUID(), userId, channelId1, now.minusSeconds(60)),
-            new ReadStatusDTO(UUID.randomUUID(), userId, channelId2, now)
+    List<ReadStatusDto> readStatuses = List.of(
+            new ReadStatusDto(UUID.randomUUID(), userId, channelId1, now.minusSeconds(60)),
+            new ReadStatusDto(UUID.randomUUID(), userId, channelId2, now)
     );
 
     given(readStatusService.findAllByUserId(userId)).willReturn(readStatuses);

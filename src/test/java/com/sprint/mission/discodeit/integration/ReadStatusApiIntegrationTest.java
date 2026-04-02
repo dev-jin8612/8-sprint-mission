@@ -11,9 +11,9 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.sprint.mission.discodeit.dto.data.ChannelDTO;
-import com.sprint.mission.discodeit.dto.data.ReadStatusDTO;
-import com.sprint.mission.discodeit.dto.data.UserDTO;
+import com.sprint.mission.discodeit.dto.data.ChannelDto;
+import com.sprint.mission.discodeit.dto.data.ReadStatusDto;
+import com.sprint.mission.discodeit.dto.data.UserDto;
 import com.sprint.mission.discodeit.dto.request.PublicChannelCreateRequest;
 import com.sprint.mission.discodeit.dto.request.ReadStatusCreateRequest;
 import com.sprint.mission.discodeit.dto.request.ReadStatusUpdateRequest;
@@ -69,14 +69,14 @@ class ReadStatusApiIntegrationTest {
         "Password1!",
             Role.USER
     );
-    UserDTO user = userService.create(userRequest, Optional.empty());
+    UserDto user = userService.create(userRequest, Optional.empty());
 
     // 공개 채널 생성
     PublicChannelCreateRequest channelRequest = new PublicChannelCreateRequest(
         "읽음 상태 테스트 채널",
         "읽음 상태 테스트 채널 설명입니다."
     );
-    ChannelDTO channel = channelService.create(channelRequest);
+    ChannelDto channel = channelService.create(channelRequest);
 
     // 읽음 상태 생성 요청
     Instant lastReadAt = Instant.now();
@@ -111,14 +111,14 @@ class ReadStatusApiIntegrationTest {
         "Password1!",
             Role.USER
     );
-    UserDTO user = userService.create(userRequest, Optional.empty());
+    UserDto user = userService.create(userRequest, Optional.empty());
 
     // 공개 채널 생성
     PublicChannelCreateRequest channelRequest = new PublicChannelCreateRequest(
         "중복 테스트 채널",
         "중복 테스트 채널 설명입니다."
     );
-    ChannelDTO channel = channelService.create(channelRequest);
+    ChannelDto channel = channelService.create(channelRequest);
 
     // 첫 번째 읽음 상태 생성 요청 (성공)
     Instant lastReadAt = Instant.now();
@@ -162,14 +162,14 @@ class ReadStatusApiIntegrationTest {
         "Password1!",
             Role.USER
     );
-    UserDTO user = userService.create(userRequest, Optional.empty());
+    UserDto user = userService.create(userRequest, Optional.empty());
 
     // 공개 채널 생성
     PublicChannelCreateRequest channelRequest = new PublicChannelCreateRequest(
         "업데이트 테스트 채널",
         "업데이트 테스트 채널 설명입니다."
     );
-    ChannelDTO channel = channelService.create(channelRequest);
+    ChannelDto channel = channelService.create(channelRequest);
 
     // 읽음 상태 생성
     Instant initialLastReadAt = Instant.now().minusSeconds(3600); // 1시간 전
@@ -179,7 +179,7 @@ class ReadStatusApiIntegrationTest {
         initialLastReadAt
     );
 
-    ReadStatusDTO createdReadStatus = readStatusService.create(createRequest);
+    ReadStatusDto createdReadStatus = readStatusService.create(createRequest);
     UUID readStatusId = createdReadStatus.id();
 
     // 읽음 상태 업데이트 요청
@@ -233,7 +233,7 @@ class ReadStatusApiIntegrationTest {
         "Password1!",
             Role.USER
     );
-    UserDTO user = userService.create(userRequest, Optional.empty());
+    UserDto user = userService.create(userRequest, Optional.empty());
 
     // 여러 채널 생성
     PublicChannelCreateRequest channelRequest1 = new PublicChannelCreateRequest(
@@ -246,8 +246,8 @@ class ReadStatusApiIntegrationTest {
         "목록 테스트 채널 설명입니다."
     );
 
-    ChannelDTO channel1 = channelService.create(channelRequest1);
-    ChannelDTO channel2 = channelService.create(channelRequest2);
+    ChannelDto channel1 = channelService.create(channelRequest1);
+    ChannelDto channel2 = channelService.create(channelRequest2);
 
     // 각 채널에 대한 읽음 상태 생성
     ReadStatusCreateRequest createRequest1 = new ReadStatusCreateRequest(

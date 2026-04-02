@@ -1,8 +1,8 @@
 package com.sprint.mission.discodeit.controller;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.sprint.mission.discodeit.dto.data.BinaryContentDTO;
-import com.sprint.mission.discodeit.dto.data.UserDTO;
+import com.sprint.mission.discodeit.dto.data.BinaryContentDto;
+import com.sprint.mission.discodeit.dto.data.UserDto;
 import com.sprint.mission.discodeit.dto.request.UserCreateRequest;
 import com.sprint.mission.discodeit.entity.Role;
 import com.sprint.mission.discodeit.service.user.UserService;
@@ -67,19 +67,19 @@ class UserControllerTest {
         );
 
         UUID userId = UUID.randomUUID();
-        BinaryContentDTO profileDTO = new BinaryContentDTO(
+        BinaryContentDto profileDto = new BinaryContentDto(
                 UUID.randomUUID(),
                 "profile.jpg",
                 12L,
                 MediaType.IMAGE_JPEG_VALUE
         );
 
-        UserDTO createdUser = new UserDTO(
+        UserDto createdUser = new UserDto(
                 userId,
                 "testuser",
                 "test@example.com",
                 Role.USER,
-                profileDTO,
+                profileDto,
                 false
         );
 
@@ -135,7 +135,7 @@ class UserControllerTest {
         UUID userId1 = UUID.randomUUID();
         UUID userId2 = UUID.randomUUID();
 
-        UserDTO user1 = new UserDTO(
+        UserDto user1 = new UserDto(
                 userId1,
                 "user1",
                 "user1@example.com",
@@ -144,7 +144,7 @@ class UserControllerTest {
                 true
         );
 
-        UserDTO user2 = new UserDTO(
+        UserDto user2 = new UserDto(
                 userId2,
                 "user2",
                 "user2@example.com",
@@ -153,7 +153,7 @@ class UserControllerTest {
                 false
         );
 
-        List<UserDTO> users = List.of(user1, user2);
+        List<UserDto> users = List.of(user1, user2);
 
         given(userService.findAll()).willReturn(users);
 

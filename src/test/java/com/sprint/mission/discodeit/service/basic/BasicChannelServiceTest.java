@@ -1,6 +1,6 @@
 package com.sprint.mission.discodeit.service.basic;
 
-import com.sprint.mission.discodeit.dto.data.ChannelDTO;
+import com.sprint.mission.discodeit.dto.data.ChannelDto;
 import com.sprint.mission.discodeit.dto.request.PrivateChannelCreateRequest;
 import com.sprint.mission.discodeit.dto.request.PublicChannelCreateRequest;
 import com.sprint.mission.discodeit.dto.request.PublicChannelUpdateRequest;
@@ -58,7 +58,7 @@ class BasicChannelServiceTest {
     private String channelName;
     private String channelDescription;
     private Channel channel;
-    private ChannelDTO channelDTO;
+    private ChannelDto channelDto;
     private User user;
 
     @BeforeEach
@@ -70,7 +70,7 @@ class BasicChannelServiceTest {
 
         channel = new Channel(ChannelType.PUBLIC, channelName, channelDescription);
         ReflectionTestUtils.setField(channel, "id", channelId);
-        channelDTO = new ChannelDTO(channelId, ChannelType.PUBLIC, channelName, channelDescription,
+        channelDto = new ChannelDto(channelId, ChannelType.PUBLIC, channelName, channelDescription,
                 List.of(), Instant.now());
         user = new User("testUser", "test@example.com", "password", Role.USER, null);
     }
@@ -81,13 +81,13 @@ class BasicChannelServiceTest {
         // given
         PublicChannelCreateRequest request = new PublicChannelCreateRequest(channelName,
                 channelDescription);
-        given(channelMapper.toDTO(any(Channel.class))).willReturn(channelDTO);
+        given(channelMapper.toDto(any(Channel.class))).willReturn(channelDto);
 
         // when
-        ChannelDTO result = channelService.create(request);
+        ChannelDto result = channelService.create(request);
 
         // then
-        assertThat(result).isEqualTo(channelDTO);
+        assertThat(result).isEqualTo(channelDto);
         verify(channelRepository).save(any(Channel.class));
     }
 
@@ -98,13 +98,13 @@ class BasicChannelServiceTest {
         List<UUID> participantIds = List.of(userId);
         PrivateChannelCreateRequest request = new PrivateChannelCreateRequest(participantIds);
         given(userRepository.findAllById(eq(participantIds))).willReturn(List.of(user));
-        given(channelMapper.toDTO(any(Channel.class))).willReturn(channelDTO);
+        given(channelMapper.toDto(any(Channel.class))).willReturn(channelDto);
 
         // when
-        ChannelDTO result = channelService.create(request);
+        ChannelDto result = channelService.create(request);
 
         // then
-        assertThat(result).isEqualTo(channelDTO);
+        assertThat(result).isEqualTo(channelDto);
         verify(channelRepository).save(any(Channel.class));
         verify(readStatusRepository).<ReadStatus>saveAll(anyList());
     }
@@ -114,13 +114,13 @@ class BasicChannelServiceTest {
     void findChannel_Success() {
         // given
         given(channelRepository.findById(eq(channelId))).willReturn(Optional.of(channel));
-        given(channelMapper.toDTO(any(Channel.class))).willReturn(channelDTO);
+        given(channelMapper.toDto(any(Channel.class))).willReturn(channelDto);
 
         // when
-        ChannelDTO result = channelService.find(channelId);
+        ChannelDto result = channelService.find(channelId);
 
         // then
-        assertThat(result).isEqualTo(channelDTO);
+        assertThat(result).isEqualTo(channelDto);
     }
 
     @Test
@@ -142,13 +142,13 @@ class BasicChannelServiceTest {
         given(readStatusRepository.findAllByUserId(eq(userId))).willReturn(readStatuses);
         given(channelRepository.findAllByTypeOrIdIn(eq(ChannelType.PUBLIC), eq(List.of(channel.getId()))))
                 .willReturn(List.of(channel));
-        given(channelMapper.toDTO(any(Channel.class))).willReturn(channelDTO);
+        given(channelMapper.toDto(any(Channel.class))).willReturn(channelDto);
 
         // when
-        List<ChannelDTO> result = channelService.findAllByUserId(userId);
+        List<ChannelDto> result = channelService.findAllByUserId(userId);
 
         // then
-        assertThat(result).containsExactly(channelDTO);
+        assertThat(result).containsExactly(channelDto);
     }
 
     @Test
@@ -160,13 +160,13 @@ class BasicChannelServiceTest {
         PublicChannelUpdateRequest request = new PublicChannelUpdateRequest(newName, newDescription);
 
         given(channelRepository.findById(eq(channelId))).willReturn(Optional.of(channel));
-        given(channelMapper.toDTO(any(Channel.class))).willReturn(channelDTO);
+        given(channelMapper.toDto(any(Channel.class))).willReturn(channelDto);
 
         // when
-        ChannelDTO result = channelService.update(channelId, request);
+        ChannelDto result = channelService.update(channelId, request);
 
         // then
-        assertThat(result).isEqualTo(channelDTO);
+        assertThat(result).isEqualTo(channelDto);
     }
 
     @Test

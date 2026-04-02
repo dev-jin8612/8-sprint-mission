@@ -1,8 +1,8 @@
 package com.sprint.mission.discodeit.service.basic;
 
-import com.sprint.mission.discodeit.dto.data.BinaryContentDTO;
-import com.sprint.mission.discodeit.dto.data.MessageDTO;
-import com.sprint.mission.discodeit.dto.data.UserDTO;
+import com.sprint.mission.discodeit.dto.data.BinaryContentDto;
+import com.sprint.mission.discodeit.dto.data.MessageDto;
+import com.sprint.mission.discodeit.dto.data.UserDto;
 import com.sprint.mission.discodeit.dto.request.BinaryContentCreateRequest;
 import com.sprint.mission.discodeit.dto.request.MessageCreateRequest;
 import com.sprint.mission.discodeit.dto.request.MessageUpdateRequest;
@@ -74,11 +74,11 @@ class BasicMessageServiceTest {
     private UUID authorId;
     private String content;
     private Message message;
-    private MessageDTO messageDTO;
+    private MessageDto messageDto;
     private Channel channel;
     private User author;
     private BinaryContent attachment;
-    private BinaryContentDTO attachmentDTO;
+    private BinaryContentDto attachmentDto;
 
     @BeforeEach
     void setUp() {
@@ -95,19 +95,19 @@ class BasicMessageServiceTest {
 
         attachment = new BinaryContent("test.txt", 100L, "text/plain");
         ReflectionTestUtils.setField(attachment, "id", UUID.randomUUID());
-        attachmentDTO = new BinaryContentDTO(attachment.getId(), "test.txt", 100L, "text/plain");
+        attachmentDto = new BinaryContentDto(attachment.getId(), "test.txt", 100L, "text/plain");
 
         message = new Message(content, channel, author, List.of(attachment));
         ReflectionTestUtils.setField(message, "id", messageId);
 
-        messageDTO = new MessageDTO(
+        messageDto = new MessageDto(
                 messageId,
                 Instant.now(),
                 Instant.now(),
                 content,
                 channelId,
-                new UserDTO(authorId, "testUser", "test@example.com", Role.USER, null, true),
-                List.of(attachmentDTO)
+                new UserDto(authorId, "testUser", "test@example.com", Role.USER, null, true),
+                List.of(attachmentDto)
         );
     }
 
@@ -127,13 +127,13 @@ class BasicMessageServiceTest {
             return attachment;
         });
         given(messageRepository.save(any(Message.class))).willReturn(message);
-        given(messageMapper.toDTO(any(Message.class))).willReturn(messageDTO);
+        given(messageMapper.toDto(any(Message.class))).willReturn(messageDto);
 
         // when
-        MessageDTO result = messageService.create(request, attachmentRequests);
+        MessageDto result = messageService.create(request, attachmentRequests);
 
         // then
-        assertThat(result).isEqualTo(messageDTO);
+        assertThat(result).isEqualTo(messageDto);
         verify(messageRepository).save(any(Message.class));
         verify(binaryContentStorage).put(eq(attachment.getId()), any(byte[].class));
     }
@@ -168,13 +168,13 @@ class BasicMessageServiceTest {
     void findMessage_Success() {
         // given
         given(messageRepository.findById(eq(messageId))).willReturn(Optional.of(message));
-        given(messageMapper.toDTO(eq(message))).willReturn(messageDTO);
+        given(messageMapper.toDto(eq(message))).willReturn(messageDto);
 
         // when
-        MessageDTO result = messageService.find(messageId);
+        MessageDto result = messageService.find(messageId);
 
         // then
-        assertThat(result).isEqualTo(messageDTO);
+        assertThat(result).isEqualTo(messageDto);
     }
 
     @Test
@@ -214,34 +214,34 @@ class BasicMessageServiceTest {
         ReflectionTestUtils.setField(message2, "createdAt", message2CreatedAt);
         ReflectionTestUtils.setField(message3, "createdAt", message3CreatedAt);
 
-        MessageDTO messageDTO1 = new MessageDTO(
+        MessageDto messageDto1 = new MessageDto(
                 message1.getId(),
                 message1CreatedAt,
                 message1CreatedAt,
                 content + "1",
                 channelId,
-                new UserDTO(authorId, "testUser", "test@example.com", Role.USER, null, true),
-                List.of(attachmentDTO)
+                new UserDto(authorId, "testUser", "test@example.com", Role.USER, null, true),
+                List.of(attachmentDto)
         );
 
-        MessageDTO messageDTO2 = new MessageDTO(
+        MessageDto messageDto2 = new MessageDto(
                 message2.getId(),
                 message2CreatedAt,
                 message2CreatedAt,
                 content + "2",
                 channelId,
-                new UserDTO(authorId, "testUser", "test@example.com", Role.USER, null, true),
-                List.of(attachmentDTO)
+                new UserDto(authorId, "testUser", "test@example.com", Role.USER, null, true),
+                List.of(attachmentDto)
         );
 
         // 첫 페이지 결과 세팅 (2개 메시지)
         List<Message> firstPageMessages = List.of(message1, message2);
-        List<MessageDTO> firstPageDTOs = List.of(messageDTO1, messageDTO2);
+        List<MessageDto> firstPageDtos = List.of(messageDto1, messageDto2);
 
         // 첫 페이지는 다음 페이지가 있고, 커서는 message2의 생성 시간이어야 함
         SliceImpl<Message> firstPageSlice = new SliceImpl<>(firstPageMessages, pageable, true);
-        PageResponse<MessageDTO> firstPageResponse = new PageResponse<>(
-                firstPageDTOs,
+        PageResponse<MessageDto> firstPageResponse = new PageResponse<>(
+                firstPageDtos,
                 message2CreatedAt,
                 pageSize,
                 true,
@@ -251,13 +251,13 @@ class BasicMessageServiceTest {
         // 모의 객체 설정
         given(messageRepository.findAllByChannelIdWithAuthor(eq(channelId), eq(createdAt), eq(pageable)))
                 .willReturn(firstPageSlice);
-        given(messageMapper.toDTO(eq(message1))).willReturn(messageDTO1);
-        given(messageMapper.toDTO(eq(message2))).willReturn(messageDTO2);
-        given(pageResponseMapper.<MessageDTO>fromSlice(any(), eq(message2CreatedAt)))
+        given(messageMapper.toDto(eq(message1))).willReturn(messageDto1);
+        given(messageMapper.toDto(eq(message2))).willReturn(messageDto2);
+        given(pageResponseMapper.<MessageDto>fromSlice(any(), eq(message2CreatedAt)))
                 .willReturn(firstPageResponse);
 
         // when
-        PageResponse<MessageDTO> result = messageService.findAllByChannelId(channelId, createdAt,
+        PageResponse<MessageDto> result = messageService.findAllByChannelId(channelId, createdAt,
                 pageable);
 
         // then
@@ -269,21 +269,21 @@ class BasicMessageServiceTest {
         // 두 번째 페이지 테스트
         // given
         List<Message> secondPageMessages = List.of(message3);
-        MessageDTO messageDTO3 = new MessageDTO(
+        MessageDto messageDto3 = new MessageDto(
                 message3.getId(),
                 message3CreatedAt,
                 message3CreatedAt,
                 content + "3",
                 channelId,
-                new UserDTO(authorId, "testUser", "test@example.com", Role.USER, null, true),
-                List.of(attachmentDTO)
+                new UserDto(authorId, "testUser", "test@example.com", Role.USER, null, true),
+                List.of(attachmentDto)
         );
-        List<MessageDTO> secondPageDTOs = List.of(messageDTO3);
+        List<MessageDto> secondPageDtos = List.of(messageDto3);
 
         // 두 번째 페이지는 다음 페이지가 없음
         SliceImpl<Message> secondPageSlice = new SliceImpl<>(secondPageMessages, pageable, false);
-        PageResponse<MessageDTO> secondPageResponse = new PageResponse<>(
-                secondPageDTOs,
+        PageResponse<MessageDto> secondPageResponse = new PageResponse<>(
+                secondPageDtos,
                 message3CreatedAt,
                 pageSize,
                 false,
@@ -293,12 +293,12 @@ class BasicMessageServiceTest {
         // 두 번째 페이지 모의 객체 설정
         given(messageRepository.findAllByChannelIdWithAuthor(eq(channelId), eq(message2CreatedAt), eq(pageable)))
                 .willReturn(secondPageSlice);
-        given(messageMapper.toDTO(eq(message3))).willReturn(messageDTO3);
-        given(pageResponseMapper.<MessageDTO>fromSlice(any(), eq(message3CreatedAt)))
+        given(messageMapper.toDto(eq(message3))).willReturn(messageDto3);
+        given(pageResponseMapper.<MessageDto>fromSlice(any(), eq(message3CreatedAt)))
                 .willReturn(secondPageResponse);
 
         // when - 두 번째 페이지 요청 (첫 페이지의 커서 사용)
-        PageResponse<MessageDTO> secondResult = messageService.findAllByChannelId(channelId, message2CreatedAt,
+        PageResponse<MessageDto> secondResult = messageService.findAllByChannelId(channelId, message2CreatedAt,
                 pageable);
 
         // then - 두 번째 페이지 검증
@@ -315,13 +315,13 @@ class BasicMessageServiceTest {
         MessageUpdateRequest request = new MessageUpdateRequest(newContent);
 
         given(messageRepository.findById(eq(messageId))).willReturn(Optional.of(message));
-        given(messageMapper.toDTO(eq(message))).willReturn(messageDTO);
+        given(messageMapper.toDto(eq(message))).willReturn(messageDto);
 
         // when
-        MessageDTO result = messageService.update(messageId, request);
+        MessageDto result = messageService.update(messageId, request);
 
         // then
-        assertThat(result).isEqualTo(messageDTO);
+        assertThat(result).isEqualTo(messageDto);
     }
 
     @Test

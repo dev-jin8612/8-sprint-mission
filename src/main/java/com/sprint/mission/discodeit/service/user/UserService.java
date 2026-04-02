@@ -1,6 +1,6 @@
 package com.sprint.mission.discodeit.service.user;
 
-import com.sprint.mission.discodeit.dto.data.UserDTO;
+import com.sprint.mission.discodeit.dto.data.UserDto;
 import com.sprint.mission.discodeit.dto.request.BinaryContentCreateRequest;
 import com.sprint.mission.discodeit.dto.request.UserCreateRequest;
 import com.sprint.mission.discodeit.dto.request.UserUpdateRequest;
@@ -10,14 +10,14 @@ import java.util.UUID;
 
 public interface UserService {
 
-  UserDTO create(UserCreateRequest userCreateRequest,
+  UserDto create(UserCreateRequest userCreateRequest,
       Optional<BinaryContentCreateRequest> profileCreateRequest);
 
-  UserDTO find(UUID userId);
+  UserDto find(UUID userId);
 
-  List<UserDTO> findAll();
+  List<UserDto> findAll();
 
-  UserDTO update(UUID userId, UserUpdateRequest userUpdateRequest,
+  UserDto update(UUID userId, UserUpdateRequest userUpdateRequest,
       Optional<BinaryContentCreateRequest> profileCreateRequest);
 
   void delete(UUID userId);

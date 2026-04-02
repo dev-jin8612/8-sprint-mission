@@ -1,7 +1,7 @@
 package com.sprint.mission.discodeit.controller;
 
 import com.sprint.mission.discodeit.controller.api.UserApi;
-import com.sprint.mission.discodeit.dto.data.UserDTO;
+import com.sprint.mission.discodeit.dto.data.UserDto;
 import com.sprint.mission.discodeit.dto.request.BinaryContentCreateRequest;
 import com.sprint.mission.discodeit.dto.request.UserCreateRequest;
 import com.sprint.mission.discodeit.dto.request.UserUpdateRequest;
@@ -31,7 +31,7 @@ public class UserController implements UserApi {
 
     @PostMapping(consumes = {MediaType.MULTIPART_FORM_DATA_VALUE})
     @Override
-    public ResponseEntity<UserDTO> create(
+    public ResponseEntity<UserDto> create(
             @RequestPart("userCreateRequest") @Valid UserCreateRequest userCreateRequest,
             @RequestPart(value = "profile", required = false) MultipartFile profile
     ) {
@@ -39,7 +39,7 @@ public class UserController implements UserApi {
         Optional<BinaryContentCreateRequest> profileRequest = Optional.ofNullable(profile)
                 .flatMap(this::resolveProfileRequest);
 
-        UserDTO createdUser = userService.create(userCreateRequest, profileRequest);
+        UserDto createdUser = userService.create(userCreateRequest, profileRequest);
 
         log.debug("사용자 생성 응답: {}", createdUser);
         return ResponseEntity
@@ -53,7 +53,7 @@ public class UserController implements UserApi {
     )
     @Override
     @PreAuthorize("#username == authentication.name")
-    public ResponseEntity<UserDTO> update(
+    public ResponseEntity<UserDto> update(
             @PathVariable("userId") UUID userId,
             @RequestPart("userUpdateRequest") @Valid UserUpdateRequest userUpdateRequest,
             @RequestPart(value = "profile", required = false) MultipartFile profile
@@ -61,7 +61,7 @@ public class UserController implements UserApi {
         log.info("사용자 수정 요청: id={}, request={}", userId, userUpdateRequest);
         Optional<BinaryContentCreateRequest> profileRequest = Optional.ofNullable(profile)
                 .flatMap(this::resolveProfileRequest);
-        UserDTO updatedUser = userService.update(userId, userUpdateRequest, profileRequest);
+        UserDto updatedUser = userService.update(userId, userUpdateRequest, profileRequest);
         log.debug("사용자 수정 응답: {}", updatedUser);
         return ResponseEntity
                 .status(HttpStatus.OK)
@@ -80,8 +80,8 @@ public class UserController implements UserApi {
 
     @GetMapping
     @Override
-    public ResponseEntity<List<UserDTO>> findAll() {
-        List<UserDTO> users = userService.findAll();
+    public ResponseEntity<List<UserDto>> findAll() {
+        List<UserDto> users = userService.findAll();
         return ResponseEntity
                 .status(HttpStatus.OK)
                 .body(users);

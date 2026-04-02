@@ -1,7 +1,7 @@
 package com.sprint.mission.discodeit.exception.auth;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.sprint.mission.discodeit.dto.data.UserDTO;
+import com.sprint.mission.discodeit.dto.data.UserDto;
 import com.sprint.mission.discodeit.service.user.DiscodeitUserDetails;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
@@ -24,7 +24,7 @@ public class LoginSuccessHandler  implements AuthenticationSuccessHandler {
             throws IOException, ServletException {
 
         if (authentication.getPrincipal() instanceof DiscodeitUserDetails discodeitUserDetails) {
-            UserDTO user = discodeitUserDetails.getUserDTO();
+            UserDto user = discodeitUserDetails.getUserDto();
             response.setContentType("application/json");
             response.setCharacterEncoding("UTF-8");
             response.setStatus(HttpServletResponse.SC_OK);

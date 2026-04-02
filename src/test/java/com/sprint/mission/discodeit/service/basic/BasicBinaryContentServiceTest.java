@@ -7,7 +7,7 @@ import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.verify;
 
-import com.sprint.mission.discodeit.dto.data.BinaryContentDTO;
+import com.sprint.mission.discodeit.dto.data.BinaryContentDto;
 import com.sprint.mission.discodeit.dto.request.BinaryContentCreateRequest;
 import com.sprint.mission.discodeit.entity.BinaryContent;
 import com.sprint.mission.discodeit.exception.binarycontent.BinaryContentNotFoundException;
@@ -47,7 +47,7 @@ class BasicBinaryContentServiceTest {
   private String contentType;
   private byte[] bytes;
   private BinaryContent binaryContent;
-  private BinaryContentDTO binaryContentDTO;
+  private BinaryContentDto binaryContentDto;
 
   @BeforeEach
   void setUp() {
@@ -59,7 +59,7 @@ class BasicBinaryContentServiceTest {
     binaryContent = new BinaryContent(fileName, (long) bytes.length, contentType);
     ReflectionTestUtils.setField(binaryContent, "id", binaryContentId);
 
-    binaryContentDTO = new BinaryContentDTO(
+    binaryContentDto = new BinaryContentDto(
         binaryContentId,
         fileName,
         (long) bytes.length,
@@ -79,13 +79,13 @@ class BasicBinaryContentServiceTest {
       ReflectionTestUtils.setField(binaryContent, "id", binaryContentId);
       return binaryContent;
     });
-    given(binaryContentMapper.toDTO(any(BinaryContent.class))).willReturn(binaryContentDTO);
+    given(binaryContentMapper.toDto(any(BinaryContent.class))).willReturn(binaryContentDto);
 
     // when
-    BinaryContentDTO result = binaryContentService.create(request);
+    BinaryContentDto result = binaryContentService.create(request);
 
     // then
-    assertThat(result).isEqualTo(binaryContentDTO);
+    assertThat(result).isEqualTo(binaryContentDto);
     verify(binaryContentRepository).save(any(BinaryContent.class));
     verify(binaryContentStorage).put(binaryContentId, bytes);
   }
@@ -96,13 +96,13 @@ class BasicBinaryContentServiceTest {
     // given
     given(binaryContentRepository.findById(eq(binaryContentId))).willReturn(
         Optional.of(binaryContent));
-    given(binaryContentMapper.toDTO(eq(binaryContent))).willReturn(binaryContentDTO);
+    given(binaryContentMapper.toDto(eq(binaryContent))).willReturn(binaryContentDto);
 
     // when
-    BinaryContentDTO result = binaryContentService.find(binaryContentId);
+    BinaryContentDto result = binaryContentService.find(binaryContentId);
 
     // then
-    assertThat(result).isEqualTo(binaryContentDTO);
+    assertThat(result).isEqualTo(binaryContentDto);
   }
 
   @Test
@@ -132,15 +132,15 @@ class BasicBinaryContentServiceTest {
 
     List<BinaryContent> contents = Arrays.asList(content1, content2);
 
-    BinaryContentDTO dto1 = new BinaryContentDTO(id1, "file1.jpg", 100L, "image/jpeg");
-    BinaryContentDTO dto2 = new BinaryContentDTO(id2, "file2.jpg", 200L, "image/png");
+    BinaryContentDto dto1 = new BinaryContentDto(id1, "file1.jpg", 100L, "image/jpeg");
+    BinaryContentDto dto2 = new BinaryContentDto(id2, "file2.jpg", 200L, "image/png");
 
     given(binaryContentRepository.findAllById(eq(ids))).willReturn(contents);
-    given(binaryContentMapper.toDTO(eq(content1))).willReturn(dto1);
-    given(binaryContentMapper.toDTO(eq(content2))).willReturn(dto2);
+    given(binaryContentMapper.toDto(eq(content1))).willReturn(dto1);
+    given(binaryContentMapper.toDto(eq(content2))).willReturn(dto2);
 
     // when
-    List<BinaryContentDTO> result = binaryContentService.findAllByIdIn(ids);
+    List<BinaryContentDto> result = binaryContentService.findAllByIdIn(ids);
 
     // then
     assertThat(result).containsExactly(dto1, dto2);

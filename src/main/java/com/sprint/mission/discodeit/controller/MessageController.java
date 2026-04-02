@@ -1,7 +1,7 @@
 package com.sprint.mission.discodeit.controller;
 
 import com.sprint.mission.discodeit.controller.api.MessageApi;
-import com.sprint.mission.discodeit.dto.data.MessageDTO;
+import com.sprint.mission.discodeit.dto.data.MessageDto;
 import com.sprint.mission.discodeit.dto.request.BinaryContentCreateRequest;
 import com.sprint.mission.discodeit.dto.request.MessageCreateRequest;
 import com.sprint.mission.discodeit.dto.request.MessageUpdateRequest;
@@ -44,7 +44,7 @@ public class MessageController implements MessageApi {
   private final MessageService messageService;
 
   @PostMapping(consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
-  public ResponseEntity<MessageDTO> create(
+  public ResponseEntity<MessageDto> create(
       @RequestPart("messageCreateRequest") @Valid MessageCreateRequest messageCreateRequest,
       @RequestPart(value = "attachments", required = false) List<MultipartFile> attachments
   ) {
@@ -66,7 +66,7 @@ public class MessageController implements MessageApi {
             })
             .toList())
         .orElse(new ArrayList<>());
-    MessageDTO createdMessage = messageService.create(messageCreateRequest, attachmentRequests);
+    MessageDto createdMessage = messageService.create(messageCreateRequest, attachmentRequests);
     log.debug("메시지 생성 응답: {}", createdMessage);
     return ResponseEntity
         .status(HttpStatus.CREATED)
@@ -75,11 +75,11 @@ public class MessageController implements MessageApi {
 
   @PreAuthorize("@messageAuthChecker.isOwner(authentication, #messageId)")
   @PatchMapping(path = "{messageId}")
-  public ResponseEntity<MessageDTO> update(
+  public ResponseEntity<MessageDto> update(
       @PathVariable("messageId") UUID messageId,
       @RequestBody @Valid MessageUpdateRequest request) {
     log.info("메시지 수정 요청: id={}, request={}", messageId, request);
-    MessageDTO updatedMessage = messageService.update(messageId, request);
+    MessageDto updatedMessage = messageService.update(messageId, request);
     log.debug("메시지 수정 응답: {}", updatedMessage);
     return ResponseEntity
         .status(HttpStatus.OK)
@@ -98,7 +98,7 @@ public class MessageController implements MessageApi {
   }
 
   @GetMapping
-  public ResponseEntity<PageResponse<MessageDTO>> findAllByChannelId(
+  public ResponseEntity<PageResponse<MessageDto>> findAllByChannelId(
       @RequestParam("channelId") UUID channelId,
       @RequestParam(value = "cursor", required = false) Instant cursor,
       @PageableDefault(
@@ -109,7 +109,7 @@ public class MessageController implements MessageApi {
       ) Pageable pageable) {
     log.info("채널별 메시지 목록 조회 요청: channelId={}, cursor={}, pageable={}", 
         channelId, cursor, pageable);
-    PageResponse<MessageDTO> messages = messageService.findAllByChannelId(channelId, cursor,
+    PageResponse<MessageDto> messages = messageService.findAllByChannelId(channelId, cursor,
         pageable);
     log.debug("채널별 메시지 목록 조회 응답: totalElements={}", messages.totalElements());
     return ResponseEntity

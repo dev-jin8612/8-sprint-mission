@@ -11,9 +11,9 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.sprint.mission.discodeit.dto.data.ChannelDTO;
-import com.sprint.mission.discodeit.dto.data.MessageDTO;
-import com.sprint.mission.discodeit.dto.data.UserDTO;
+import com.sprint.mission.discodeit.dto.data.ChannelDto;
+import com.sprint.mission.discodeit.dto.data.MessageDto;
+import com.sprint.mission.discodeit.dto.data.UserDto;
 import com.sprint.mission.discodeit.dto.request.MessageCreateRequest;
 import com.sprint.mission.discodeit.dto.request.MessageUpdateRequest;
 import com.sprint.mission.discodeit.dto.request.PublicChannelCreateRequest;
@@ -69,7 +69,7 @@ class MessageApiIntegrationTest {
         "테스트 채널 설명입니다."
     );
 
-    ChannelDTO channel = channelService.create(channelRequest);
+    ChannelDto channel = channelService.create(channelRequest);
 
     // 테스트 사용자 생성
     UserCreateRequest userRequest = new UserCreateRequest(
@@ -79,7 +79,7 @@ class MessageApiIntegrationTest {
             Role.USER
     );
 
-    UserDTO user = userService.create(userRequest, Optional.empty());
+    UserDto user = userService.create(userRequest, Optional.empty());
 
     // 메시지 생성 요청
     MessageCreateRequest createRequest = new MessageCreateRequest(
@@ -150,7 +150,7 @@ class MessageApiIntegrationTest {
         "테스트 채널 설명입니다."
     );
 
-    ChannelDTO channel = channelService.create(channelRequest);
+    ChannelDto channel = channelService.create(channelRequest);
 
     // 테스트 사용자 생성
     UserCreateRequest userRequest = new UserCreateRequest(
@@ -160,7 +160,7 @@ class MessageApiIntegrationTest {
             Role.USER
     );
 
-    UserDTO user = userService.create(userRequest, Optional.empty());
+    UserDto user = userService.create(userRequest, Optional.empty());
 
     // 메시지 생성
     MessageCreateRequest messageRequest1 = new MessageCreateRequest(
@@ -202,7 +202,7 @@ class MessageApiIntegrationTest {
         "테스트 채널 설명입니다."
     );
 
-    ChannelDTO channel = channelService.create(channelRequest);
+    ChannelDto channel = channelService.create(channelRequest);
 
     // 테스트 사용자 생성
     UserCreateRequest userRequest = new UserCreateRequest(
@@ -212,7 +212,7 @@ class MessageApiIntegrationTest {
             Role.USER
     );
 
-    UserDTO user = userService.create(userRequest, Optional.empty());
+    UserDto user = userService.create(userRequest, Optional.empty());
 
     // 메시지 생성
     MessageCreateRequest createRequest = new MessageCreateRequest(
@@ -221,7 +221,7 @@ class MessageApiIntegrationTest {
         user.id()
     );
 
-    MessageDTO createdMessage = messageService.create(createRequest, new ArrayList<>());
+    MessageDto createdMessage = messageService.create(createRequest, new ArrayList<>());
     UUID messageId = createdMessage.id();
 
     // 메시지 업데이트 요청
@@ -272,7 +272,7 @@ class MessageApiIntegrationTest {
         "테스트 채널 설명입니다."
     );
 
-    ChannelDTO channel = channelService.create(channelRequest);
+    ChannelDto channel = channelService.create(channelRequest);
 
     // 테스트 사용자 생성
     UserCreateRequest userRequest = new UserCreateRequest(
@@ -282,7 +282,7 @@ class MessageApiIntegrationTest {
             Role.USER
     );
 
-    UserDTO user = userService.create(userRequest, Optional.empty());
+    UserDto user = userService.create(userRequest, Optional.empty());
 
     // 메시지 생성
     MessageCreateRequest createRequest = new MessageCreateRequest(
@@ -291,7 +291,7 @@ class MessageApiIntegrationTest {
         user.id()
     );
 
-    MessageDTO createdMessage = messageService.create(createRequest, new ArrayList<>());
+    MessageDto createdMessage = messageService.create(createRequest, new ArrayList<>());
     UUID messageId = createdMessage.id();
 
     // When & Then

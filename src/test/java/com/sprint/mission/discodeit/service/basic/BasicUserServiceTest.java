@@ -1,6 +1,6 @@
 package com.sprint.mission.discodeit.service.basic;
 
-import com.sprint.mission.discodeit.dto.data.UserDTO;
+import com.sprint.mission.discodeit.dto.data.UserDto;
 import com.sprint.mission.discodeit.dto.request.UserCreateRequest;
 import com.sprint.mission.discodeit.dto.request.UserUpdateRequest;
 import com.sprint.mission.discodeit.entity.Role;
@@ -56,7 +56,7 @@ class BasicUserServiceTest {
     private String email;
     private String password;
     private User user;
-    private UserDTO userDTO;
+    private UserDto userDto;
 
     @BeforeEach
     void setUp() {
@@ -67,7 +67,7 @@ class BasicUserServiceTest {
 
         user = new User(username, email, password, Role.USER, null);
         ReflectionTestUtils.setField(user, "id", userId);
-        userDTO = new UserDTO(userId, username, email, Role.USER, null, true);
+        userDto = new UserDto(userId, username, email, Role.USER, null, true);
     }
 
     @Test
@@ -77,14 +77,14 @@ class BasicUserServiceTest {
         UserCreateRequest request = new UserCreateRequest(username, email, password, Role.USER);
         given(userRepository.existsByEmail(eq(email))).willReturn(false);
         given(userRepository.existsByUsername(eq(username))).willReturn(false);
-        given(userMapper.toDTO(any(User.class))).willReturn(userDTO);
+        given(userMapper.toDto(any(User.class))).willReturn(userDto);
         given(passwordEncoder.encode(eq(password))).willReturn("Password123!");
 
         // when
-        UserDTO result = userService.create(request, Optional.empty());
+        UserDto result = userService.create(request, Optional.empty());
 
         // then
-        assertThat(result).isEqualTo(userDTO);
+        assertThat(result).isEqualTo(userDto);
         verify(userRepository).save(any(User.class));
         verify(passwordEncoder).encode(password);
     }
@@ -119,13 +119,13 @@ class BasicUserServiceTest {
     void findUser_Success() {
         // given
         given(userRepository.findById(eq(userId))).willReturn(Optional.of(user));
-        given(userMapper.toDTO(any(User.class))).willReturn(userDTO);
+        given(userMapper.toDto(any(User.class))).willReturn(userDto);
 
         // when
-        UserDTO result = userService.find(userId);
+        UserDto result = userService.find(userId);
 
         // then
-        assertThat(result).isEqualTo(userDTO);
+        assertThat(result).isEqualTo(userDto);
     }
 
     @Test
@@ -151,13 +151,13 @@ class BasicUserServiceTest {
         given(userRepository.findById(eq(userId))).willReturn(Optional.of(user));
         given(userRepository.existsByEmail(eq(newEmail))).willReturn(false);
         given(userRepository.existsByUsername(eq(newUsername))).willReturn(false);
-        given(userMapper.toDTO(any(User.class))).willReturn(userDTO);
+        given(userMapper.toDto(any(User.class))).willReturn(userDto);
 
         // when
-        UserDTO result = userService.update(userId, request, Optional.empty());
+        UserDto result = userService.update(userId, request, Optional.empty());
 
         // then
-        assertThat(result).isEqualTo(userDTO);
+        assertThat(result).isEqualTo(userDto);
     }
 
     @Test

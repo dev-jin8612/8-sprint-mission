@@ -1,6 +1,6 @@
 package com.sprint.mission.discodeit.service.basic;
 
-import com.sprint.mission.discodeit.dto.data.UserDTO;
+import com.sprint.mission.discodeit.dto.data.UserDto;
 import com.sprint.mission.discodeit.dto.request.BinaryContentCreateRequest;
 import com.sprint.mission.discodeit.dto.request.UserCreateRequest;
 import com.sprint.mission.discodeit.dto.request.UserUpdateRequest;
@@ -36,7 +36,7 @@ public class BasicUserService implements UserService {
 
   @Transactional
   @Override
-  public UserDTO create(UserCreateRequest userCreateRequest,
+  public UserDto create(UserCreateRequest userCreateRequest,
       Optional<BinaryContentCreateRequest> optionalProfileCreateRequest) {
     log.debug("사용자 생성 시작: {}", userCreateRequest);
 
@@ -70,35 +70,35 @@ public class BasicUserService implements UserService {
 
     userRepository.save(user);
     log.info("사용자 생성 완료: id={}, username={}", user.getId(), username);
-    return userMapper.toDTO(user);
+    return userMapper.toDto(user);
   }
 
   @Transactional(readOnly = true)
   @Override
-  public UserDTO find(UUID userId) {
+  public UserDto find(UUID userId) {
     log.debug("사용자 조회 시작: id={}", userId);
-    UserDTO userDTO = userRepository.findById(userId)
-        .map(userMapper::toDTO)
+    UserDto userDto = userRepository.findById(userId)
+        .map(userMapper::toDto)
         .orElseThrow(() -> UserNotFoundException.withId(userId));
     log.info("사용자 조회 완료: id={}", userId);
-    return userDTO;
+    return userDto;
   }
 
   @Transactional(readOnly = true)
   @Override
-  public List<UserDTO> findAll() {
+  public List<UserDto> findAll() {
     log.debug("모든 사용자 조회 시작");
-    List<UserDTO> userDTOs = userRepository.findAllWithProfile()
+    List<UserDto> userDtos = userRepository.findAllWithProfile()
         .stream()
-        .map(userMapper::toDTO)
+        .map(userMapper::toDto)
         .toList();
-    log.info("모든 사용자 조회 완료: 총 {}명", userDTOs.size());
-    return userDTOs;
+    log.info("모든 사용자 조회 완료: 총 {}명", userDtos.size());
+    return userDtos;
   }
 
   @Transactional
   @Override
-  public UserDTO update(UUID userId, UserUpdateRequest userUpdateRequest,
+  public UserDto update(UUID userId, UserUpdateRequest userUpdateRequest,
       Optional<BinaryContentCreateRequest> optionalProfileCreateRequest) {
     log.debug("사용자 수정 시작: id={}, request={}", userId, userUpdateRequest);
 
@@ -137,7 +137,7 @@ public class BasicUserService implements UserService {
     user.update(newUsername, newEmail, newPassword, nullableProfile);
 
     log.info("사용자 수정 완료: id={}", userId);
-    return userMapper.toDTO(user);
+    return userMapper.toDto(user);
   }
 
   @Transactional

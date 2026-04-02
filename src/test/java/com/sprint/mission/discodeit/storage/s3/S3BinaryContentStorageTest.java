@@ -4,7 +4,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 
-import com.sprint.mission.discodeit.dto.data.BinaryContentDTO;
+import com.sprint.mission.discodeit.dto.data.BinaryContentDto;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.NoSuchElementException;
@@ -129,7 +129,7 @@ class S3BinaryContentStorageTest {
   void download_success() {
     // given
     s3BinaryContentStorage.put(testId, testData);
-    BinaryContentDTO dto = new BinaryContentDTO(
+    BinaryContentDto dto = new BinaryContentDto(
         testId, "test.txt", (long) testData.length, "text/plain"
     );
 
