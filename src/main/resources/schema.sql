@@ -132,3 +132,16 @@ ALTER TABLE read_statuses
         FOREIGN KEY (channel_id)
             REFERENCES channels (id)
             ON DELETE CASCADE;
+
+-- JWT 토큰 상태 테이블
+CREATE TABLE IF NOT EXISTS tbl_jwt_token (
+    jti           VARCHAR(64) PRIMARY KEY,
+    username      VARCHAR(255) NOT NULL,
+    token_type    VARCHAR(16)  NOT NULL CHECK (token_type IN ('access', 'refresh')),
+    issued_at     TIMESTAMPTZ  NOT NULL,
+    expires_at    TIMESTAMPTZ  NOT NULL,
+    revoked       BOOLEAN      NOT NULL DEFAULT FALSE,
+    replaced_by   VARCHAR(64)           -- 회전 시 새 리프레시의 jti
+);
+CREATE INDEX IF NOT EXISTS idx_tbl_jwt_token_username ON tbl_jwt_token(username);
+CREATE INDEX IF NOT EXISTS idx_tbl_jwt_token_expires  ON tbl_jwt_token(expires_at);

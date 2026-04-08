@@ -3,13 +3,18 @@ package com.sprint.mission.discodeit.controller;
 import com.sprint.mission.discodeit.controller.api.AuthApi;
 import com.sprint.mission.discodeit.dto.data.UserDto;
 import com.sprint.mission.discodeit.dto.request.UserRoleUpdateRequest;
+import com.sprint.mission.discodeit.dto.response.JwtDTO;
+import com.sprint.mission.discodeit.entity.JwtTokenEntity;
+import com.sprint.mission.discodeit.security.jwt.JwtTokenProvider;
+import com.sprint.mission.discodeit.security.jwt.JwtSessionRegistry;
 import com.sprint.mission.discodeit.service.AuthService;
+import com.sprint.mission.discodeit.service.user.DiscodeitUserDetails;
+import com.sprint.mission.discodeit.service.user.DiscodeitUserDetailsService;
+import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.core.annotation.AuthenticationPrincipal;
-import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.web.csrf.CsrfToken;
 import org.springframework.web.bind.annotation.*;
 
@@ -19,39 +24,62 @@ import org.springframework.web.bind.annotation.*;
 @RequestMapping("/api/auth")
 public class AuthController implements AuthApi {
     private final AuthService authService;
+    private final JwtTokenProvider jwtTokenProvider;
+    private final DiscodeitUserDetailsService userDetailsService;
+    private final JwtSessionRegistry jwtSessionRegistry;
 
     @GetMapping("/csrf-token")
     public ResponseEntity<Void> getCsrfToken(CsrfToken csrfToken) {
         log.debug("CSRF 토큰 요청: {}", csrfToken.getToken());
-        return ResponseEntity.noContent().build(); // 204 Void 응답
+        return ResponseEntity.noContent().build();
     }
 
-    @GetMapping("/me")
-    public ResponseEntity<UserDto> getCurrentUser(@AuthenticationPrincipal UserDetails userDetails) {
-        if (userDetails == null) {
-            log.info("비 인증 사용자");
-            return ResponseEntity
-                    .status(HttpStatus.UNAUTHORIZED)
-                    .body(null);
+    @PostMapping("/refresh")
+    public ResponseEntity<JwtDTO> refresh(
+            @CookieValue(
+                    name = JwtTokenProvider.REFRESH_TOKEN_COOKIE_NAME,
+                    required = false
+            )
+            String refreshToken,
+            HttpServletResponse response
+    ) {
+        if (refreshToken == null || !jwtTokenProvider.validateRefreshToken(refreshToken)) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
         }
 
-        UserDto userDto = authService.getCurrentUserInfo(userDetails);
+        String username = jwtTokenProvider.getUsernameFromToken(refreshToken);
+        String oldRefreshJti = jwtTokenProvider.getTokenId(refreshToken);
+        DiscodeitUserDetails userDetails = (DiscodeitUserDetails) userDetailsService.loadUserByUsername(username);
 
-        if(userDto ==null){
-            log.info("비 인증 사용자");
-            return ResponseEntity
-                    .status(HttpStatus.UNAUTHORIZED)
-                    .body(null);
+        try {
+            String newAccessToken = jwtTokenProvider.generateAccessToken(userDetails);
+            String newRefreshToken = jwtTokenProvider.generateRefreshToken(userDetails);
+            String newRefreshJti = jwtTokenProvider.getTokenId(newRefreshToken);
+
+            if (jwtSessionRegistry.isRevoked(oldRefreshJti)) {
+                jwtTokenProvider.expireRefreshCookie(response);
+                return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
+            }
+
+            jwtSessionRegistry.markReplaced(oldRefreshJti, newRefreshJti);
+            JwtTokenEntity accessEntity = jwtTokenProvider.toEntity(newAccessToken);
+            JwtTokenEntity refreshEntity = jwtTokenProvider.toEntity(newRefreshToken);
+
+            jwtSessionRegistry.register(accessEntity);
+            jwtSessionRegistry.register(refreshEntity);
+            jwtTokenProvider.addRefreshCookie(response, newRefreshToken);
+
+            UserDto userDto = userDetails.getUserDto();
+            JwtDTO body = new JwtDTO(userDto, newAccessToken);
+            return ResponseEntity.ok(body);
+
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
         }
-
-        log.info("[AuthController] 현재 사용자 정보 조회 완료: "+userDto);
-        return ResponseEntity.ok(userDto);
     }
 
     @PutMapping("/role")
-    public ResponseEntity<UserDto> updateRole(
-            @RequestBody UserRoleUpdateRequest userRoleUpdateRequest
-    ) {
+    public ResponseEntity<UserDto> updateRole(@RequestBody UserRoleUpdateRequest userRoleUpdateRequest) {
         UserDto userDto = authService.updateRole(userRoleUpdateRequest);
         return ResponseEntity.ok(userDto);
     }

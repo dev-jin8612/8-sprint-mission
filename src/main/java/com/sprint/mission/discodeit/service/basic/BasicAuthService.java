@@ -19,6 +19,7 @@ import java.util.List;
 @Slf4j
 @RequiredArgsConstructor
 @Service
+// TODO 생각해보니 세션 없앴으니 여기도 수정해야되네
 public class BasicAuthService implements AuthService {
     private final UserMapper userMapper;
     private final UserRepository userRepository;

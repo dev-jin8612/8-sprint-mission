@@ -63,3 +63,15 @@ logging:
     com.sprint.mission.discodeit: DEBUG
     org.springframework.web: DEBUG
     org.springframework.security: trace
+
+# 커스텀 프로퍼티 추가
+jwt:
+  access-token:
+    #    수정 필요
+    # 여기는 9-3 실습에서 시크릿값을 가져와서 해야하는데 날려먹음
+    #    43자릿수만 나오면됨, 임으로 막 만들어도 된다는 것
+    secret: change-me-access-secret-for-dev-only
+    exp: 900000        # 15분(ms)
+  refresh-token:
+    secret: change-me-refresh-secret-for-dev-only
+    exp: 3600000       # 1시간(ms)

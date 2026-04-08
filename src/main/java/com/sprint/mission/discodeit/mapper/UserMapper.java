@@ -11,29 +11,8 @@ import org.springframework.security.core.userdetails.UserDetails;
 
 @Mapper(componentModel = "spring", uses = {BinaryContentMapper.class})
 public abstract class UserMapper {
-    @Autowired
-    protected SessionRegistry sessionRegistry;
-
     @Mapping(target = "online", expression = "java(checkOnlineStatus(user))")
     public abstract UserDto toDto(User user);
 
-    protected Boolean checkOnlineStatus(User user) {
-        if (user == null || user.getUsername() == null) {
-            return false;
-        }
-        return sessionRegistry.getAllPrincipals().stream()
-                .anyMatch(principal -> {
-                    String sessionUsername = "";
-
-                    if (principal instanceof UserDetails) {
-                        sessionUsername = ((UserDetails) principal).getUsername();
-                    } else if (principal instanceof String) {
-                        sessionUsername = (String) principal;
-                    }
-
-                    return user.getUsername().equals(sessionUsername) &&
-                            !sessionRegistry.getAllSessions(principal, false)
-                                    .isEmpty();
-                });
-    }
+//    TODO: 여기 원래 세션에 유저 있으면 온라인 표시 만들던건데 이제 세션을 안쓰니 다른걸 찾아야 하는데
 }
