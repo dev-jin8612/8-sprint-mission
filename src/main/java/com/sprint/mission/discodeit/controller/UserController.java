@@ -47,12 +47,12 @@ public class UserController implements UserApi {
                 .body(createdUser);
     }
 
+    @Override
     @PatchMapping(
             path = "{userId}",
             consumes = {MediaType.MULTIPART_FORM_DATA_VALUE}
     )
-    @Override
-    @PreAuthorize("#username == authentication.name")
+    @PreAuthorize("@userAuthChecker.isOwner(authentication, #userId)")
     public ResponseEntity<UserDto> update(
             @PathVariable("userId") UUID userId,
             @RequestPart("userUpdateRequest") @Valid UserUpdateRequest userUpdateRequest,
@@ -68,9 +68,9 @@ public class UserController implements UserApi {
                 .body(updatedUser);
     }
 
-    @DeleteMapping(path = "{userId}")
     @Override
-    @PreAuthorize("#username == authentication.name")
+    @DeleteMapping(path = "{userId}")
+    @PreAuthorize("@userAuthChecker.isOwner(authentication, #userId)")
     public ResponseEntity<Void> delete(@PathVariable("userId") UUID userId) {
         userService.delete(userId);
         return ResponseEntity
