@@ -1,32 +1,32 @@
--- 테이블, 원본
-DROP TABLE IF EXISTS read_statuses CASCADE;
-DROP TABLE IF EXISTS message_attachments CASCADE;
-DROP TABLE IF EXISTS messages CASCADE;
-DROP TABLE IF EXISTS channels CASCADE;
-DROP TABLE IF EXISTS user_statuses CASCADE;
-DROP TABLE IF EXISTS users CASCADE;
-DROP TABLE IF EXISTS binary_contents CASCADE;
-
+-- 테이블
 -- User
 CREATE TABLE users
 (
     id         uuid PRIMARY KEY,
-    created_at timestamptz         NOT NULL,
-    updated_at timestamptz,
-    username   varchar(50) UNIQUE  NOT NULL,
-    email      varchar(100) UNIQUE NOT NULL,
-    password   varchar(60)         NOT NULL,
+    created_at timestamp with time zone NOT NULL,
+    updated_at timestamp with time zone,
+    username   varchar(50) UNIQUE       NOT NULL,
+    email      varchar(100) UNIQUE      NOT NULL,
+    password   varchar(60)              NOT NULL,
+    role varchar(20) NOT NULL,
     profile_id uuid
 );
+
+-- ALTER TABLE users
+--     ADD COLUMN role varchar(20) NOT NULL DEFAULT 'USER';
+
+UPDATE users
+SET password = '$2a$10$w.Vn/s.lH9Z9R5R2c8iL.O7O.l41bQ17zZ6f9f3X6X.W.T.9X.Z.'
+WHERE email = 'wlstj4344@gmail.com';
 
 -- BinaryContent
 CREATE TABLE binary_contents
 (
     id           uuid PRIMARY KEY,
-    created_at   timestamptz  NOT NULL,
-    file_name    varchar(255) NOT NULL,
-    size         bigint       NOT NULL,
-    content_type varchar(100) NOT NULL
+    created_at   timestamp with time zone NOT NULL,
+    file_name    varchar(255)             NOT NULL,
+    size         bigint                   NOT NULL,
+    content_type varchar(100)             NOT NULL
 --     ,bytes        bytea        NOT NULL
 );
 
@@ -34,31 +34,31 @@ CREATE TABLE binary_contents
 CREATE TABLE user_statuses
 (
     id             uuid PRIMARY KEY,
-    created_at     timestamptz NOT NULL,
-    updated_at     timestamptz,
-    user_id        uuid UNIQUE NOT NULL,
-    last_active_at timestamptz NOT NULL
+    created_at     timestamp with time zone NOT NULL,
+    updated_at     timestamp with time zone,
+    user_id        uuid UNIQUE              NOT NULL,
+    last_active_at timestamp with time zone NOT NULL
 );
 
 -- Channel
 CREATE TABLE channels
 (
     id          uuid PRIMARY KEY,
-    created_at  timestamptz NOT NULL,
-    updated_at  timestamptz,
+    created_at  timestamp with time zone NOT NULL,
+    updated_at  timestamp with time zone,
     name        varchar(100),
     description varchar(500),
-    type        varchar(10) NOT NULL
+    type        varchar(10)              NOT NULL
 );
 
 -- Message
 CREATE TABLE messages
 (
     id         uuid PRIMARY KEY,
-    created_at timestamptz NOT NULL,
-    updated_at timestamptz,
+    created_at timestamp with time zone NOT NULL,
+    updated_at timestamp with time zone,
     content    text,
-    channel_id uuid        NOT NULL,
+    channel_id uuid                     NOT NULL,
     author_id  uuid
 );
 
@@ -74,11 +74,11 @@ CREATE TABLE message_attachments
 CREATE TABLE read_statuses
 (
     id           uuid PRIMARY KEY,
-    created_at   timestamptz NOT NULL,
-    updated_at   timestamptz,
-    user_id      uuid        NOT NULL,
-    channel_id   uuid        NOT NULL,
-    last_read_at timestamptz NOT NULL,
+    created_at   timestamp with time zone NOT NULL,
+    updated_at   timestamp with time zone,
+    user_id      uuid                     NOT NULL,
+    channel_id   uuid                     NOT NULL,
+    last_read_at timestamp with time zone NOT NULL,
     UNIQUE (user_id, channel_id)
 );
 

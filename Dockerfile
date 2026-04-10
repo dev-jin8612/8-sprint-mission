@@ -1,45 +1,40 @@
-# 1) Build stage
-FROM amazoncorretto:17-alpine AS builder
+# 빌드 스테이지
+FROM amazoncorretto:17 AS builder
+
+# 작업 디렉토리 설정
 WORKDIR /app
 
-# 프로젝트 정보 (jar 이름 정규화에 사용)
-ARG PROJECT_NAME=discodeit
-ARG PROJECT_VERSION=1.2-M8
-
-# 1) Gradle wrapper/설정만 먼저 복사 (의존성 캐시 레이어 고정)
-COPY gradlew ./
+# Gradle Wrapper 파일 먼저 복사
 COPY gradle ./gradle
+COPY gradlew ./gradlew
+
+# Gradle 캐시를 위한 의존성 파일 복사
 COPY build.gradle settings.gradle ./
 
-# 권한
-RUN chmod +x ./gradlew
+# 의존성 다운로드
+RUN ./gradlew dependencies
 
-# 2) 의존성만 먼저 받아 캐시(소스 변경과 분리)
-RUN ./gradlew --no-daemon dependencies
-
-# 3) 그 다음에 소스 복사 (자주 변경되는 부분)
+# 소스 코드 복사 및 빌드
 COPY src ./src
+RUN ./gradlew build -x test
 
-# 4) 빌드 (테스트는 필요 시 -x test)
-RUN ./gradlew --no-daemon clean bootJar
 
-# 5) jar 이름 정규화 (패턴이 여러 개여도 1개 선택)
-RUN set -eux; \
-    JAR_PATH="$(ls -1 build/libs/*.jar | head -n 1)"; \
-    cp "$JAR_PATH" "/app/${PROJECT_NAME}-${PROJECT_VERSION}.jar"
+# 런타임 스테이지
+FROM amazoncorretto:17-alpine3.21
 
-# 2) Runtime stage
-FROM amazoncorretto:17-alpine AS runtime
+# 작업 디렉토리 설정
 WORKDIR /app
 
-ENV JVM_OPTS=""
+# 프로젝트 정보를 ENV로 설정
+ENV PROJECT_NAME=discodeit \
+    PROJECT_VERSION=1.2-M8 \
+    JVM_OPTS=""
 
+# 빌드 스테이지에서 jar 파일만 복사
+COPY --from=builder /app/build/libs/${PROJECT_NAME}-${PROJECT_VERSION}.jar ./
+
+# 80 포트 노출
 EXPOSE 80
 
-# 빌드 결과물만 복사
-ARG PROJECT_NAME=discodeit
-ARG PROJECT_VERSION=1.2-M8
-COPY --from=builder /app/${PROJECT_NAME}-${PROJECT_VERSION}.jar /app/app.jar
-
-# 실행
-ENTRYPOINT ["sh", "-c", "java $JVM_OPTS -jar /app/app.jar"]
+# jar 파일 실행
+ENTRYPOINT ["sh", "-c", "java ${JVM_OPTS} -jar ${PROJECT_NAME}-${PROJECT_VERSION}.jar"]
