@@ -9,6 +9,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.session.SessionRegistry;
 import org.springframework.security.core.userdetails.UserDetails;
 
+// TODO 여기 다시 인터페로 바꾸기?
 @Mapper(componentModel = "spring", uses = {BinaryContentMapper.class})
 public abstract class UserMapper {
     @Mapping(target = "online", expression = "java(checkOnlineStatus(user))")

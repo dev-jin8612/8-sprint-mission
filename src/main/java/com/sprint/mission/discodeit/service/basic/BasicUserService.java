@@ -5,6 +5,7 @@ import com.sprint.mission.discodeit.dto.request.BinaryContentCreateRequest;
 import com.sprint.mission.discodeit.dto.request.UserCreateRequest;
 import com.sprint.mission.discodeit.dto.request.UserUpdateRequest;
 import com.sprint.mission.discodeit.entity.BinaryContent;
+import com.sprint.mission.discodeit.entity.Role;
 import com.sprint.mission.discodeit.entity.User;
 import com.sprint.mission.discodeit.exception.user.UserAlreadyExistsException;
 import com.sprint.mission.discodeit.exception.user.UserNotFoundException;
@@ -65,7 +66,7 @@ public class BasicUserService implements UserService {
 
     String password = passwordEncoder.encode(userCreateRequest.password());;
 
-    User user = new User(username, email, password, userCreateRequest.role(),nullableProfile);
+    User user = new User(username, email, password, Role.USER,nullableProfile);
     Instant now = Instant.now();
 
     userRepository.save(user);

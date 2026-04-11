@@ -15,7 +15,7 @@ import java.util.Objects;
 @RequiredArgsConstructor
 public class DiscodeitUserDetails implements UserDetails {
     private final UserDto userDto;
-    private final String passsword;
+    private final String password;
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
@@ -26,7 +26,7 @@ public class DiscodeitUserDetails implements UserDetails {
 
     @Override
     public String getPassword() {
-        return passsword;
+        return password;
     }
 
     @Override

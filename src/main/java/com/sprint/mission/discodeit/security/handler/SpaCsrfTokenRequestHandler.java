@@ -1,4 +1,4 @@
-package com.sprint.mission.discodeit.exception.auth;
+package com.sprint.mission.discodeit.security.handler;
 
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;

@@ -4,6 +4,7 @@ import com.sprint.mission.discodeit.exception.auth.*;
 import com.sprint.mission.discodeit.security.jwt.JwtAuthenticationFilter;
 import com.sprint.mission.discodeit.security.jwt.JwtLoginSuccessHandler;
 import com.sprint.mission.discodeit.security.jwt.JwtLogoutHandler;
+import com.sprint.mission.discodeit.security.handler.*;
 import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.context.annotation.Bean;
@@ -50,21 +51,6 @@ public class SecurityConfig {
     }
 
     @Bean
-    public CommandLineRunner debugFilterChain(SecurityFilterChain filterChain) {
-        return args -> {
-            int filterSize = filterChain.getFilters().size();
-
-            List<String> filterNames = IntStream.range(0, filterSize)
-                    .mapToObj(idx -> String.format("\t[%s/%s] %s", idx + 1, filterSize,
-                            filterChain.getFilters().get(idx).getClass()))
-                    .toList();
-
-            System.out.println("현재 적용된 필터 체인 목록:");
-            filterNames.forEach(System.out::println);
-        };
-    }
-
-    @Bean
     public SecurityFilterChain filterChain(
             HttpSecurity http,
             LoginFailureHandler loginFailureHandler,
@@ -93,7 +79,7 @@ public class SecurityConfig {
 
                         // 채널 관련
                         .requestMatchers("/api/channels/public").hasRole("CHANNEL_MANAGER")
-                        .requestMatchers(HttpMethod.PATCH, "/api/channels").hasRole("CHANNEL_MANAGER")
+                        .requestMatchers(HttpMethod.PATCH, "/api/channels/{channelId}").hasRole("CHANNEL_MANAGER")
                         .requestMatchers(HttpMethod.DELETE, "/api/channels").hasRole("CHANNEL_MANAGER")
 
                         // 유저 관련
