@@ -27,6 +27,7 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.Http403ForbiddenEntryPoint;
+import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import org.springframework.security.web.authentication.logout.HttpStatusReturningLogoutSuccessHandler;
 import org.springframework.security.web.csrf.CookieCsrfTokenRepository;
 import org.springframework.security.web.session.HttpSessionEventPublisher;
@@ -43,11 +44,10 @@ public class SecurityConfig {
     @Bean
     public SecurityFilterChain filterChain(
             HttpSecurity http,
-            LoginFailureHandler loginFailureHandler,
             JwtLoginSuccessHandler jwtLoginSuccessHandler,
-            JwtLogoutHandler jwtLoginFailureHandler,
             JwtAuthenticationFilter jwtAuthenticationFilter,
             JwtLogoutHandler jwtLogoutHandler,
+            LoginFailureHandler loginFailureHandler,
             DaoAuthenticationProvider authenticationProvider,
             CustomAccessDeniedHandler customAccessDeniedHandler
     ) throws Exception {
@@ -100,9 +100,9 @@ public class SecurityConfig {
                             response.sendError(HttpServletResponse.SC_UNAUTHORIZED, "Unauthorized");
                         })
                         .accessDeniedHandler(customAccessDeniedHandler)
-                        .authenticationEntryPoint(new Http403ForbiddenEntryPoint())
                 )
                 .authenticationProvider(authenticationProvider)
+                .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class)
         ;
         return http.build();
     }
