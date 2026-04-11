@@ -14,7 +14,6 @@ import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 import org.springframework.beans.factory.annotation.Autowired;
 
-// TODO 여기 다시 인터페로?
 @Mapper(componentModel = "spring", uses = {UserMapper.class})
 public abstract class ChannelMapper {
 

@@ -32,7 +32,6 @@ public class JwtTokenProvider {
     private final JWSVerifier refreshTokenVerifier;
 
     public JwtTokenProvider(
-            // TODO: 여기 비밀키 수정해야됨
             // application.yaml 파일에 정의된 프로퍼티 값을 주입받는다.
             @Value("${jwt.access-token.secret}") String accessTokenSecret,
             @Value("${jwt.access-token.exp}") int accessTokenExpirationMs,

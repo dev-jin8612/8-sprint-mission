@@ -2,8 +2,9 @@ package com.sprint.mission.discodeit.security.jwt;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.sprint.mission.discodeit.dto.data.UserDto;
+import com.sprint.mission.discodeit.dto.request.JwtInformation;
 import com.sprint.mission.discodeit.dto.response.JwtDTO;
-import com.sprint.mission.discodeit.entity.JwtTokenEntity;
+import com.sprint.mission.discodeit.service.jwt.JwtRegistry;
 import com.sprint.mission.discodeit.service.user.DiscodeitUserDetails;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
@@ -13,6 +14,7 @@ import org.springframework.http.MediaType;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.web.authentication.AuthenticationSuccessHandler;
 import org.springframework.stereotype.Component;
+
 import java.io.IOException;
 
 @Component
@@ -20,7 +22,7 @@ import java.io.IOException;
 public class JwtLoginSuccessHandler implements AuthenticationSuccessHandler {
     private final ObjectMapper objectMapper;
     private final JwtTokenProvider tokenProvider;
-    private final JwtSessionRegistry jwtSessionRegistry;
+    private final JwtRegistry jwtRegistry;
 
     @Override
     public void onAuthenticationSuccess(
@@ -35,27 +37,22 @@ public class JwtLoginSuccessHandler implements AuthenticationSuccessHandler {
 
         // Principal 유효성 확인 및 캐스팅
         if (authentication.getPrincipal() instanceof DiscodeitUserDetails customUserDetails) {
-            try {
-                // 1. 동일 계정 기존 토큰 전부 무효화(동시 로그인 제한)
-                jwtSessionRegistry.revokeAllByUsername(customUserDetails.getUsername());
+            try {// 사용자 DTO 구성
+                UserDto userDto = customUserDetails.getUserDto();
 
-                // 2. 새 Access/Refresh 발급
+                // 1. 새 Access/Refresh 토큰 발급
                 String accessToken = tokenProvider.generateAccessToken(customUserDetails);
                 String refreshToken = tokenProvider.generateRefreshToken(customUserDetails);
 
-                // 3. 토큰 메타데이터 저장 (toEntity로 중복 제거)
-                JwtTokenEntity accessEntity = tokenProvider.toEntity(accessToken);
-                JwtTokenEntity refreshEntity = tokenProvider.toEntity(refreshToken);
-                jwtSessionRegistry.register(accessEntity);
-                jwtSessionRegistry.register(refreshEntity);
+                // 2. JwtRegistry에 등록
+                // (이 메서드 내부에서 기존 토큰 무효화, 동시 로그인 제한, 새 토큰 DB/메모리 저장이 모두 자동으로 처리됩니다)
+                JwtInformation jwtInformation = new JwtInformation(userDto, accessToken, refreshToken);
+                jwtRegistry.registerJwtInformation(jwtInformation);
 
-                // 4. 리프레시 쿠키 설정
+                // 3. 리프레시 쿠키 설정
                 tokenProvider.addRefreshCookie(response, refreshToken);
 
-                // 사용자 DTO 구성
-                UserDto userDto = customUserDetails.getUserDto();
-
-                // 5. JwtDto 바디 전송
+                // 4. JwtDto 바디 전송 (Access Token 응답)
                 JwtDTO jwtDto = new JwtDTO(userDto, accessToken);
                 response.setStatus(HttpServletResponse.SC_OK);
                 response.getWriter().write(objectMapper.writeValueAsString(jwtDto));

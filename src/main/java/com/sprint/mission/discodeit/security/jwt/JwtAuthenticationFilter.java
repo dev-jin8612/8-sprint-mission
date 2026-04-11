@@ -1,6 +1,7 @@
 package com.sprint.mission.discodeit.security.jwt;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.sprint.mission.discodeit.service.jwt.JwtRegistry;
 import com.sprint.mission.discodeit.service.user.DiscodeitUserDetailsService;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
@@ -29,7 +30,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
     // 에러 응답 작성용
     private final ObjectMapper objectMapper;
     // 토큰 폐기 여부 확인용 저장소
-    private final JwtSessionRegistry jwtSessionRegistry;
+    private final JwtRegistry jwtRegistry;
 
     @Override
     protected void doFilterInternal(
@@ -49,7 +50,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
                     // 토큰이 서버 측에서 폐기(revoked)되었는지 확인한다.
                     String jti = tokenProvider.getTokenId(token);
 
-                    if (jwtSessionRegistry.isRevoked(jti)) {
+                    if (!jwtRegistry.hasActiveJwtInformationByAccessToken(token)) {
                         sendUnauthorized(response, "Token revoked");
                         return;
                     }

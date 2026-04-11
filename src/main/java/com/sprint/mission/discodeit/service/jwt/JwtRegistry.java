@@ -7,15 +7,15 @@ import java.util.UUID;
 public interface JwtRegistry {
     void registerJwtInformation(JwtInformation jwtInformation);
 
-    void invalidateJwtInformationByUserid(UUID userld);
+    void invalidateJwtInformationByUserId(UUID userId);
 
-    void hasActiveJwtInformationByUserid(UUID userld);
+    boolean hasActiveJwtInformationByUserId(UUID userId);
 
-    void hasActiveJwtInformationByAccessToken(String accessToken);
+    boolean hasActiveJwtInformationByAccessToken(String accessToken);
 
-    void hasActiveJwtInformationByRefreshToken(String refreshToken);
+    boolean hasActiveJwtInformationByRefreshToken(String refreshToken);
 
-    void rotateJwtInformation(String refreshToken,String  newJwtInformation);
+    void rotateJwtInformation(String refreshToken,JwtInformation  newJwtInformation);
 
     void clearExpiredJwtInformation();
 }
