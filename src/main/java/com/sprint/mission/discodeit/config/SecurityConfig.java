@@ -1,8 +1,12 @@
 package com.sprint.mission.discodeit.config;
 
-import com.sprint.mission.discodeit.security.handler.*;
+import com.sprint.mission.discodeit.security.handler.CustomAccessDeniedHandler;
+import com.sprint.mission.discodeit.security.handler.LoginFailureHandler;
+import com.sprint.mission.discodeit.security.handler.SpaCsrfTokenRequestHandler;
+import com.sprint.mission.discodeit.security.jwt.JwtAuthenticationFilter;
+import com.sprint.mission.discodeit.security.jwt.JwtLoginSuccessHandler;
+import com.sprint.mission.discodeit.security.jwt.JwtLogoutHandler;
 import jakarta.servlet.http.HttpServletResponse;
-import org.springframework.boot.CommandLineRunner;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpMethod;
@@ -17,23 +21,14 @@ import org.springframework.security.config.annotation.method.configuration.Enabl
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityCustomizer;
-import org.springframework.security.core.session.SessionRegistry;
-import org.springframework.security.core.session.SessionRegistryImpl;
+import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
-import org.springframework.security.web.authentication.RememberMeServices;
+import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import org.springframework.security.web.authentication.logout.HttpStatusReturningLogoutSuccessHandler;
-import org.springframework.security.web.authentication.rememberme.JdbcTokenRepositoryImpl;
-import org.springframework.security.web.authentication.rememberme.PersistentTokenBasedRememberMeServices;
-import org.springframework.security.web.context.HttpSessionSecurityContextRepository;
 import org.springframework.security.web.csrf.CookieCsrfTokenRepository;
-import org.springframework.security.web.session.HttpSessionEventPublisher;
-
-import javax.sql.DataSource;
-import java.util.List;
-import java.util.stream.IntStream;
 
 @Configuration
 @EnableWebSecurity
@@ -47,9 +42,9 @@ public class SecurityConfig {
     @Bean
     public SecurityFilterChain filterChain(
             HttpSecurity http,
-            SessionRegistry sessionRegistry,
-            RememberMeServices rememberMeServices,
-            LoginSuccessHandler loginSuccessHandler,
+            JwtLoginSuccessHandler jwtLoginSuccessHandler,
+            JwtAuthenticationFilter jwtAuthenticationFilter,
+            JwtLogoutHandler jwtLogoutHandler,
             LoginFailureHandler loginFailureHandler,
             DaoAuthenticationProvider authenticationProvider,
             CustomAccessDeniedHandler customAccessDeniedHandler
@@ -61,15 +56,14 @@ public class SecurityConfig {
                 )
                 .authorizeHttpRequests(auth -> auth
                         // 문서 관련
-                        .requestMatchers("/","/index.html").permitAll()
-                        .requestMatchers("/swagger-ui/**", "/v3/api-docs/**").permitAll()
-                        .requestMatchers("/actuator/**").permitAll()
+                        .requestMatchers("/", "/index.html").permitAll()
+                        .requestMatchers("/swagger-ui/**", "/v3/api-docs/**", "/actuator/**").permitAll()
 
                         // 로그인/아웃 관련
                         .requestMatchers("/api/auth/csrf-token").permitAll()
                         .requestMatchers(HttpMethod.POST, "/api/users").permitAll()
-                        .requestMatchers("/api/auth/login").permitAll()
-                        .requestMatchers("/api/auth/logout").permitAll()
+                        .requestMatchers("/api/auth/login", "/api/auth/logout").permitAll()
+                        .requestMatchers(HttpMethod.POST, "/api/auth/refresh").permitAll() // 엑세스 토큰 재발급
 
                         // 채널 관련
                         .requestMatchers("/api/channels/public").hasRole("CHANNEL_MANAGER")
@@ -85,28 +79,18 @@ public class SecurityConfig {
                         .anyRequest().authenticated()
                 )
                 .sessionManagement(session -> session
-                        .sessionFixation().migrateSession()
-                        .maximumSessions(1)
-                        .maxSessionsPreventsLogin(false)
-                        .sessionRegistry(sessionRegistry)
-                        .expiredSessionStrategy(new CustomSessionExpiredStrategy())
-                )
-                .rememberMe(remember -> remember
-                        .rememberMeServices(rememberMeServices)
-                        .key("ohgiraffers-mission-key")
-                )
-                .securityContext(securityContext -> securityContext
-                        .securityContextRepository(new HttpSessionSecurityContextRepository())
+                        .sessionCreationPolicy(SessionCreationPolicy.STATELESS)
                 )
                 .formLogin(login -> login
                         .loginProcessingUrl("/api/auth/login")
-                        .successHandler(loginSuccessHandler)
+                        .successHandler(jwtLoginSuccessHandler)
                         .failureHandler(loginFailureHandler)
                         .permitAll()
                 )
                 .httpBasic(basic -> basic.disable())
                 .logout(logout -> logout
                         .logoutUrl("/api/auth/logout")
+                        .addLogoutHandler(jwtLogoutHandler)
                         .logoutSuccessHandler(new HttpStatusReturningLogoutSuccessHandler())
                         .permitAll())
                 .exceptionHandling(exception -> exception
@@ -116,6 +100,7 @@ public class SecurityConfig {
                         .accessDeniedHandler(customAccessDeniedHandler)
                 )
                 .authenticationProvider(authenticationProvider)
+                .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class)
         ;
         return http.build();
     }
@@ -134,44 +119,10 @@ public class SecurityConfig {
     }
 
     @Bean
-    public SessionRegistry sessionRegistry() {
-        return new SessionRegistryImpl();
-    }
-
-    @Bean
-    public HttpSessionEventPublisher httpSessionEventPublisher() {
-        return new HttpSessionEventPublisher();
-    }
-
-    @Bean
     public WebSecurityCustomizer webSecurityCustomizer() {
         return (web) -> web.ignoring()
                 .requestMatchers("/favicon.ico", "/error", "/assets/**")
                 .requestMatchers("/static/**", "/css/**", "/js/**", "/images/**", "/*.js", "/*.css");
-    }
-
-    @Bean
-    public JdbcTokenRepositoryImpl tokenRepository(DataSource dataSource) {
-        JdbcTokenRepositoryImpl tokenRepository = new JdbcTokenRepositoryImpl();
-        tokenRepository.setDataSource(dataSource);
-        return tokenRepository;
-    }
-
-    @Bean
-    public PersistentTokenBasedRememberMeServices rememberMeServices(
-            UserDetailsService userDetailsService,
-            JdbcTokenRepositoryImpl tokenRepository
-    ) {
-        PersistentTokenBasedRememberMeServices rememberMeServices =
-                new PersistentTokenBasedRememberMeServices(
-                        "ohgiraffers-mission-key",
-                        userDetailsService,
-                        tokenRepository);
-
-        rememberMeServices.setTokenValiditySeconds(600);
-        rememberMeServices.setCookieName("remember-me");
-        rememberMeServices.setParameter("remember-me");
-        return rememberMeServices;
     }
 
     @Bean

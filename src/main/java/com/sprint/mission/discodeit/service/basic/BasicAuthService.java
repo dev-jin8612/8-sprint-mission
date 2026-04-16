@@ -6,15 +6,14 @@ import com.sprint.mission.discodeit.entity.User;
 import com.sprint.mission.discodeit.mapper.UserMapper;
 import com.sprint.mission.discodeit.repository.UserRepository;
 import com.sprint.mission.discodeit.service.AuthService;
+import com.sprint.mission.discodeit.service.jwt.JwtRegistry;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.security.core.session.SessionInformation;
-import org.springframework.security.core.session.SessionRegistry;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.List;
+import java.util.UUID;
 
 @Slf4j
 @RequiredArgsConstructor
@@ -22,7 +21,7 @@ import java.util.List;
 public class BasicAuthService implements AuthService {
     private final UserMapper userMapper;
     private final UserRepository userRepository;
-    private final SessionRegistry sessionRegistry;
+    private final JwtRegistry jwtRegistry;
 
     @Override
     @Transactional(readOnly = true)
@@ -43,35 +42,22 @@ public class BasicAuthService implements AuthService {
     @Transactional
     public UserDto updateRole(UserRoleUpdateRequest userRoleUpdateRequest) {
         User user = userRepository.findById(userRoleUpdateRequest.userId())
-                .orElseThrow(()-> new IllegalArgumentException("사용자를 찾을 수 없습니다."));
+                .orElseThrow(() -> new IllegalArgumentException("사용자를 찾을 수 없습니다."));
 
         user.updateRole(userRoleUpdateRequest.newRole());
         User updatedUser = userRepository.save(user);
-        invalidateUserSessions(updatedUser.getUsername());
+        invalidateUserTokens(updatedUser.getId());
 
-        UserDto userDto = userMapper.toDto(updatedUser);
-        return userDto;
+        return userMapper.toDto(updatedUser);
     }
 
-    private void invalidateUserSessions(String username) {
+    private void invalidateUserTokens(UUID userId) {
         try {
-            List<Object> allPrincipals = sessionRegistry.getAllPrincipals();
-
-            for (Object principal : allPrincipals) {
-                UserDetails userDetails = (UserDetails) principal;
-                String principalName = userDetails.getUsername();
-
-                if (username.equals(principalName)) {
-                    List<SessionInformation> sessions = sessionRegistry.getAllSessions(principal, false);
-
-                    for (SessionInformation session : sessions) {
-                        session.expireNow();
-                    }
-                    break;
-                }
-            }
+            // InMemoryJwtRegistry(및 DB)에 저장된 해당 유저의 토큰 정보를 모두 삭제/폐기 처리합니다.
+            jwtRegistry.invalidateJwtInformationByUserId(userId);
+            log.info("[AuthService] 유저(ID: {})의 모든 활성 JWT 토큰이 무효화되었습니다.", userId);
         } catch (Exception e) {
-            log.error("[UserService] 세션 무효화 중 오류 발생: " + e.getMessage());
+            log.error("[AuthService] JWT 무효화 중 오류 발생: " + e.getMessage());
             e.printStackTrace();
         }
     }
