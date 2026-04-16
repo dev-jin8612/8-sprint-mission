@@ -9,12 +9,10 @@ import com.sprint.mission.discodeit.service.AuthService;
 import com.sprint.mission.discodeit.service.jwt.JwtRegistry;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.security.core.session.SessionInformation;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.List;
 import java.util.UUID;
 
 @Slf4j
@@ -47,7 +45,8 @@ public class BasicAuthService implements AuthService {
                 .orElseThrow(() -> new IllegalArgumentException("사용자를 찾을 수 없습니다."));
 
         user.updateRole(userRoleUpdateRequest.newRole());
-        User updatedUser = userRepository.save(user);invalidateUserTokens(updatedUser.getId());
+        User updatedUser = userRepository.save(user);
+        invalidateUserTokens(updatedUser.getId());
 
         return userMapper.toDto(updatedUser);
     }

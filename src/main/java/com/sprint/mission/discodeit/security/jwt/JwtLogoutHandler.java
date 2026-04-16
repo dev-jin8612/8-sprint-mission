@@ -70,6 +70,10 @@ public class JwtLogoutHandler implements LogoutHandler {
     }
 
     private UUID extractUserIdFromToken(String token) throws Exception {
+        if(!tokenProvider.validateRefreshToken(token)) {
+            return null;
+        }
+
         SignedJWT signedJWT = SignedJWT.parse(token);
         Object claim = signedJWT.getJWTClaimsSet().getClaim("userId");
         if (claim != null) {

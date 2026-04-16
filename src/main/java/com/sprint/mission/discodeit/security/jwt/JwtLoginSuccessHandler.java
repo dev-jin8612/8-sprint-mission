@@ -2,7 +2,6 @@ package com.sprint.mission.discodeit.security.jwt;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.sprint.mission.discodeit.dto.data.UserDto;
-import com.sprint.mission.discodeit.dto.request.JwtInformation;
 import com.sprint.mission.discodeit.dto.response.JwtDTO;
 import com.sprint.mission.discodeit.service.jwt.JwtRegistry;
 import com.sprint.mission.discodeit.service.user.DiscodeitUserDetails;
@@ -51,11 +50,6 @@ public class JwtLoginSuccessHandler implements AuthenticationSuccessHandler {
 
                 // 3. 리프레시 쿠키 설정
                 tokenProvider.addRefreshCookie(response, refreshToken);
-
-                jakarta.servlet.http.Cookie accessCookie = new jakarta.servlet.http.Cookie("accessToken", accessToken);
-                accessCookie.setHttpOnly(false); // 프론트엔드 JS에서 접근해야 할 수도 있으므로 false 권장
-                accessCookie.setPath("/");
-                response.addCookie(accessCookie);
 
                 // 4. JwtDto 바디 전송 (Access Token 응답)
                 JwtDTO jwtDto = new JwtDTO(userDto, accessToken);
