@@ -54,10 +54,6 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
             if (StringUtils.hasText(token)) {
                 // Access 토큰 유효성 검사(토큰 타입 검증, 만료 시간 검증, 서명 무결성 검증)
                 if (tokenProvider.validateAccessToken(token)) {
-
-                    // 토큰이 서버 측에서 폐기(revoked)되었는지 확인한다.
-                    String jti = tokenProvider.getTokenId(token);
-
                     if (!jwtRegistry.hasActiveJwtInformationByAccessToken(token)) {
                         sendUnauthorized(response, "Token revoked");
                         return;
@@ -98,15 +94,14 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
             return bearerToken.substring(7);
         }
 
-        // 헤더에 없으면 쿠키를 뒤져봅니다. (쿠키 이름이 "accessToken" 이라고 가정)
+        // 헤더에 없으면 쿠키를 뒤져봅니다.
         if (request.getCookies() != null) {
-            Arrays.stream(request.getCookies())
+            return Arrays.stream(request.getCookies())
                     .filter(cookie -> "accessToken".equals(cookie.getName()))
                     .map(Cookie::getValue)
                     .findFirst()
                     .orElse(null);
         }
-
         return null;
     }
 

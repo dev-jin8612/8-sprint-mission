@@ -1,6 +1,6 @@
 package com.sprint.mission.discodeit.service.jwt;
 
-import com.sprint.mission.discodeit.dto.request.JwtInformation;
+import com.sprint.mission.discodeit.security.jwt.JwtInformation;
 import com.sprint.mission.discodeit.entity.JwtTokenEntity;
 import com.sprint.mission.discodeit.repository.JwtTokenRepository;
 import com.sprint.mission.discodeit.security.jwt.JwtTokenProvider;
@@ -14,13 +14,11 @@ import java.util.concurrent.ConcurrentLinkedQueue;
 
 @Service
 public class InMemoryJwtRegistry implements JwtRegistry {
-    private final JwtTokenRepository jwtTokenRepository;
     private final JwtTokenProvider jwtTokenProvider;
     private final Map<UUID, Queue<JwtInformation>> origin;
     private final int maxActiveJwtCount;
 
-    public InMemoryJwtRegistry(JwtTokenRepository jwtTokenRepository, JwtTokenProvider jwtTokenProvider) {
-        this.jwtTokenRepository = jwtTokenRepository;
+    public InMemoryJwtRegistry(JwtTokenProvider jwtTokenProvider) {
         this.jwtTokenProvider = jwtTokenProvider;
         this.origin = new ConcurrentHashMap<>();
         this.maxActiveJwtCount = 1;
@@ -30,47 +28,27 @@ public class InMemoryJwtRegistry implements JwtRegistry {
     @Transactional
     public void registerJwtInformation(JwtInformation jwtInformation) {
         UUID userId = jwtInformation.getUser().id();
-
         origin.putIfAbsent(userId, new ConcurrentLinkedQueue<>());
         Queue<JwtInformation> userQueue = origin.get(userId);
 
         while (userQueue.size() >= maxActiveJwtCount) {
             JwtInformation oldInfo = userQueue.poll();
-            if (oldInfo != null) {
-                // In-Memory뿐만 아니라 DB에서도 폐기 처리
-                revokeAllInDatabase(oldInfo.getUser().username());
-            }
         }
 
         // 3. 새 로그인 정보 메모리(큐)에 추가
         userQueue.offer(jwtInformation);
-
-        // 3. DB에 새 토큰 저장 (Provider의 toEntity 활용)
-        if (jwtInformation.getAccessToken() != null) {
-            jwtTokenRepository.save(jwtTokenProvider.toEntity(jwtInformation.getAccessToken()));
-        }
-        if (jwtInformation.getRefreshToken() != null) {
-            jwtTokenRepository.save(jwtTokenProvider.toEntity(jwtInformation.getRefreshToken()));
-        }
     }
 
     @Override
     @Transactional
-    public void invalidateJwtInformationByUserId(UUID userId) {// 메모리에서 유저의 큐 자체를 삭제
-        Queue<JwtInformation> removedQueue = origin.remove(userId);
-
-        if (removedQueue != null && !removedQueue.isEmpty()) {
-            // DB에 있는 해당 유저의 모든 토큰 정보를 폐기
-            String username = removedQueue.peek().getUser().username();
-            revokeAllInDatabase(username);
-        }
+    public void invalidateJwtInformationByUserId(UUID userId) {
+        origin.remove(userId);// 메모리에서 유저의 큐 자체를 삭제
     }
 
     @Override
     public boolean hasActiveJwtInformationByUserId(UUID userId) {
         Queue<JwtInformation> userQueue = origin.get(userId);
         return userQueue != null && !userQueue.isEmpty();
-
     }
 
     @Override
@@ -91,7 +69,6 @@ public class InMemoryJwtRegistry implements JwtRegistry {
         return origin.values().stream()
                 .flatMap(Queue::stream)
                 .anyMatch(info -> refreshToken.equals(info.getRefreshToken()));
-
     }
 
     @Override
@@ -108,23 +85,8 @@ public class InMemoryJwtRegistry implements JwtRegistry {
             userQueue.offer(newJwtInformation);
 
             // 3. DB 로테이션 수행
-            // TokenProvider를 이용해 원본 문자열에서 JTI를 추출했다고 가정 (주석 참조)
             String oldJti = jwtTokenProvider.getTokenId(refreshToken);
             String newJti = jwtTokenProvider.getTokenId(newJwtInformation.getRefreshToken());
-
-            jwtTokenRepository.findById(oldJti).ifPresent(t -> {
-                t.setRevoked(true);
-                t.setReplacedBy(newJti);
-                jwtTokenRepository.save(t);
-            });
-
-            // 4. 새 토큰 정보를 DB에 저장 (Provider의 toEntity 활용)
-            if (newJwtInformation.getAccessToken() != null) {
-                jwtTokenRepository.save(jwtTokenProvider.toEntity(newJwtInformation.getAccessToken()));
-            }
-            if (newJwtInformation.getRefreshToken() != null) {
-                jwtTokenRepository.save(jwtTokenProvider.toEntity(newJwtInformation.getRefreshToken()));
-            }
         }
     }
 
@@ -149,13 +111,5 @@ public class InMemoryJwtRegistry implements JwtRegistry {
                 }
             });
         });
-    }
-
-    private void revokeAllInDatabase(String username) {
-        List<JwtTokenEntity> tokens = jwtTokenRepository.findByUsername(username);
-        for (JwtTokenEntity t : tokens) {
-            t.setRevoked(true);
-        }
-        jwtTokenRepository.saveAll(tokens);
     }
 }

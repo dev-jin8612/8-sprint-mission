@@ -2,7 +2,6 @@ package com.sprint.mission.discodeit.security.jwt;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.sprint.mission.discodeit.dto.data.UserDto;
-import com.sprint.mission.discodeit.dto.request.JwtInformation;
 import com.sprint.mission.discodeit.dto.response.JwtDTO;
 import com.sprint.mission.discodeit.service.jwt.JwtRegistry;
 import com.sprint.mission.discodeit.service.user.DiscodeitUserDetails;
