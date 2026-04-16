@@ -75,3 +75,31 @@ jwt:
   refresh-token:
     secret: Zq4t7w!z%C*F-JaNdRgUkXp2s5v8x/A?D(G+KbPeShVmYq3t6w9z
     exp: 3600000       # 1시간(ms)
+
+# 비동기 TaskExecutor 설정
+async:
+  executors:
+    # 메뉴 관련 비동기 TaskExecutor 설정
+    menu:
+      core-size: 4
+      max-size: 8
+      queue-capacity: 200
+      keep-alive-seconds: 60
+    # 알림(이메일/SMS) 발송 비동기 TaskExecutor 설정
+    notification:
+      core-size: 2
+      max-size: 4
+      queue-capacity: 500
+      keep-alive-seconds: 60
+    # 파일 업로드/이미지 처리 등 작업 TaskExecutor 설정
+    file:
+      core-size: 2
+      max-size: 4
+      queue-capacity: 100
+      keep-alive-seconds: 120
+    # 감사 로그/모니터링 등 백그라운드 작업 TaskExecutor 설정
+    audit:
+      core-size: 1
+      max-size: 2
+      queue-capacity: 1000
+      keep-alive-seconds: 60
