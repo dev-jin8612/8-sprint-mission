@@ -1,10 +1,9 @@
 package com.sprint.mission.discodeit.event;
 
-public record BinaryContentCreatedEvent(
-        // TODO 여기 제작 필요
+import java.util.UUID;
 
-) {
-    public static BinaryContentCreatedEvent create(){
-        return new BinaryContentCreatedEvent();
-    }
-}
+public record BinaryContentCreatedEvent(
+        // TODO 흠... ID만 있어도 돼지 않을까?
+        UUID binaryContentId,
+        byte[] bytes
+) { }

@@ -1,9 +1,7 @@
 package com.sprint.mission.discodeit.entity;
 
 import com.sprint.mission.discodeit.entity.base.BaseUpdatableEntity;
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.Table;
+import jakarta.persistence.*;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -20,6 +18,7 @@ public class BinaryContent extends BaseUpdatableEntity {
   private Long size;
   @Column(length = 100, nullable = false)
   private String contentType;
+  @Enumerated(EnumType.STRING)
   @Column(nullable = false)
   private BinaryContentStatus status;
 
@@ -33,11 +32,5 @@ public class BinaryContent extends BaseUpdatableEntity {
   public BinaryContent updateStatus(BinaryContentStatus newStatus) {
     this.status = newStatus;
     return this;
-  }
-
-  public enum BinaryContentStatus {
-      PROCESSING,
-      SUCCESS,
-      FAIL
   }
 }

@@ -81,9 +81,12 @@ CREATE TABLE read_statuses
     user_id      uuid                     NOT NULL,
     channel_id   uuid                     NOT NULL,
     last_read_at timestamp with time zone NOT NULL,
+    notification_enabled boolean NOT NULL,
     UNIQUE (user_id, channel_id)
 );
 
+-- ALTER TABLE read_statuses
+--     ADD COLUMN notification_enabled boolean NOT NULL DEFAULT false;
 
 -- 제약 조건
 -- User (1) -> BinaryContent (1)
