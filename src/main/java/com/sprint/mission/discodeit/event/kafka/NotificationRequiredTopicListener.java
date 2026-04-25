@@ -5,7 +5,6 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.sprint.mission.discodeit.dto.data.ChannelDto;
 import com.sprint.mission.discodeit.dto.data.MessageDto;
 import com.sprint.mission.discodeit.entity.ChannelType;
-import com.sprint.mission.discodeit.entity.Role;
 import com.sprint.mission.discodeit.event.MessageCreatedEvent;
 import com.sprint.mission.discodeit.event.RoleUpdatedEvent;
 import com.sprint.mission.discodeit.event.S3UploadFailedEvent;
@@ -71,7 +70,7 @@ public class NotificationRequiredTopicListener {
         try {
             RoleUpdatedEvent event = objectMapper.readValue(kafkaEvent, RoleUpdatedEvent.class);
             String title = "권한이 변경되었습니다.";
-            String content = String.format("%s -> %s",event.oldRole(), event.newRole());
+            String content = String.format("%s -> %s", event.oldRole(), event.newRole());
             notificationService.create(Set.of(event.userId()), title, content);
 
         } catch (JsonProcessingException e) {
