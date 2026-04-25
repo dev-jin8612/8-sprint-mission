@@ -149,6 +149,7 @@ CREATE TABLE IF NOT EXISTS tbl_jwt_token (
     replaced_by   VARCHAR(64)           -- 회전 시 새 리프레시의 jti
 );
 CREATE INDEX IF NOT EXISTS idx_tbl_jwt_token_username ON tbl_jwt_token(username);
+
 CREATE INDEX IF NOT EXISTS idx_tbl_jwt_token_expires  ON tbl_jwt_token(expires_at);
 
 CREATE TABLE notifications
