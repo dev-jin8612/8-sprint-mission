@@ -15,6 +15,7 @@ import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.Instant;
 import java.util.List;
 import java.util.UUID;
 
@@ -44,7 +45,7 @@ public class BasicBinaryContentService implements BinaryContentService {
         );
 
         binaryContent = binaryContentRepository.save(binaryContent);
-        eventPublisher.publishEvent(new BinaryContentCreatedEvent(binaryContent.getId(), request.bytes()));
+        eventPublisher.publishEvent(new BinaryContentCreatedEvent(bytes, Instant.now(),binaryContent));
 
         log.info("바이너리 컨텐츠 생성 완료: id={}, fileName={}, size={}", binaryContent.getId(), fileName, bytes.length);
         return binaryContentMapper.toDto(binaryContent);

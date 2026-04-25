@@ -150,3 +150,13 @@ CREATE TABLE IF NOT EXISTS tbl_jwt_token (
 );
 CREATE INDEX IF NOT EXISTS idx_tbl_jwt_token_username ON tbl_jwt_token(username);
 CREATE INDEX IF NOT EXISTS idx_tbl_jwt_token_expires  ON tbl_jwt_token(expires_at);
+
+CREATE TABLE notifications
+(
+    id          uuid PRIMARY KEY,
+    created_at  timestamp with time zone NOT NULL,
+    updated_at  timestamp with time zone,
+    receiver_id uuid                     NOT NULL,
+    title       varchar(255)             NOT NULL,
+    content     text                     NOT NULL
+);

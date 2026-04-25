@@ -1,76 +1,62 @@
 package com.sprint.mission.discodeit.config;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.aop.interceptor.AsyncUncaughtExceptionHandler;
-import org.springframework.beans.factory.annotation.Value;
+import org.jboss.logging.MDC;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.core.task.TaskDecorator;
+import org.springframework.core.task.TaskExecutor;
+import org.springframework.core.task.support.CompositeTaskDecorator;
 import org.springframework.scheduling.annotation.AsyncConfigurer;
 import org.springframework.scheduling.annotation.EnableAsync;
 import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor;
+import org.springframework.security.core.context.SecurityContext;
+import org.springframework.security.core.context.SecurityContextHolder;
 
-import java.lang.reflect.Method;
-import java.util.concurrent.ThreadPoolExecutor;
+import java.util.List;
+import java.util.Optional;
 
 @Configuration
 @EnableAsync
 public class AsyncConfig implements AsyncConfigurer {
-    // TODO 여기 미션에 맞게 수정 필요
-    private ThreadPoolTaskExecutor buildExecutor(int core, int max, int queue, int keepAlive, String prefix) {
-        ThreadPoolTaskExecutor exec = new ThreadPoolTaskExecutor();
-
-		// 스레드 풀의 세부 스펙을 설정한다.
-        exec.setCorePoolSize(core);
-        exec.setMaxPoolSize(max);
-        exec.setQueueCapacity(queue);
-        exec.setKeepAliveSeconds(keepAlive);
-        exec.setThreadNamePrefix(prefix + "-");
-		// 스레드 풀이 포화일 때 호출 스레드에서 작업을 실행하여 백프레셔(완만한 저하)를 유도한다.
-        exec.setRejectedExecutionHandler(new ThreadPoolExecutor.CallerRunsPolicy());
-		// 애플리케이션 종료 시 진행 중 작업을 최대한 정리한다.
-        exec.setWaitForTasksToCompleteOnShutdown(true);
-		// 애플리케이션 종료 시 진행 중 작업을 최대한 정리한다.
-        exec.setAwaitTerminationSeconds(20);
-        // exec.setTaskDecorator(new MdcTaskDecorator()); // 예: 로깅 MDC/보안 컨텍스트 전파
-		// 스레드 풀을 초기화한다.
-        exec.initialize();
-
-		// 설정된 스레드 풀을 반환한다.
-        return exec;
+    @Bean(name = "eventTaskExecutor")
+    public TaskExecutor eventExecutor() {
+        ThreadPoolTaskExecutor executor = new ThreadPoolTaskExecutor();
+        executor.setCorePoolSize(2);
+        executor.setMaxPoolSize(4);
+        executor.setQueueCapacity(100);
+        executor.setThreadNamePrefix("event-task-");
+        executor.setTaskDecorator(
+                new CompositeTaskDecorator(List.of(mdcTaskDecorator(), securityContextTaskDecorator())));
+        executor.initialize();
+        return executor;
     }
 
-    @Bean(name = "fileTaskExecutor")
-    public ThreadPoolTaskExecutor fileTaskExecutor(
-            @Value("${async.executors.file.core-size:2}") int core,
-            @Value("${async.executors.file.max-size:4}") int max,
-            @Value("${async.executors.file.queue-capacity:50}") int queue,
-            @Value("${async.executors.file.keep-alive-seconds:120}") int keepAlive
-    ) {
-        return buildExecutor(core, max, queue, keepAlive, "file-exec");
-    }
-
-	@Override
-    public AsyncUncaughtExceptionHandler getAsyncUncaughtExceptionHandler() {
-        return new LoggingAsyncUncaughtExceptionHandler();
-    }
-
-    private static class LoggingAsyncUncaughtExceptionHandler implements AsyncUncaughtExceptionHandler {
-
-        @Override
-        public void handleUncaughtException(Throwable ex, Method method, Object... params) {
-            Logger logger = LoggerFactory.getLogger(method.getDeclaringClass());
-            String methodName = method.getName();
-            logger.error("[AsyncUncaughtException] method={} exType={} message={}", methodName, ex.getClass().getName(), ex.getMessage(), ex);
-
-            if (params != null && params.length > 0) {
+    public TaskDecorator mdcTaskDecorator() {
+        return runnable -> {
+            Optional<String> requestId = Optional.ofNullable(MDC.get(MDCLoggingInterceptor.REQUEST_ID))
+                    .map(String.class::cast);
+            return () -> {
+                requestId.ifPresent(id -> MDC.put(MDCLoggingInterceptor.REQUEST_ID, id));
                 try {
-                    logger.error("[AsyncUncaughtException] params={}", java.util.Arrays.toString(params));
-                } catch (Exception ignore) {
-                    // TODO 여기 수정 필요
-                    // 일반적으로 로깅 중 발생한 예외는 무시하여 원본 오류를 가리지 않게 한다.
+                    runnable.run();
+                } finally {
+                    requestId.ifPresent(id -> MDC.remove(MDCLoggingInterceptor.REQUEST_ID));
                 }
-            }
-        }
+            };
+        };
+    }
+
+    public TaskDecorator securityContextTaskDecorator() {
+        return runnable -> {
+            SecurityContext securityContext = SecurityContextHolder.getContext();
+            return () -> {
+                SecurityContextHolder.setContext(securityContext);
+                try {
+                    runnable.run();
+                } finally {
+                    SecurityContextHolder.clearContext();
+                }
+            };
+        };
     }
 }

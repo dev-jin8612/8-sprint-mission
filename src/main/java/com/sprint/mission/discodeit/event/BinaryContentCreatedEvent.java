@@ -1,9 +1,11 @@
 package com.sprint.mission.discodeit.event;
 
-import java.util.UUID;
+import com.sprint.mission.discodeit.entity.BinaryContent;
+import java.time.Instant;
 
 public record BinaryContentCreatedEvent(
-        // TODO 흠... ID만 있어도 돼지 않을까?
-        UUID binaryContentId,
-        byte[] bytes
-) { }
+        byte[] bytes,
+        Instant createAt,
+        BinaryContent binaryContent
+) {
+}

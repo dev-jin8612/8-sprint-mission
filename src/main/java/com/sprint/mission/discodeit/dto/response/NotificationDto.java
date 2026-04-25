@@ -1,5 +1,7 @@
 package com.sprint.mission.discodeit.dto.response;
 
+import com.sprint.mission.discodeit.entity.Notification;
+
 import java.time.Instant;
 import java.util.UUID;
 
@@ -10,4 +12,13 @@ public record NotificationDto(
         String title,
         String content
 ) {
+    public static NotificationDto from(Notification notification) {
+        return new NotificationDto(
+                notification.getId(),
+                notification.getCreatedAt(),
+                notification.getReceiverId(),
+                notification.getTitle(),
+                notification.getContent()
+        );
+    }
 }

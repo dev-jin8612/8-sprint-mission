@@ -1,8 +1,11 @@
 package com.sprint.mission.discodeit.event;
 
-import java.util.UUID;
+import com.sprint.mission.discodeit.dto.data.MessageDto;
+
+import java.time.Instant;
 
 public record MessageCreatedEvent(
-        UUID MessageId
+        MessageDto messageDto,
+        Instant createdAt
 ) {
 }

@@ -43,7 +43,6 @@ public class BasicMessageService implements MessageService {
     private final ApplicationEventPublisher eventPublisher;
     private final BinaryContentRepository binaryContentRepository;
     private final PageResponseMapper pageResponseMapper;
-
     @Transactional
     @Override
     public MessageDto create(MessageCreateRequest messageCreateRequest,
@@ -67,7 +66,7 @@ public class BasicMessageService implements MessageService {
                             contentType, BinaryContentStatus.SUCCESS);
 
                     binaryContent = binaryContentRepository.save(binaryContent);
-                    eventPublisher.publishEvent(new BinaryContentCreatedEvent(binaryContent.getId(), bytes));
+                    eventPublisher.publishEvent(new BinaryContentCreatedEvent(bytes, Instant.now(), binaryContent));
                     return binaryContent;
                 })
                 .toList();
@@ -81,7 +80,11 @@ public class BasicMessageService implements MessageService {
         );
 
         message= messageRepository.save(message);
-        eventPublisher.publishEvent(new MessageCreatedEvent(message.getId()));
+
+        eventPublisher.publishEvent(new MessageCreatedEvent(
+                messageMapper.toDto(message),
+                Instant.now()
+        ));
         log.info("메시지 생성 완료: id={}, channelId={}", message.getId(), channelId);
         return messageMapper.toDto(message);
     }
