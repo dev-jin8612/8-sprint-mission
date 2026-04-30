@@ -69,7 +69,7 @@ public class BasicUserService implements UserService {
                             contentType, BinaryContentStatus.SUCCESS);
 
                     binaryContent = binaryContentRepository.save(binaryContent);
-                    eventPublisher.publishEvent(new BinaryContentCreatedEvent(bytes, Instant.now(), binaryContent));
+                    eventPublisher.publishEvent(new BinaryContentCreatedEvent(bytes, Instant.now(), binaryContent.getId()));
                     return binaryContent;
                 })
                 .orElse(null);
@@ -141,7 +141,7 @@ public class BasicUserService implements UserService {
                             contentType,BinaryContentStatus.SUCCESS);
 
                     binaryContent = binaryContentRepository.save(binaryContent);
-                    eventPublisher.publishEvent(new BinaryContentCreatedEvent(bytes, Instant.now(), binaryContent));
+                    eventPublisher.publishEvent(new BinaryContentCreatedEvent(bytes, Instant.now(), binaryContent.getId()));
                     return binaryContent;
                 })
                 .orElse(null);

@@ -41,11 +41,11 @@ public class BasicBinaryContentService implements BinaryContentService {
                 fileName,
                 (long) bytes.length,
                 contentType,
-                BinaryContentStatus.SUCCESS
+                BinaryContentStatus.PROCESSING
         );
 
         binaryContent = binaryContentRepository.save(binaryContent);
-        eventPublisher.publishEvent(new BinaryContentCreatedEvent(bytes, Instant.now(),binaryContent));
+        eventPublisher.publishEvent(new BinaryContentCreatedEvent(bytes, Instant.now(),binaryContent.getId()));
 
         log.info("바이너리 컨텐츠 생성 완료: id={}, fileName={}, size={}", binaryContent.getId(), fileName, bytes.length);
         return binaryContentMapper.toDto(binaryContent);

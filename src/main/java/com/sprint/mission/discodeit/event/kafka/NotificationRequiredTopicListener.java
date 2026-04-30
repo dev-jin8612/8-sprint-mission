@@ -87,7 +87,7 @@ public class NotificationRequiredTopicListener {
             StringBuffer sb = new StringBuffer();
             sb.append("RequestId: ").append(event.getRequestId()).append("\n");
             sb.append("BinaryContentId: ").append(event.getBinaryContentId()).append("\n");
-            sb.append("Error: ").append(event.getE().getMessage()).append("\n");
+            sb.append("Error: ").append(event.getE()).append("\n");
             String content = sb.toString();
 
             Set<UUID> receiverIds = userRepository.findByUsername(adminUsername)

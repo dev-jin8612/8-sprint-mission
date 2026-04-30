@@ -87,5 +87,10 @@ public class BasicNotificationService implements NotificationService {
         }
 
         notificationRepository.delete(notification);
+
+        Cache cache = cacheManager.getCache("notifications");
+        if (cache != null) {
+            cache.evict(user.getId());
+        }
     }
 }

@@ -10,7 +10,7 @@ public record ReadStatusUpdateRequest(
     Instant newLastReadAt,
 
     @NotNull(message = "확인 상태 정보는 필수입니다.")
-    boolean newNotificationEnabled
+    Boolean newNotificationEnabled
 ) {
 
 }

@@ -1,6 +1,6 @@
 package com.sprint.mission.discodeit.config;
 
-import org.jboss.logging.MDC;
+import org.slf4j.MDC;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.task.TaskDecorator;
@@ -33,8 +33,7 @@ public class AsyncConfig implements AsyncConfigurer {
 
     public TaskDecorator mdcTaskDecorator() {
         return runnable -> {
-            Optional<String> requestId = Optional.ofNullable(MDC.get(MDCLoggingInterceptor.REQUEST_ID))
-                    .map(String.class::cast);
+            Optional<String> requestId = Optional.ofNullable(MDC.get(MDCLoggingInterceptor.REQUEST_ID));
             return () -> {
                 requestId.ifPresent(id -> MDC.put(MDCLoggingInterceptor.REQUEST_ID, id));
                 try {
