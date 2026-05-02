@@ -10,12 +10,12 @@ import java.util.UUID;
 public class S3UploadFailedEvent {
 
   private final UUID binaryContentId;
-  private final Throwable e;
+  private final String e;
   private final String requestId;
 
   public S3UploadFailedEvent(UUID binaryContentId, Throwable e) {
     this.binaryContentId = binaryContentId;
-    this.e = e;
+    this.e = e.getMessage();
     this.requestId = MDC.get(MDCLoggingInterceptor.REQUEST_ID);
   }
 }
