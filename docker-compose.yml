@@ -17,17 +17,15 @@ services:
   # 2. Backend (Spring Boot) - 기존 app과 backend를 하나로 통합
   backend:
     build:
-      context: . # 현재 폴더의 Dockerfile 사용 (기존 app 설정 유지)
+      context: ./backend
       dockerfile: Dockerfile
-    container_name: discodeit-backend
-    restart: unless-stopped
+    # ports 매핑은 제거하거나 주석 처리합니다. (Nginx를 통해서만 접근)
+    deploy:
+      replicas: 3
     depends_on:
-      db:
-        condition: service_healthy
-      redis:
-        condition: service_started
-      kafka:
-        condition: service_started
+      - db
+      - redis
+      - kafka
     environment:
       SPRING_PROFILES_ACTIVE: ${SPRING_PROFILES_ACTIVE:-prod}
       
