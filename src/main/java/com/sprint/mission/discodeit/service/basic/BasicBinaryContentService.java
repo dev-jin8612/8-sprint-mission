@@ -10,6 +10,7 @@ import com.sprint.mission.discodeit.mapper.BinaryContentMapper;
 import com.sprint.mission.discodeit.repository.BinaryContentRepository;
 import com.sprint.mission.discodeit.service.BinaryContentService;
 import com.sprint.mission.discodeit.service.sse.SseService;
+
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.ApplicationEventPublisher;
@@ -97,7 +98,6 @@ public class BasicBinaryContentService implements BinaryContentService {
 
         // SSE 이벤트 발송: 파일 업로드 상태 변경 (전체 브로드캐스트)
         sseService.broadcast("binaryContents.updated", dto);
-
         log.info("바이너리 컨텐츠 업데이트 완료: id={}", binaryContentId);
         return dto;
     }
